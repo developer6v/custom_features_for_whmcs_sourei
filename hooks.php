@@ -1,4 +1,7 @@
 <?php
+include_once __DIR__ . '/src/Config/Assets/login.php';
+include_once __DIR__ . '/src/Config/Assets/checkout.php';
+
 
 use WHMCS\View\Template\Smarty;
 
