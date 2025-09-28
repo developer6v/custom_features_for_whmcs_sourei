@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const brandingPanel = document.createElement('div');
     brandingPanel.id = 'branding-panel';
     brandingPanel.innerHTML = `
-        <img src="https://i.imgur.com/8cT5V3I.png" alt="StayCloud Logo" class="logo">
+        <img src="/../img/logo.svg" alt="Sourei Logo" class="logo">
         <h2>Bem-vindo de volta,  
     Seja Rei!</h2>
         <p>27823+ aplicações Web em nossa arquitetura</p>
