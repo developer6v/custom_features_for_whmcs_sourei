@@ -221,3 +221,7 @@ h2 {
     margin: 0 !important;
     width: 100% !important;
 }
+
+.social-signin-btns::before {
+    display: none!important;
+}
