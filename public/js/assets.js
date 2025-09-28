@@ -61,14 +61,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <a href="/password/reset">Esqueceu sua senha?</a>
                 <a href="/register.php">Crie sua conta agora</a>
             </div>
-            <div id="divider-ou">OU</div>
-            <div id="google-signin-btn">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="Google">
-                Sign in with Google
-            </div>
-            <div id="footer-link-final">
-                Ainda não é membro? <a href="#">Escolha um plano de hospedagem</a> e comece agora!
-            </div>
+           
         `;
         submitButton.insertAdjacentHTML('afterend', newElementsHTML );
     }

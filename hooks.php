@@ -7,10 +7,19 @@ use WHMCS\View\Template\Smarty;
 
 
 
-add_hook('ClientAreaFooterOutput', 1, function($vars) {
-    $currentFile = basename($_SERVER['PHP_SELF']);
 
-    if ($currentFile === 'logincustom.php') {
+
+add_hook('ClientAreaFooterOutput', 1, function($vars) {
+    // Detecta a página de login tanto com Friendly URLs quanto sem
+    $isLogin =
+        (($vars['templatefile'] ?? '') === 'login')                  // template login.tpl
+        || (($vars['filename'] ?? '') === 'login')                  // filename = login
+        || (isset($_SERVER['REQUEST_URI']) && (                     // fallback pela URL
+            stripos($_SERVER['REQUEST_URI'], '/login') !== false    // /login
+            || stripos($_SERVER['REQUEST_URI'], 'action=login') !== false // clientarea.php?action=login
+        ));
+
+    if ($isLogin) {
         return assets_login();
     }
 

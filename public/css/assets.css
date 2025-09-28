@@ -176,3 +176,48 @@ strong {
 h2 {
     line-height: 1;
 }
+
+/* --- CSS PARA OS BOTÕES SOCIAIS --- */
+
+/* Contêiner dos botões e divisor "OU" */
+.social-signin-btns {
+    margin-top: 25px !important;
+    text-align: center !important;
+}
+
+.social-signin-btns::before {
+    content: 'OU';
+    display: block;
+    text-align: center;
+    margin-bottom: 25px;
+    color: #aaa;
+    font-size: 14px;
+}
+
+/* Esconde o botão original do Facebook */
+.social-signin-btns .btn-facebook {
+    display: none !important;
+}
+
+/* Customiza o botão do Google para o novo design */
+.social-signin-btns .btn-google {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 100% !important;
+    padding: 14px !important;
+    border: 1px solid #ddd !important;
+    border-radius: 14px !important;
+    background-color: #fff !important;
+    font-size: 15px !important;
+    color: #555 !important;
+    text-decoration: none !important;
+    box-shadow: none !important;
+    height: auto !important;
+}
+
+/* Ajusta o iframe do Google para preencher o novo botão */
+.social-signin-btns .btn-google iframe {
+    margin: 0 !important;
+    width: 100% !important;
+}
