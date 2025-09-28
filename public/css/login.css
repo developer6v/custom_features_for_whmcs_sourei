@@ -245,7 +245,9 @@ h2 {
         .border-white {
             border-color: white;
         }
-   
+        .ml {
+            margin-left: -12px;
+        }
         .text-sm {
             font-size: 0.875rem;
             line-height: 1.25rem;

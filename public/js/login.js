@@ -13,8 +13,8 @@ document.addEventListener('DOMContentLoaded', function() {
              <div class="flex gap-3 items-center">
             <div class="flex">
                 <img alt="Cliente 1" loading="lazy" width="32" height="32" decoding="async" data-nimg="1" class="rounded-full border border-white" style="color:transparent" src="/modules/addons/custom_features_for_whmcs_sourei/public/img/profile1.jpg">
-                <img alt="Cliente 2" loading="lazy" width="32" height="32" decoding="async" data-nimg="1" class="rounded-full border border-white ml-[-12px]" style="color:transparent" src="/modules/addons/custom_features_for_whmcs_sourei/public/img/profile2.png">
-                <img alt="Cliente 3" loading="lazy" width="32" height="32" decoding="async" data-nimg="1" class="rounded-full border border-white ml-[-12px]" style="color:transparent" src="/modules/addons/custom_features_for_whmcs_sourei/public/img/profile3.png">
+                <img alt="Cliente 2" loading="lazy" width="32" height="32" decoding="async" data-nimg="1" class="rounded-full border border-white ml" style="color:transparent" src="/modules/addons/custom_features_for_whmcs_sourei/public/img/profile2.png">
+                <img alt="Cliente 3" loading="lazy" width="32" height="32" decoding="async" data-nimg="1" class="rounded-full border border-white ml" style="color:transparent" src="/modules/addons/custom_features_for_whmcs_sourei/public/img/profile3.png">
             </div>
             <p class="text-sm font-medium">500+ clientes</p>
         </div>
