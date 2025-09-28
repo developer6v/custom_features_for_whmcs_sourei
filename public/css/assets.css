@@ -76,10 +76,14 @@ body.lagom {
     background-color: #F7F7F9 !important;
     border: 1px solid #F7F7F9 !important;
     border-radius: 14px !important;
-    padding: 24px 20px !important;
     font-size: 15px !important;
     height: auto !important;
     color: #333 !important;
+    border: 1px solid #e5e7eb !important;
+    padding-top: .75rem;
+    padding-bottom: .75rem;
+    padding-right: 2rem;
+    padding-left: 2rem;
 }
 .login-form .form-control:focus {
     background-color: #fff !important;
