@@ -86,3 +86,7 @@
 .login-footer {
     display: none !important; /* Oculta completamente o rodapé original */
 }
+
+.app-nav {
+    display: none;
+}
