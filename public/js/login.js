@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', function() {
         <img src="/modules/addons/custom_features_for_whmcs_sourei/public/img/logo.webp" alt="Sourei Logo" class="logo">
         <h2><strong>Bem-vindo</strong> de volta,  
     <br><strong>Seja Rei!</strong></h2>
-        <p>27823+ aplicações Web em nossa arquitetura</p>
+        <p>500+ clientes</p>
     `;
 
 
