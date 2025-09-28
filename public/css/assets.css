@@ -1,7 +1,7 @@
 /* Reset e Esconde Elementos Indesejados */
 body.lagom {
     background-color: #F0F2F5 !important; /* Fundo da página */
-    background-image: url('https://i.imgur.com/rX3F8pI.png' ) !important; /* Imagem de fundo com linhas */
+    background-image: url('https://auth.staycloud.com.br/images/background-staycloud.png' ) !important; /* Imagem de fundo com linhas */
     background-repeat: no-repeat !important;
     background-position: center !important;
     background-size: cover !important;
@@ -162,5 +162,5 @@ body.lagom {
 
 
 .app-nav {
-    display: none;
+    display: none!important;
 }
