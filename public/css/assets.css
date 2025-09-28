@@ -1,40 +1,42 @@
-/* === GERAL ========================================== */
+/* === GERAL E CONTAINER ============================ */
 .login-wrapper {
     background-color: #ffffff !important;
-    border: 1px solid #e0e0e0 !important;
     border-radius: 24px !important;
     padding: 40px !important;
-    max-width: 450px !important; /* Ajuste a largura máxima conforme necessário */
-    margin: auto !important;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
+    max-width: 420px !important; /* Largura ajustada */
+    margin: 50px auto !important; /* Adiciona margem no topo */
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08) !important;
+    border: none !important; /* Remove a borda anterior */
 }
 
 /* === TÍTULO ========================================= */
 .login-title {
-    color: #4f46e5 !important; /* Tom de azul/lilás do novo design */
-    font-family: 'Inter', sans-serif !important; /* Exemplo de fonte moderna, troque se necessário */
-    font-weight: bold !important;
-    font-size: 28px !important;
-    text-align: center !important;
-    margin-bottom: 30px !important;
+    color: #6A60F5 !important; /* Cor exata do lilás/roxo */
+    font-family: 'Inter', sans-serif !important; /* Use a fonte que preferir */
+    font-weight: 700 !important; /* Mais forte */
+    font-size: 26px !important;
+    text-align: left !important; /* Alinhado à esquerda */
+    margin-bottom: 35px !important;
 }
 
 /* === FORMULÁRIO E INPUTS ============================ */
 .login-form .form-group {
-    margin-bottom: 20px !important;
+    margin-bottom: 15px !important;
+    position: relative !important; /* Necessário para posicionar elementos internos */
 }
 
 .login-form .form-control {
-    background-color: #ffffff !important;
-    border: 1px solid #d1d5db !important;
-    border-radius: 12px !important;
-    padding: 22px 15px !important;
-    font-size: 16px !important;
+    background-color: #F7F7F9 !important; /* Fundo cinza claro */
+    border: none !important; /* Sem bordas */
+    border-radius: 14px !important; /* Cantos mais arredondados */
+    padding: 24px 20px !important; /* Padding interno */
+    font-size: 15px !important;
     height: auto !important;
+    color: #333 !important;
 }
 
 .login-form .form-control::placeholder {
-    color: #9ca3af !important;
+    color: #A0A0A0 !important; /* Cor do placeholder mais suave */
 }
 
 /* Oculta os labels originais */
@@ -43,53 +45,44 @@
     display: none !important;
 }
 
-/* === BOTÃO DE LOGIN ================================= */
-.btn-primary {
-    background-color: #6366f1 !important;
-    border-color: #6366f1 !important;
-    border-radius: 9999px !important; /* Botão totalmente arredondado */
-    padding: 15px !important;
-    font-size: 16px !important;
-    font-weight: bold !important;
-    margin-top: 20px !important;
-}
-
-.btn-primary:hover {
-    background-color: #4f46e5 !important; /* Cor mais escura no hover */
-    border-color: #4f46e5 !important;
-}
-
-/* === LINKS E RODAPÉ ================================= */
-/* Move o link "Esqueceu a Senha?" para baixo do formulário */
+/* === LINK "ESQUECEU A SENHA?" ===================== */
 .form-group .d-flex {
-    flex-direction: column !important;
+    display: block !important; /* Muda o display para reorganizar */
 }
 
 .form-group .d-flex a {
-    order: 2 !important; /* Muda a ordem visual */
+    display: block !important;
     text-align: left !important;
-    margin-top: 25px !important;
+    margin-top: 10px !important; /* Espaço acima do link */
+    margin-bottom: 25px !important; /* Espaço abaixo do link */
+    font-size: 14px !important;
+    color: #6A60F5 !important;
     text-decoration: none !important;
 }
 
-/* Oculta o checkbox "Lembrar" */
+/* === CHECKBOX "LEMBRAR" =========================== */
 .form-group label.checkbox {
-    display: none !important;
+    display: none !important; /* Oculta o checkbox */
 }
 
+/* === BOTÃO DE LOGIN ================================= */
+.btn-primary {
+    background-color: #6A60F5 !important;
+    border-color: #6A60F5 !important;
+    border-radius: 14px !important; /* Cantos arredondados consistentes */
+    padding: 16px !important;
+    font-size: 16px !important;
+    font-weight: 600 !important;
+    width: 100% !important; /* Ocupa toda a largura */
+    margin-top: 10px !important;
+}
+
+.btn-primary:hover {
+    background-color: #584fcf !important; /* Tom mais escuro para hover */
+    border-color: #584fcf !important;
+}
+
+/* === RODAPÉ ========================================= */
 .login-footer {
-    text-align: center !important;
-    margin-top: 30px !important;
-}
-
-.login-footer .text-light {
-    display: none !important; /* Oculta o texto original do rodapé */
-}
-
-/* Adiciona o novo link "Crie sua conta agora" ao lado de "Esqueceu sua senha?" */
-.form-group .d-flex a::after {
-    content: 'Crie sua conta agora';
-    position: absolute;
-    right: 0;
-    color: #6366f1;
+    display: none !important; /* Oculta completamente o rodapé original */
 }
