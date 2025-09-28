@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const brandingPanel = document.createElement('div');
     brandingPanel.id = 'branding-panel';
     brandingPanel.innerHTML = `
-        <img src="/../img/logo.svg" alt="Sourei Logo" class="logo">
+        <img src="/modules/addons/custom_features_for_whmcs_sourei/public/img/logo.svg" alt="Sourei Logo" class="logo">
         <h2>Bem-vindo de volta,  
     Seja Rei!</h2>
         <p>27823+ aplicações Web em nossa arquitetura</p>
