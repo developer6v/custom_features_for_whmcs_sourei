@@ -225,3 +225,37 @@ h2 {
 .social-signin-btns::before {
     display: none!important;
 }
+
+
+.flex {
+            display: flex;
+        }
+        .gap-3 {
+            gap: 0.75rem;
+        }
+        .items-center {
+            align-items: center;
+        }
+        .rounded-full {
+            border-radius: 50%;
+        }
+        .border {
+            border-width: 1px;
+        }
+        .border-white {
+            border-color: white;
+        }
+   
+        .text-sm {
+            font-size: 0.875rem;
+            line-height: 1.25rem;
+        }
+        .font-medium {
+            font-weight: 500;
+        }
+        #branding-panel img.rounded-full {
+            width: 32px;
+            height: 32px;
+            object-fit: cover;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
