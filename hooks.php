@@ -8,7 +8,9 @@ use WHMCS\View\Template\Smarty;
 
 add_hook('ClientAreaPrimarySidebar', 1, function($primarySidebar) {
     if (basename($_SERVER['PHP_SELF']) === 'logincustom.php') {
-        $primarySidebar->removeAllChildren(); // remove todos os itens
+        foreach ($primarySidebar->getChildren() as $child) {
+            $primarySidebar->removeChild($child->getName());
+        }
     }
 });
 
