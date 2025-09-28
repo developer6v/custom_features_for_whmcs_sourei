@@ -6,11 +6,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const brandingPanel = document.createElement('div');
     brandingPanel.id = 'branding-panel';
     brandingPanel.innerHTML = `
-        <img src="https://i.imgur.com/your-logo-image.png" alt="StayCloud Logo" class="logo"> <!-- Substitua pela URL da sua logo -->
+        <img src="https://i.imgur.com/8cT5V3I.png" alt="StayCloud Logo" class="logo">
         <h2>Bem-vindo de volta,  
-Fique em Nuvem!</h2>
+    Seja Rei!</h2>
         <p>27823+ aplicações Web em nossa arquitetura</p>
     `;
+
 
     const loginPanel = document.createElement('div' );
     loginPanel.id = 'login-panel';
