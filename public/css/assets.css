@@ -1,91 +1,165 @@
-/* === GERAL E CONTAINER ============================ */
+/* Reset e Esconde Elementos Indesejados */
+body.lagom {
+    background-color: #F0F2F5 !important; /* Fundo da página */
+    background-image: url('https://i.imgur.com/rX3F8pI.png' ) !important; /* Imagem de fundo com linhas */
+    background-repeat: no-repeat !important;
+    background-position: center !important;
+    background-size: cover !important;
+}
+
+.app-main, .main-footer, .cookie-bar, #SASContainer, .main-header, .main-top {
+    display: none !important;
+}
+
+/* Novo Container Principal */
+#login-container-custom {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+    font-family: 'Inter', sans-serif;
+}
+
+/* Painel Esquerdo (Branding) */
+#branding-panel {
+    background-color: #fff;
+    border-radius: 24px;
+    padding: 50px;
+    margin-right: 20px;
+    width: 450px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.05);
+    text-align: center;
+}
+#branding-panel img.logo {
+    max-width: 150px;
+    margin-bottom: 20px;
+}
+#branding-panel h2 {
+    font-size: 24px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 15px;
+}
+#branding-panel p {
+    font-size: 14px;
+    color: #555;
+}
+
+/* Painel Direito (Formulário) - Reutiliza .login-wrapper */
 .login-wrapper {
     background-color: #ffffff !important;
     border-radius: 24px !important;
     padding: 40px !important;
-    max-width: 420px !important; /* Largura ajustada */
-    margin: 50px auto !important; /* Adiciona margem no topo */
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08) !important;
-    border: none !important; /* Remove a borda anterior */
+    width: 450px !important;
+    max-width: 100% !important;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.05) !important;
+    border: none !important;
+    margin: 0 !important;
 }
 
-/* === TÍTULO ========================================= */
+/* Estilos do Formulário */
 .login-title {
-    color: #6A60F5 !important; /* Cor exata do lilás/roxo */
-    font-family: 'Inter', sans-serif !important; /* Use a fonte que preferir */
-    font-weight: 700 !important; /* Mais forte */
+    color: #6A60F5 !important;
+    font-weight: 700 !important;
     font-size: 26px !important;
-    text-align: left !important; /* Alinhado à esquerda */
+    text-align: left !important;
     margin-bottom: 35px !important;
 }
 
-/* === FORMULÁRIO E INPUTS ============================ */
 .login-form .form-group {
     margin-bottom: 15px !important;
-    position: relative !important; /* Necessário para posicionar elementos internos */
+    position: relative !important;
 }
 
 .login-form .form-control {
-    background-color: #F7F7F9 !important; /* Fundo cinza claro */
-    border: none !important; /* Sem bordas */
-    border-radius: 14px !important; /* Cantos mais arredondados */
-    padding: 24px 20px !important; /* Padding interno */
+    background-color: #F7F7F9 !important;
+    border: 1px solid #F7F7F9 !important;
+    border-radius: 14px !important;
+    padding: 24px 20px !important;
     font-size: 15px !important;
     height: auto !important;
     color: #333 !important;
 }
-
-.login-form .form-control::placeholder {
-    color: #A0A0A0 !important; /* Cor do placeholder mais suave */
+.login-form .form-control:focus {
+    background-color: #fff !important;
+    border-color: #6A60F5 !important;
+    box-shadow: none !important;
 }
 
-/* Oculta os labels originais */
-.form-group > label[for="inputEmail"],
-.form-group > .d-flex > label[for="inputPassword"] {
+/* Ícone de Olho */
+#password-toggle-icon {
+    position: absolute;
+    top: 50%;
+    right: 20px;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #888;
+}
+
+/* Ocultar Labels e Checkbox */
+.form-group > label, .form-group label.checkbox {
     display: none !important;
 }
 
-/* === LINK "ESQUECEU A SENHA?" ===================== */
-.form-group .d-flex {
-    display: block !important; /* Muda o display para reorganizar */
+/* Botão Entrar */
+.btn-primary {
+    background-color: #6A60F5 !important;
+    border-radius: 14px !important;
+    padding: 16px !important;
+    font-size: 16px !important;
+    font-weight: 600 !important;
+    margin-top: 10px !important;
+    border: none !important;
 }
 
-.form-group .d-flex a {
-    display: block !important;
-    text-align: left !important;
-    margin-top: 10px !important; /* Espaço acima do link */
-    margin-bottom: 25px !important; /* Espaço abaixo do link */
-    font-size: 14px !important;
+/* Links e Divisores */
+#links-container {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+    font-size: 14px;
+}
+#links-container a {
     color: #6A60F5 !important;
     text-decoration: none !important;
 }
 
-/* === CHECKBOX "LEMBRAR" =========================== */
-.form-group label.checkbox {
-    display: none !important; /* Oculta o checkbox */
+#divider-ou {
+    text-align: center;
+    margin: 25px 0;
+    color: #aaa;
 }
 
-/* === BOTÃO DE LOGIN ================================= */
-.btn-primary {
-    background-color: #6A60F5 !important;
-    border-color: #6A60F5 !important;
-    border-radius: 14px !important; /* Cantos arredondados consistentes */
-    padding: 16px !important;
-    font-size: 16px !important;
-    font-weight: 600 !important;
-    width: 100% !important; /* Ocupa toda a largura */
-    margin-top: 10px !important;
+#google-signin-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 14px;
+    border: 1px solid #ddd;
+    border-radius: 14px;
+    background-color: #fff;
+    font-size: 15px;
+    color: #555;
+    cursor: pointer;
+}
+#google-signin-btn img {
+    width: 20px;
+    margin-right: 10px;
 }
 
-.btn-primary:hover {
-    background-color: #584fcf !important; /* Tom mais escuro para hover */
-    border-color: #584fcf !important;
+#footer-link-final {
+    text-align: center;
+    margin-top: 25px;
+    font-size: 14px;
+    color: #888;
+}
+#footer-link-final a {
+    color: #6A60F5 !important;
+    text-decoration: none !important;
 }
 
-/* === RODAPÉ ========================================= */
-.login-footer {
-    display: none !important; /* Oculta completamente o rodapé original */
-}
 
 .app-nav {
     display: none;
