@@ -2,7 +2,8 @@
 
 include_once __DIR__ . '/hooks.php';
 include_once __DIR__ . '/src/Views/config.php';
-include_once __DIR__ . '/src/Config/assets.php';
+include_once __DIR__ . '/src/Config/Assets/login.php';
+include_once __DIR__ . '/src/Config/Assets/checkout.php';
 
 function custom_features_for_whmcs_sourei_config() { 
     return array(
@@ -23,7 +24,6 @@ function custom_features_for_whmcs_sourei_deactivate() {
 }
 
 function custom_features_for_whmcs_sourei_output() {
-    echo assets();
     echo config();
 }
 
