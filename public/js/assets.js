@@ -1,3 +1,4 @@
+
 document.addEventListener('DOMContentLoaded', function() {
     // 1. Criar a nova estrutura de layout
     const loginContainer = document.createElement('div');

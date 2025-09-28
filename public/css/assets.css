@@ -172,3 +172,7 @@ body.lagom {
 strong {
     color: #1E4A96;
 }
+
+h2 {
+    line-height: 1;
+}
