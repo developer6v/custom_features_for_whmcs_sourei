@@ -60,7 +60,7 @@ body.lagom {
 
 /* Estilos do Formulário */
 .login-title {
-    color: #6A60F5 !important;
+    color: #0795c2 !important;
     font-weight: 700 !important;
     font-size: 26px !important;
     text-align: left !important;
@@ -87,7 +87,7 @@ body.lagom {
 }
 .login-form .form-control:focus {
     background-color: #fff !important;
-    border-color: #6A60F5 !important;
+    border-color: #0795c2 !important;
     box-shadow: none !important;
 }
 
@@ -108,7 +108,7 @@ body.lagom {
 
 /* Botão Entrar */
 .btn-primary {
-    background-color: #6A60F5 !important;
+    background-color: #0795c2 !important;
     border-radius: 14px !important;
     padding: 16px !important;
     font-size: 16px !important;
@@ -125,7 +125,7 @@ body.lagom {
     font-size: 14px;
 }
 #links-container a {
-    color: #6A60F5 !important;
+    color: #0795c2 !important;
     text-decoration: none !important;
 }
 
@@ -160,11 +160,15 @@ body.lagom {
     color: #888;
 }
 #footer-link-final a {
-    color: #6A60F5 !important;
+    color: #0795c2 !important;
     text-decoration: none !important;
 }
 
 
 .app-nav {
     display: none!important;
+}
+
+strong {
+    color: #0795c2;
 }
