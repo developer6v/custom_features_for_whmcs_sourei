@@ -269,3 +269,13 @@ h2 {
     width: 25px;
     height: 25px;
 }
+
+
+@media screen and (max-width: 720px) {
+    #branding-panel {
+        display: none;
+    }
+    .login-wrapper {
+        width: 100%;
+    }
+}
