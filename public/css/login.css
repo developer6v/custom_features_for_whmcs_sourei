@@ -273,9 +273,9 @@ h2 {
 
 @media screen and (max-width: 720px) {
     #branding-panel {
-        display: none;
+        display: none!important;
     }
     .login-wrapper {
-        width: 100%;
+        width: 100%!important;
     }
 }
