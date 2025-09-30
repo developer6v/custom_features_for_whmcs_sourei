@@ -74,7 +74,6 @@ class StepByStepForm {
             this.getFieldGroup('customfield5', 'CNPJ (opcional)', 'Digite seu CNPJ (opcional)')
         ]),
             this.createDateField('inputBirthDate', 'Data de Nascimento', 'data de nascimento'),
-            this.createCheckboxField()
         ]);
 
         // Passo 2: Endereço
@@ -108,6 +107,7 @@ class StepByStepForm {
             personalInfo.appendChild(stepsContainer);
         }
     }
+
     createStep(stepNumber, fields) {
         const step = document.createElement('div');
         step.className = `form-step step-${stepNumber}`;
@@ -121,21 +121,6 @@ class StepByStepForm {
         });
 
         step.appendChild(content);
-
-        // Verificar se a inicialização do intlTelInput já foi feita
-        const phoneInputField = document.querySelector("#inputPhone");
-        if (phoneInputField && !phoneInputField.intlTelInput) {
-            const phoneInput = window.intlTelInput(phoneInputField, {
-                initialCountry: "auto",
-                separateDialCode: true,
-                preferredCountries: ["br", "us", "ca", "gb", "de", "fr", "pt", "jp"],
-                utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js"
-            });
-
-            // Marcar o campo como inicializado para evitar reinicializações
-            phoneInputField.intlTelInput = phoneInput;
-        }
-
         return step;
     }
 

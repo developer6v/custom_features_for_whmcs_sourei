@@ -495,4 +495,13 @@ body {
     .app-main {
         padding: 0 !important;
     }
+
+    .container {
+        padding-right: 0!important;
+        padding-left: 0!important;
+    }
+
+    .main-body {
+        padding: 0!important;
+    }
 }
