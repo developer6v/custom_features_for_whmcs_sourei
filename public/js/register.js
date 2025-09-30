@@ -600,7 +600,56 @@ class StepByStepForm {
             form.submit();
         }
     }
+
+
 }
+// Função para gerar uma senha aleatória
+function generateRandomPassword(length = 8) {
+    const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+";
+    let password = "";
+    for (let i = 0; i < length; i++) {
+        const randomIndex = Math.floor(Math.random() * charset.length);
+        password += charset[randomIndex];
+    }
+    return password;
+}
+
+// Função para preencher os campos de senha
+function fillGeneratedPassword() {
+    const password = generateRandomPassword(12); // Gera uma senha de 12 caracteres
+
+    // Preenche os campos de senha
+    document.getElementById('inputNewPassword1').value = password;
+    document.getElementById('inputNewPassword2').value = password;
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Função para gerar uma senha aleatória
+    function generateRandomPassword(length = 8) {
+        const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+";
+        let password = "";
+        for (let i = 0; i < length; i++) {
+            const randomIndex = Math.floor(Math.random() * charset.length);
+            password += charset[randomIndex];
+        }
+        return password;
+    }
+
+    // Função para preencher os campos de senha
+    function fillGeneratedPassword() {
+        const password = generateRandomPassword(12); // Gera uma senha de 12 caracteres
+
+        // Preenche os campos de senha
+        document.getElementById('inputNewPassword1').value = password;
+        document.getElementById('inputNewPassword2').value = password;
+    }
+
+    // Atribuindo ao botão de gerar senha
+    const generatePasswordButton = document.querySelector('.generate-password');
+    if (generatePasswordButton) {
+        generatePasswordButton.addEventListener('click', fillGeneratedPassword);
+    }
+});
 
 // Inicializar o sistema de passos
 new StepByStepForm();
