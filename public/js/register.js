@@ -356,7 +356,7 @@ class StepByStepForm {
         });
     }
 
-    setupInputMasks() {
+   setupInputMasks() {
         document.addEventListener('input', (e) => {
             const field = e.target;
             
@@ -366,9 +366,17 @@ class StepByStepForm {
                 this.applyPhoneMask(field);
             } else if (field.id === 'inputPostcode') {
                 this.applyCepMask(field);
+            } else if (field.id === 'inputBirthDate') {
+                this.applyDateMask(field); // Adicionando a máscara para data de nascimento
             }
         });
     }
+
+    applyDateMask(field) {
+        const im = new Inputmask('99/99/9999');  // Máscara de data: dd/mm/aaaa
+        im.mask(field);  // Aplica a máscara no campo
+    }
+
 
     showStep(stepNumber) {
         // Ocultar todos os passos
