@@ -489,3 +489,10 @@ body {
     color: #6366f1!important;
     font-size: 25px!important;
 }
+
+
+@media screen and (max-width: 720px) {
+    .app-main {
+        padding: 0 !important;
+    }
+}
