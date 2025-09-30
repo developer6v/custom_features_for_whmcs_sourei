@@ -1,5 +1,6 @@
 <?php
 include_once __DIR__ . '/src/Config/Assets/login.php';
+include_once __DIR__ . '/src/Config/Assets/register.php';
 include_once __DIR__ . '/src/Config/Assets/checkout.php';
 
 
@@ -19,6 +20,20 @@ add_hook('ClientAreaFooterOutput', 1, function($vars) {
 
     if ($isLogin) {
         return assets_login();
+    }
+
+    return '';
+});
+
+
+
+
+add_hook('ClientAreaFooterOutput', 1, function($vars) {
+    // Detecta a página de login tanto com Friendly URLs quanto sem
+    $isLogin =(($vars['filename'] ?? '') === 'registercustom');
+
+    if ($isLogin) {
+        return assets_register();
     }
 
     return '';
