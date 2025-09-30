@@ -10,14 +10,7 @@ class StepByStepForm {
 
     init() {
         document.addEventListener('DOMContentLoaded', () => {
-            const phoneInputField = document.querySelector("#inputPhone");
 
-            const phoneInput = window.intlTelInput(phoneInputField, {
-                initialCountry: "auto",
-                separateDialCode: true,
-                preferredCountries: ["br", "us", "ca", "gb", "de", "fr", "pt", "jp"],
-                utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js"
-            });
             this.setupFormStructure();
             this.setupEventListeners();
             this.setupValidation();
@@ -75,10 +68,12 @@ class StepByStepForm {
                 this.getFieldGroup('inputPhone', 'Telefone', 'Seu número'),
                 this.getFieldGroup('inputEmail', 'E-mail', 'Insira seu e-mail')
             ]),
-            this.createTwoColumnRow([
-                this.getFieldGroup('inputCompanyName', 'CPF', 'Coloque seu CPF'),
-                this.getFieldGroup('customfield5', 'CNPJ (opcional)', 'Digite seu CNPJ (opcional)')  // CNPJ opcional
-            ]),
+                this.createTwoColumnRow([
+            // Exibe os dois campos: CPF (obrigatório) e CNPJ (opcional)
+            this.getFieldGroup('inputCompanyName', 'CPF', 'Coloque seu CPF'),
+            this.getFieldGroup('customfield5', 'CNPJ (opcional)', 'Digite seu CNPJ (opcional)')
+        ]),
+            this.createDateField('inputBirthDate', 'Data de Nascimento', 'data de nascimento'),
             this.createCheckboxField()
         ]);
 
@@ -113,7 +108,6 @@ class StepByStepForm {
             personalInfo.appendChild(stepsContainer);
         }
     }
-
     createStep(stepNumber, fields) {
         const step = document.createElement('div');
         step.className = `form-step step-${stepNumber}`;
@@ -127,6 +121,21 @@ class StepByStepForm {
         });
 
         step.appendChild(content);
+
+        // Verificar se a inicialização do intlTelInput já foi feita
+        const phoneInputField = document.querySelector("#inputPhone");
+        if (phoneInputField && !phoneInputField.intlTelInput) {
+            const phoneInput = window.intlTelInput(phoneInputField, {
+                initialCountry: "auto",
+                separateDialCode: true,
+                preferredCountries: ["br", "us", "ca", "gb", "de", "fr", "pt", "jp"],
+                utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js"
+            });
+
+            // Marcar o campo como inicializado para evitar reinicializações
+            phoneInputField.intlTelInput = phoneInput;
+        }
+
         return step;
     }
 
