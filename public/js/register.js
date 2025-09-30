@@ -622,34 +622,52 @@ function fillGeneratedPassword() {
     document.getElementById('inputNewPassword1').value = password;
     document.getElementById('inputNewPassword2').value = password;
 }
-
 document.addEventListener('DOMContentLoaded', function() {
+    console.log("DOM completamente carregado");
+
     // Função para gerar uma senha aleatória
     function generateRandomPassword(length = 8) {
+        console.log("Gerando senha...");
         const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+";
         let password = "";
         for (let i = 0; i < length; i++) {
             const randomIndex = Math.floor(Math.random() * charset.length);
             password += charset[randomIndex];
         }
+        console.log("Senha gerada: " + password);
         return password;
     }
 
     // Função para preencher os campos de senha
     function fillGeneratedPassword() {
+        console.log("Preenchendo campos com a senha gerada");
         const password = generateRandomPassword(12); // Gera uma senha de 12 caracteres
 
         // Preenche os campos de senha
-        document.getElementById('inputNewPassword1').value = password;
-        document.getElementById('inputNewPassword2').value = password;
+        const passwordField1 = document.getElementById('inputNewPassword1');
+        const passwordField2 = document.getElementById('inputNewPassword2');
+
+        if (passwordField1 && passwordField2) {
+            passwordField1.value = password;
+            passwordField2.value = password;
+            console.log("Campos preenchidos com a senha gerada");
+        } else {
+            console.error("Campos de senha não encontrados");
+        }
     }
 
     // Atribuindo ao botão de gerar senha
     const generatePasswordButton = document.querySelector('.generate-password');
     if (generatePasswordButton) {
-        generatePasswordButton.addEventListener('click', fillGeneratedPassword);
+        generatePasswordButton.addEventListener('click', function() {
+            console.log("Botão de gerar senha clicado");
+            fillGeneratedPassword();
+        });
+    } else {
+        console.error("Botão de gerar senha não encontrado");
     }
 });
+
 
 // Inicializar o sistema de passos
 new StepByStepForm();
