@@ -307,6 +307,32 @@ class StepByStepForm {
         });
     }
 
+    validateName(field) {
+        const value = field.value.trim();
+        let isValid = true;
+        let errorMessage = '';
+
+        // Verificar se o nome contém pelo menos dois nomes (nome e sobrenome)
+        if (value.split(' ').length < 2) {
+            isValid = false;
+            errorMessage = 'Por favor, insira o nome e sobrenome.';
+        }
+
+        // Aplica classes e mensagem de erro
+        field.classList.remove('error', 'success');
+        if (!isValid) {
+            field.classList.add('error');
+            const errorEl = document.createElement('span');
+            errorEl.className = 'error-message';
+            errorEl.textContent = errorMessage;
+            field.parentNode.appendChild(errorEl);
+        } else if (value) {
+            field.classList.add('success');
+        }
+
+        return isValid;
+    }
+
     setupValidation() {
         // Validação em tempo real
         document.addEventListener('input', (e) => {
@@ -622,9 +648,48 @@ function fillGeneratedPassword() {
     document.getElementById('inputNewPassword1').value = password;
     document.getElementById('inputNewPassword2').value = password;
 }
+
+// Você já deve ter algo parecido para adicionar os campos dinamicamente, então altere o tipo de campo
+function getDateField(fieldId, label, placeholder) {
+    const group = document.createElement('div');
+    group.className = 'form-group';
+
+    const labelEl = document.createElement('label');
+    labelEl.setAttribute('for', fieldId);
+    labelEl.className = 'label-required';
+    labelEl.textContent = label;
+
+    const inputEl = document.createElement('input');
+    inputEl.type = 'text';  // Permite a digitação, alterando de 'date' para 'text'
+    inputEl.id = fieldId;
+    inputEl.name = 'birth_date';
+    inputEl.className = 'form-control';
+    inputEl.placeholder = placeholder;
+    inputEl.required = true;
+
+    group.appendChild(labelEl);
+    group.appendChild(inputEl);
+
+    return group;
+}
+
+// Apenas para garantir que o campo de Data de Nascimento seja tratado corretamente
+document.addEventListener('input', (e) => {
+    if (e.target.id === 'customfield3') {
+        // Permitir que o usuário digite manualmente a data (sem validação extra)
+    }
+});
+
+document.addEventListener('input', (e) => {
+    if (e.target.id === 'inputFirstName' || e.target.id === 'inputLastName') {
+        validateName(e.target);
+    }
+});
+
 document.addEventListener('DOMContentLoaded', function() {
     console.log("DOM completamente carregado");
 
+    
     // Função para gerar uma senha aleatória
     function generateRandomPassword(length = 8) {
         console.log("Gerando senha...");
