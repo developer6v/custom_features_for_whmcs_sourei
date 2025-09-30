@@ -16,6 +16,18 @@ body.lagom {
 .page-header {
     display: none !important;
 }
+* {
+    box-sizing: border-box;
+}
+
+/* Ocultar sidebar e elementos desnecessários */
+.app-sidebar,
+.main-top,
+.main-footer,
+.breadcrumb,
+.page-header {
+    display: none !important;
+}
 
 /* Configurar body e html para layout centralizado */
 body {
@@ -42,46 +54,128 @@ body {
     background: white !important;
     border-radius: 16px !important;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1) !important;
-    padding: 40px !important;
-    max-width: 500px !important;
+    padding: 0 !important;
+    max-width: 600px !important;
     width: 100% !important;
     margin: 0 !important;
     position: relative !important;
+    overflow: hidden !important;
 }
 
-/* Título principal */
-.login-container h1,
-.login-container .page-title {
-    color: #6366f1 !important;
-    font-size: 28px !important;
+/* Header do card com indicador de progresso */
+.step-header {
+    background: #f8fafc !important;
+    padding: 30px 40px 20px !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+}
+
+/* Indicador de progresso */
+.progress-indicator {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    margin-bottom: 20px !important;
+    position: relative !important;
+}
+
+.progress-indicator::before {
+    content: '' !important;
+    position: absolute !important;
+    top: 50% !important;
+    left: 0 !important;
+    right: 0 !important;
+    height: 2px !important;
+    background: #e2e8f0 !important;
+    z-index: 1 !important;
+}
+
+.progress-line {
+    position: absolute !important;
+    top: 50% !important;
+    left: 0 !important;
+    height: 2px !important;
+    background: #6366f1 !important;
+    transition: width 0.3s ease !important;
+    z-index: 2 !important;
+}
+
+.step-indicator {
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: 50% !important;
+    background: #e2e8f0 !important;
+    color: #64748b !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 14px !important;
     font-weight: 600 !important;
-    margin-bottom: 8px !important;
-    text-align: left !important;
-    line-height: 1.2 !important;
+    position: relative !important;
+    z-index: 3 !important;
+    transition: all 0.3s ease !important;
 }
 
-/* Subtítulo */
-.section-title {
-    color: #6b7280 !important;
+.step-indicator.active {
+    background: #6366f1 !important;
+    color: white !important;
+}
+
+.step-indicator.completed {
+    background: #10b981 !important;
+    color: white !important;
+}
+
+.step-indicator.completed::after {
+    content: '✓' !important;
+    font-size: 12px !important;
+}
+
+/* Título e subtítulo */
+.step-title {
+    color: #1e293b !important;
+    font-size: 24px !important;
+    font-weight: 600 !important;
+    margin: 0 0 8px 0 !important;
+}
+
+.step-subtitle {
+    color: #64748b !important;
     font-size: 16px !important;
-    font-weight: 400 !important;
-    margin-bottom: 32px !important;
-    text-align: left !important;
+    margin: 0 !important;
 }
 
-/* Ocultar seções desnecessárias */
-.section-header {
+/* Conteúdo do formulário */
+.step-content {
+    padding: 40px !important;
+}
+
+/* Container dos passos */
+.steps-container {
+    position: relative !important;
+    overflow: hidden !important;
+}
+
+/* Cada passo individual */
+.form-step {
     display: none !important;
+    opacity: 0 !important;
+    transform: translateX(30px) !important;
+    transition: all 0.4s ease !important;
 }
 
-/* Container do formulário */
-.loginForm {
-    width: 100% !important;
+.form-step.active {
+    display: block !important;
+    opacity: 1 !important;
+    transform: translateX(0) !important;
+}
+
+.form-step.prev {
+    transform: translateX(-30px) !important;
 }
 
 /* Grupos de campos */
 .form-group {
-    margin-bottom: 20px !important;
+    margin-bottom: 24px !important;
 }
 
 /* Labels */
@@ -90,7 +184,7 @@ body {
     color: #374151 !important;
     font-size: 14px !important;
     font-weight: 500 !important;
-    margin-bottom: 6px !important;
+    margin-bottom: 8px !important;
 }
 
 /* Campos de input */
@@ -114,7 +208,7 @@ body {
     color: #9ca3af !important;
 }
 
-/* Layout de duas colunas para campos específicos */
+/* Layout de duas colunas */
 .row {
     display: flex !important;
     gap: 16px !important;
@@ -126,52 +220,74 @@ body {
     padding: 0 !important;
 }
 
-/* Botão principal */
-.btn-primary {
-    background: #6366f1 !important;
-    border: none !important;
-    border-radius: 8px !important;
-    padding: 14px 24px !important;
-    font-size: 16px !important;
-    font-weight: 600 !important;
-    color: white !important;
-    cursor: pointer !important;
-    transition: all 0.2s ease !important;
-    width: auto !important;
-    display: inline-block !important;
+/* Botões de navegação */
+.step-navigation {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    margin-top: 32px !important;
+    padding-top: 24px !important;
+    border-top: 1px solid #e5e7eb !important;
 }
 
-.btn-primary:hover {
+.btn-step {
+    padding: 12px 24px !important;
+    border-radius: 8px !important;
+    font-size: 16px !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+    border: none !important;
+    text-decoration: none !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+}
+
+.btn-prev {
+    background: #f8fafc !important;
+    color: #64748b !important;
+    border: 1px solid #e2e8f0 !important;
+}
+
+.btn-prev:hover {
+    background: #f1f5f9 !important;
+    color: #475569 !important;
+}
+
+.btn-next {
+    background: #6366f1 !important;
+    color: white !important;
+}
+
+.btn-next:hover {
     background: #5856eb !important;
     transform: translateY(-1px) !important;
     box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3) !important;
 }
 
-.btn-primary:active {
-    transform: translateY(0) !important;
+.btn-next:disabled {
+    background: #cbd5e1 !important;
+    cursor: not-allowed !important;
+    transform: none !important;
+    box-shadow: none !important;
 }
 
-/* Footer do login */
-.login-footer {
-    text-align: center !important;
-    margin-top: 24px !important;
-    padding-top: 24px !important;
-    border-top: 1px solid #e5e7eb !important;
-}
-
-.login-footer .text-light {
-    color: #6b7280 !important;
+/* Ícones dos botões */
+.btn-step::before {
     font-size: 14px !important;
 }
 
-.login-footer a {
-    color: #6366f1 !important;
-    text-decoration: none !important;
-    font-weight: 500 !important;
+.btn-prev::before {
+    content: '←' !important;
 }
 
-.login-footer a:hover {
-    text-decoration: underline !important;
+.btn-next::after {
+    content: '→' !important;
+}
+
+.btn-submit::after {
+    content: '✓' !important;
 }
 
 /* Checkbox para pessoa jurídica */
@@ -180,6 +296,10 @@ body {
     align-items: center !important;
     gap: 8px !important;
     margin: 20px 0 !important;
+    padding: 12px !important;
+    background: #f8fafc !important;
+    border-radius: 8px !important;
+    border: 1px solid #e2e8f0 !important;
 }
 
 .checkbox-container input[type="checkbox"] {
@@ -195,26 +315,68 @@ body {
     cursor: pointer !important;
 }
 
-/* Ícone de calendário para data */
-.date-input-container {
-    position: relative !important;
+/* Validação visual */
+.form-control.error {
+    border-color: #ef4444 !important;
+    background: #fef2f2 !important;
 }
 
-.date-input-container::after {
-    content: "📅" !important;
-    position: absolute !important;
-    right: 12px !important;
-    top: 50% !important;
-    transform: translateY(-50%) !important;
-    pointer-events: none !important;
-    font-size: 16px !important;
+.form-control.success {
+    border-color: #10b981 !important;
+    background: #f0fdf4 !important;
+}
+
+.error-message {
+    color: #ef4444 !important;
+    font-size: 12px !important;
+    margin-top: 4px !important;
+    display: block !important;
+}
+
+/* Animações */
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.form-step.slide-in-right {
+    animation: slideInRight 0.4s ease !important;
+}
+
+.form-step.slide-in-left {
+    animation: slideInLeft 0.4s ease !important;
 }
 
 /* Responsividade */
 @media (max-width: 768px) {
     .login-container {
-        padding: 24px !important;
         margin: 10px !important;
+        max-width: none !important;
+    }
+    
+    .step-header {
+        padding: 20px 24px 16px !important;
+    }
+    
+    .step-content {
+        padding: 24px !important;
     }
     
     .row {
@@ -222,42 +384,39 @@ body {
         gap: 0 !important;
     }
     
-    .col-md-6 {
-        margin-bottom: 20px !important;
+    .step-navigation {
+        flex-direction: column !important;
+        gap: 12px !important;
+    }
+    
+    .btn-step {
+        width: 100% !important;
+        justify-content: center !important;
+    }
+    
+    .progress-indicator {
+        margin-bottom: 16px !important;
+    }
+    
+    .step-indicator {
+        width: 28px !important;
+        height: 28px !important;
+        font-size: 12px !important;
     }
 }
 
-/* Animações suaves */
-.login-container {
-    animation: fadeInUp 0.6s ease-out !important;
+/* Ocultar campos de senha por padrão */
+.password-section {
+    display: none !important;
 }
 
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+/* Mostrar campos de senha no último passo */
+.form-step.step-3 .password-section {
+    display: block !important;
 }
 
-/* Ocultar elementos específicos que não são necessários */
-.container,
-.main-content {
-    background: none !important;
-    padding: 0 !important;
-    margin: 0 !important;
-}
-
-/* Ajustes para o spinner de loading */
-.spinner {
-    display: inline-block !important;
-}
-
-/* Ajustes para validação de senha */
-#passwordStrengthBar {
+/* Estilos para campos de senha */
+.password-strength {
     margin-top: 8px !important;
 }
 
@@ -265,29 +424,41 @@ body {
     height: 4px !important;
     border-radius: 2px !important;
     background: #e5e7eb !important;
+    overflow: hidden !important;
 }
 
 .progress-bar {
+    height: 100% !important;
     border-radius: 2px !important;
+    transition: width 0.3s ease !important;
 }
 
-/* Mensagens de erro */
-.help-block {
-    color: #ef4444 !important;
-    font-size: 12px !important;
-    margin-top: 4px !important;
+.progress-bar-danger {
+    background: #ef4444 !important;
 }
 
-.has-error .form-control {
-    border-color: #ef4444 !important;
+.progress-bar-warning {
+    background: #f59e0b !important;
 }
 
-.has-success .form-control {
-    border-color: #10b981 !important;
+.progress-bar-success {
+    background: #10b981 !important;
 }
 
-/* Ajustes específicos para campos obrigatórios */
-.label-required::after {
-    content: " *" !important;
-    color: #ef4444 !important;
+/* Loading state */
+.btn-step.loading {
+    position: relative !important;
+    color: transparent !important;
+}
+
+.btn-step.loading::before,
+.btn-step.loading::after {
+    content: '' !important;
+}
+
+.btn-step.loading .spinner {
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
 }
