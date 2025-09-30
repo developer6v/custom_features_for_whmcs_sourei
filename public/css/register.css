@@ -6,3 +6,287 @@ body.lagom {
     background-position: center !important;
     background-size: cover !important;
 }
+
+/* Ocultar sidebar e elementos desnecessários */
+.app-sidebar,
+.main-top,
+.main-footer,
+.breadcrumb,
+.page-header {
+    display: none !important;
+}
+
+/* Configurar body e html para layout centralizado */
+body {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* Container principal centralizado */
+.app-main {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    min-height: 100vh !important;
+    padding: 20px !important;
+    margin: 0 !important;
+    background: none !important;
+}
+
+/* Card principal do formulário */
+.login-container {
+    background: white !important;
+    border-radius: 16px !important;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1) !important;
+    padding: 40px !important;
+    max-width: 500px !important;
+    width: 100% !important;
+    margin: 0 !important;
+    position: relative !important;
+}
+
+/* Título principal */
+.login-container h1,
+.login-container .page-title {
+    color: #6366f1 !important;
+    font-size: 28px !important;
+    font-weight: 600 !important;
+    margin-bottom: 8px !important;
+    text-align: left !important;
+    line-height: 1.2 !important;
+}
+
+/* Subtítulo */
+.section-title {
+    color: #6b7280 !important;
+    font-size: 16px !important;
+    font-weight: 400 !important;
+    margin-bottom: 32px !important;
+    text-align: left !important;
+}
+
+/* Ocultar seções desnecessárias */
+.section-header {
+    display: none !important;
+}
+
+/* Container do formulário */
+.loginForm {
+    width: 100% !important;
+}
+
+/* Grupos de campos */
+.form-group {
+    margin-bottom: 20px !important;
+}
+
+/* Labels */
+.form-group label {
+    display: block !important;
+    color: #374151 !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    margin-bottom: 6px !important;
+}
+
+/* Campos de input */
+.form-control {
+    width: 100% !important;
+    padding: 12px 16px !important;
+    border: 1px solid #d1d5db !important;
+    border-radius: 8px !important;
+    font-size: 16px !important;
+    transition: all 0.2s ease !important;
+    background: white !important;
+}
+
+.form-control:focus {
+    outline: none !important;
+    border-color: #6366f1 !important;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1) !important;
+}
+
+.form-control::placeholder {
+    color: #9ca3af !important;
+}
+
+/* Layout de duas colunas para campos específicos */
+.row {
+    display: flex !important;
+    gap: 16px !important;
+    margin: 0 !important;
+}
+
+.col-md-6 {
+    flex: 1 !important;
+    padding: 0 !important;
+}
+
+/* Botão principal */
+.btn-primary {
+    background: #6366f1 !important;
+    border: none !important;
+    border-radius: 8px !important;
+    padding: 14px 24px !important;
+    font-size: 16px !important;
+    font-weight: 600 !important;
+    color: white !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+    width: auto !important;
+    display: inline-block !important;
+}
+
+.btn-primary:hover {
+    background: #5856eb !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3) !important;
+}
+
+.btn-primary:active {
+    transform: translateY(0) !important;
+}
+
+/* Footer do login */
+.login-footer {
+    text-align: center !important;
+    margin-top: 24px !important;
+    padding-top: 24px !important;
+    border-top: 1px solid #e5e7eb !important;
+}
+
+.login-footer .text-light {
+    color: #6b7280 !important;
+    font-size: 14px !important;
+}
+
+.login-footer a {
+    color: #6366f1 !important;
+    text-decoration: none !important;
+    font-weight: 500 !important;
+}
+
+.login-footer a:hover {
+    text-decoration: underline !important;
+}
+
+/* Checkbox para pessoa jurídica */
+.checkbox-container {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    margin: 20px 0 !important;
+}
+
+.checkbox-container input[type="checkbox"] {
+    width: 18px !important;
+    height: 18px !important;
+    accent-color: #6366f1 !important;
+}
+
+.checkbox-container label {
+    margin: 0 !important;
+    font-size: 14px !important;
+    color: #374151 !important;
+    cursor: pointer !important;
+}
+
+/* Ícone de calendário para data */
+.date-input-container {
+    position: relative !important;
+}
+
+.date-input-container::after {
+    content: "📅" !important;
+    position: absolute !important;
+    right: 12px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    pointer-events: none !important;
+    font-size: 16px !important;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .login-container {
+        padding: 24px !important;
+        margin: 10px !important;
+    }
+    
+    .row {
+        flex-direction: column !important;
+        gap: 0 !important;
+    }
+    
+    .col-md-6 {
+        margin-bottom: 20px !important;
+    }
+}
+
+/* Animações suaves */
+.login-container {
+    animation: fadeInUp 0.6s ease-out !important;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Ocultar elementos específicos que não são necessários */
+.container,
+.main-content {
+    background: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+/* Ajustes para o spinner de loading */
+.spinner {
+    display: inline-block !important;
+}
+
+/* Ajustes para validação de senha */
+#passwordStrengthBar {
+    margin-top: 8px !important;
+}
+
+.progress {
+    height: 4px !important;
+    border-radius: 2px !important;
+    background: #e5e7eb !important;
+}
+
+.progress-bar {
+    border-radius: 2px !important;
+}
+
+/* Mensagens de erro */
+.help-block {
+    color: #ef4444 !important;
+    font-size: 12px !important;
+    margin-top: 4px !important;
+}
+
+.has-error .form-control {
+    border-color: #ef4444 !important;
+}
+
+.has-success .form-control {
+    border-color: #10b981 !important;
+}
+
+/* Ajustes específicos para campos obrigatórios */
+.label-required::after {
+    content: " *" !important;
+    color: #ef4444 !important;
+}
