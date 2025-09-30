@@ -225,7 +225,7 @@ body {
     display: flex !important;
     justify-content: space-between !important;
     align-items: center !important;
-    margin-top: 32px !important;
+    margin-top: 0 !important;
     padding-top: 24px !important;
     border-top: 1px solid #e5e7eb !important;
 }
@@ -464,15 +464,25 @@ body {
 }
 
 #containerNewUserSecurity {
-    display: none;
+    display: none!important;
 }
 
 /* Esconde o segundo .section.section-sm dentro do #containerNewUserSignup */
 #containerNewUserSignup .section.section-sm:nth-of-type(2) {
-    display: none;
+    display: none!important;
 }
 
 /* Esconde o terceiro .section.section-sm dentro do #containerNewUserSignup */
 #containerNewUserSignup .section.section-sm:nth-of-type(3) {
-    display: none;
+    display: none!important;
+}
+
+.section-title {
+    display: none!important;
+}
+
+.login-title {
+    text-align: left!important;
+    color: #6366f1!important;
+    font-size: 25px!important;
 }
