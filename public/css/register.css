@@ -12,6 +12,7 @@ body.lagom {
 .main-top,
 .main-footer,
 .breadcrumb,
+.app-nav,
 .page-header {
     display: none !important;
 }
