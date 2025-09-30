@@ -466,3 +466,13 @@ body {
 #containerNewUserSecurity {
     display: none;
 }
+
+/* Esconde o segundo .section.section-sm dentro do #containerNewUserSignup */
+#containerNewUserSignup .section.section-sm:nth-of-type(2) {
+    display: none;
+}
+
+/* Esconde o terceiro .section.section-sm dentro do #containerNewUserSignup */
+#containerNewUserSignup .section.section-sm:nth-of-type(3) {
+    display: none;
+}
