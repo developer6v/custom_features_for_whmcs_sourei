@@ -332,6 +332,9 @@ body {
     margin-top: 4px !important;
     display: block !important;
 }
+.main-header-title {
+    display: none!important;
+}
 
 /* Animações */
 @keyframes slideInRight {
