@@ -77,7 +77,7 @@ class StepByStepForm {
             ]),
             this.createTwoColumnRow([
                 this.getFieldGroup('inputCompanyName', 'CPF', 'Coloque seu CPF'),
-                this.createDateField('inputBirthDate', 'Data de Nascimento', 'data de nascimento')
+                this.getFieldGroup('customfield5', 'CNPJ (opcional)', 'Digite seu CNPJ (opcional)')  // CNPJ opcional
             ]),
             this.createCheckboxField()
         ]);
@@ -580,6 +580,7 @@ class StepByStepForm {
             field.value = ''; // Limpar campo ao alternar
         }
     }
+
 
     applyCpfCnpjMask(field) {
         let value = field.value.replace(/\D/g, '');
