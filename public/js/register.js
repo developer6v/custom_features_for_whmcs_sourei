@@ -666,6 +666,15 @@ function fillGeneratedPassword() {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
+    const im = new Inputmask('99/99/9999');
+    const birthDateField = document.getElementById('inputBirthDate');
+    if (birthDateField) {
+        im.mask(birthDateField);
+    }
+});
+
+
+document.addEventListener('DOMContentLoaded', function() {
     console.log("DOM completamente carregado");
 
     
