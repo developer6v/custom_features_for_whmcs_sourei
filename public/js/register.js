@@ -10,6 +10,14 @@ class StepByStepForm {
 
     init() {
         document.addEventListener('DOMContentLoaded', () => {
+            const phoneInputField = document.querySelector("#inputPhone");
+
+            const phoneInput = window.intlTelInput(phoneInputField, {
+                initialCountry: "auto",
+                separateDialCode: true,
+                preferredCountries: ["br", "us", "ca", "gb", "de", "fr", "pt", "jp"],
+                utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js"
+            });
             this.setupFormStructure();
             this.setupEventListeners();
             this.setupValidation();
