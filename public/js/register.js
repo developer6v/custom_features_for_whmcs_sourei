@@ -6,10 +6,8 @@ document.addEventListener('DOMContentLoaded', function() {
     function adjustTitlesAndTexts() {
         // Alterar título principal
         const pageTitle = document.querySelector('.page-title, h1');
-        if (pageTitle) {
-            pageTitle.textContent = 'Abra a sua conta';
-        }
-        
+        pageTitle.style.display = "none";
+
         // Alterar subtítulo da seção
         const sectionTitle = document.querySelector('.section-title');
         if (sectionTitle) {
