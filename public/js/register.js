@@ -1,4 +1,4 @@
-// JavaScript para Sistema de Passos (Step-by-Step) - VERSÃO CORRIGIDA
+// JavaScript para Sistema de Passos (Step-by-Step) - VERSÃO FINAL CORRIGIDA
 
 class StepByStepForm {
     constructor() {
@@ -69,9 +69,10 @@ class StepByStepForm {
             ]),
             this.createTwoColumnRow([
                 this.getFieldGroup('inputCompanyName', 'CPF', 'Coloque seu CPF'),
-                this.createCnpjField() // CORREÇÃO: Criar campo CNPJ separado
+                this.createCnpjField()
             ]),
-            this.createDateField('inputBirthDate', 'Data de Nascimento', 'dd/mm/aaaa'), // CORREÇÃO: Máscara de data
+            this.createDateField('inputBirthDate', 'Data de Nascimento', 'dd/mm/aaaa'),
+            this.createCheckboxField() // Adicionar checkbox para pessoa jurídica
         ]);
 
         // Passo 2: Endereço
@@ -83,7 +84,7 @@ class StepByStepForm {
                 this.getFieldGroup('inputPostcode', 'CEP', '00000-000')
             ]),
             this.createTwoColumnRow([
-                this.getFieldGroup('inputCountry', 'País', '', 'select'),
+                this.createCountryField(), // CORREÇÃO: Campo país customizado
                 this.getFieldGroup('stateinput', 'Estado', 'Seu estado')
             ])
         ]);
@@ -124,7 +125,7 @@ class StepByStepForm {
 
     getFieldGroup(fieldId, label, placeholder, type = 'input') {
         const originalField = document.getElementById(fieldId);
-        if (!originalField && fieldId !== 'inputBirthDate') return null; // Permitir campo de data mesmo sem original
+        if (!originalField && fieldId !== 'inputBirthDate') return null;
 
         const group = document.createElement('div');
         group.className = 'form-group';
@@ -176,7 +177,67 @@ class StepByStepForm {
         return row;
     }
 
-    // CORREÇÃO: Campo de data com máscara correta
+    // CORREÇÃO: Campo país customizado com Brasil pré-selecionado
+    createCountryField() {
+        const group = document.createElement('div');
+        group.className = 'form-group';
+
+        const labelEl = document.createElement('label');
+        labelEl.setAttribute('for', 'inputCountry');
+        labelEl.className = 'label-required';
+        labelEl.textContent = 'País';
+
+        const selectEl = document.createElement('select');
+        selectEl.id = 'inputCountry';
+        selectEl.name = 'country';
+        selectEl.className = 'form-control';
+        selectEl.required = true;
+
+        // Lista de países com Brasil pré-selecionado
+        const countries = [
+            { value: '', text: 'Selecione o país' },
+            { value: 'BR', text: 'Brasil', selected: true },
+            { value: 'US', text: 'Estados Unidos' },
+            { value: 'AR', text: 'Argentina' },
+            { value: 'CA', text: 'Canadá' },
+            { value: 'CL', text: 'Chile' },
+            { value: 'CO', text: 'Colômbia' },
+            { value: 'FR', text: 'França' },
+            { value: 'DE', text: 'Alemanha' },
+            { value: 'IT', text: 'Itália' },
+            { value: 'JP', text: 'Japão' },
+            { value: 'MX', text: 'México' },
+            { value: 'PE', text: 'Peru' },
+            { value: 'PT', text: 'Portugal' },
+            { value: 'ES', text: 'Espanha' },
+            { value: 'GB', text: 'Reino Unido' },
+            { value: 'UY', text: 'Uruguai' },
+            { value: 'VE', text: 'Venezuela' }
+        ];
+
+        countries.forEach(country => {
+            const option = document.createElement('option');
+            option.value = country.value;
+            option.textContent = country.text;
+            if (country.selected) {
+                option.selected = true;
+            }
+            selectEl.appendChild(option);
+        });
+
+        group.appendChild(labelEl);
+        group.appendChild(selectEl);
+
+        // Remover campo original se existir
+        const originalField = document.getElementById('inputCountry');
+        if (originalField) {
+            const originalGroup = originalField.closest('.form-group, .row');
+            if (originalGroup) originalGroup.remove();
+        }
+
+        return group;
+    }
+
     createDateField(fieldId, label, placeholder) {
         const group = document.createElement('div');
         group.className = 'form-group';
@@ -187,13 +248,13 @@ class StepByStepForm {
         labelEl.textContent = label;
 
         const inputEl = document.createElement('input');
-        inputEl.type = 'text'; // CORREÇÃO: Usar text em vez de date para aplicar máscara
+        inputEl.type = 'text';
         inputEl.id = fieldId;
         inputEl.name = 'birth_date';
         inputEl.className = 'form-control';
         inputEl.placeholder = placeholder;
         inputEl.required = true;
-        inputEl.maxLength = 10; // dd/mm/aaaa
+        inputEl.maxLength = 10;
 
         group.appendChild(labelEl);
         group.appendChild(inputEl);
@@ -201,7 +262,6 @@ class StepByStepForm {
         return group;
     }
 
-    // CORREÇÃO: Criar campo CNPJ separado
     createCnpjField() {
         const group = document.createElement('div');
         group.className = 'form-group';
@@ -216,12 +276,11 @@ class StepByStepForm {
         inputEl.name = 'cnpj';
         inputEl.className = 'form-control';
         inputEl.placeholder = 'Digite seu CNPJ (opcional)';
-        inputEl.style.display = 'block'; // Inicialmente oculto
 
         group.appendChild(labelEl);
         group.appendChild(inputEl);
         
-        // Ocultar grupo inicialmente
+        // Inicialmente oculto
         group.style.display = 'block';
         group.id = 'cnpjGroup';
 
@@ -320,10 +379,10 @@ class StepByStepForm {
             }
         });
 
-        // CORREÇÃO: Checkbox pessoa jurídica para mostrar/ocultar campo CNPJ
+        // Checkbox pessoa jurídica
         document.addEventListener('change', (e) => {
             if (e.target.id === 'pessoaJuridica') {
-               // this.toggleCnpjField(e.target.checked);
+                //this.toggleCnpjField(e.target.checked);
             }
         });
 
@@ -354,30 +413,27 @@ class StepByStepForm {
         });
     }
 
-    // CORREÇÃO: Máscaras de input corrigidas
     setupInputMasks() {
         document.addEventListener('input', (e) => {
             const field = e.target;
             
             if (field.id === 'inputCompanyName') {
-                this.applyCpfMask(field); // Sempre CPF para este campo
+                this.applyCpfMask(field);
             } else if (field.id === 'inputCnpj') {
-                this.applyCnpjMask(field); // CNPJ para o campo separado
+                this.applyCnpjMask(field);
             } else if (field.id === 'inputPhone') {
                 this.applyPhoneMask(field);
             } else if (field.id === 'inputPostcode') {
                 this.applyCepMask(field);
             } else if (field.id === 'inputBirthDate') {
-                this.applyDateMask(field); // CORREÇÃO: Máscara de data corrigida
+                this.applyDateMask(field);
             }
         });
     }
 
-    // CORREÇÃO: Máscara de data funcionando
     applyDateMask(field) {
-        let value = field.value.replace(/\D/g, ''); // Remove tudo que não é dígito
+        let value = field.value.replace(/\D/g, '');
         
-        // Aplica a máscara dd/mm/aaaa
         if (value.length >= 2) {
             value = value.substring(0, 2) + '/' + value.substring(2);
         }
@@ -399,7 +455,6 @@ class StepByStepForm {
         if (currentStepEl) {
             currentStepEl.classList.add('active');
             
-            // Animação baseada na direção
             if (stepNumber > this.currentStep) {
                 currentStepEl.classList.add('slide-in-right');
             } else if (stepNumber < this.currentStep) {
@@ -414,7 +469,6 @@ class StepByStepForm {
     }
 
     updateProgressIndicator() {
-        // Atualizar indicadores
         document.querySelectorAll('.step-indicator').forEach((indicator, index) => {
             const stepNum = index + 1;
             indicator.classList.remove('active', 'completed');
@@ -426,7 +480,6 @@ class StepByStepForm {
             }
         });
 
-        // Atualizar linha de progresso
         const progressLine = document.getElementById('progressLine');
         if (progressLine) {
             const progress = ((this.currentStep - 1) / (this.totalSteps - 1)) * 100;
@@ -504,7 +557,6 @@ class StepByStepForm {
             }
         });
 
-        // Validações específicas
         if (this.currentStep === 3) {
             isValid = this.validatePasswords() && isValid;
         }
@@ -550,7 +602,6 @@ class StepByStepForm {
         if (!isValid) {
             field.classList.add('error');
             
-            // Adicionar mensagem de erro
             const errorEl = document.createElement('span');
             errorEl.className = 'error-message';
             errorEl.textContent = errorMessage;
@@ -584,7 +635,6 @@ class StepByStepForm {
         return isValid;
     }
 
-    // CORREÇÃO: Função para mostrar/ocultar campo CNPJ
     toggleCnpjField(showCnpj) {
         const cnpjGroup = document.getElementById('cnpjGroup');
         const cpfField = document.getElementById('inputCompanyName');
@@ -593,24 +643,21 @@ class StepByStepForm {
         if (cnpjGroup) {
             if (showCnpj) {
                 cnpjGroup.style.display = 'block';
-                if (cpfField) cpfField.required = false; // CPF não obrigatório se CNPJ está sendo usado
+                if (cpfField) cpfField.required = false;
                 if (cpfLabel) cpfLabel.textContent = 'CPF (opcional)';
             } else {
                 cnpjGroup.style.display = 'none';
-                if (cpfField) cpfField.required = true; // CPF obrigatório se CNPJ não está sendo usado
+                if (cpfField) cpfField.required = true;
                 if (cpfLabel) cpfLabel.textContent = 'CPF';
-                // Limpar campo CNPJ
                 const cnpjField = document.getElementById('inputCnpj');
                 if (cnpjField) cnpjField.value = '';
             }
         }
     }
 
-    // CORREÇÃO: Máscara CPF separada
     applyCpfMask(field) {
         let value = field.value.replace(/\D/g, '');
         
-        // Máscara CPF: 000.000.000-00
         if (value.length <= 11) {
             value = value.replace(/(\d{3})(\d)/, '$1.$2');
             value = value.replace(/(\d{3})(\d)/, '$1.$2');
@@ -620,11 +667,9 @@ class StepByStepForm {
         field.value = value;
     }
 
-    // CORREÇÃO: Máscara CNPJ separada
     applyCnpjMask(field) {
         let value = field.value.replace(/\D/g, '');
         
-        // Máscara CNPJ: 00.000.000/0000-00
         if (value.length <= 14) {
             value = value.replace(/^(\d{2})(\d)/, '$1.$2');
             value = value.replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3');
@@ -638,7 +683,6 @@ class StepByStepForm {
     applyPhoneMask(field) {
         let value = field.value.replace(/\D/g, '');
 
-        // Máscara telefone: (00) 00000-0000
         if (value.length <= 11) {
             value = value.replace(/^(\d{2})(\d)/, '($1) $2');
             value = value.replace(/(\d{5})(\d)/, '$1-$2');
@@ -650,7 +694,6 @@ class StepByStepForm {
     applyCepMask(field) {
         let value = field.value.replace(/\D/g, '');
 
-        // Máscara CEP: 00000-000
         if (value.length <= 8) {
             value = value.replace(/^(\d{5})(\d)/, '$1-$2');
         }
@@ -661,14 +704,12 @@ class StepByStepForm {
     submitForm() {
         const form = document.querySelector('.loginForm');
         if (form) {
-            // Mostrar loading
             const submitBtn = document.getElementById('nextBtn');
             if (submitBtn) {
                 submitBtn.classList.add('loading');
                 submitBtn.innerHTML = '<div class="spinner"></div>';
             }
 
-            // Submeter formulário original
             form.submit();
         }
     }
@@ -689,7 +730,6 @@ function generateRandomPassword(length = 8) {
 function fillGeneratedPassword() {
     const password = generateRandomPassword(12);
 
-    // Preenche os campos de senha
     const passwordField1 = document.getElementById('inputNewPassword1') || document.getElementById('inputPassword');
     const passwordField2 = document.getElementById('inputNewPassword2') || document.getElementById('inputPasswordConfirm');
 
