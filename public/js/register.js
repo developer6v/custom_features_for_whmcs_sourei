@@ -78,16 +78,16 @@ class StepByStepForm {
 
         // Passo 2: Endereço
         const step2 = this.createStep(2, [
+            this.createTwoColumnRow([ 
+                this.getFieldGroup('inputPostcode', 'CEP', '00000-000') // Movemos o CEP para cima
+            ]),
             this.getFieldGroup('inputAddress1', 'Endereço', 'Rua, número'),
             this.getFieldGroup('inputAddress2', 'Complemento', 'Apartamento, bloco (opcional)'),
             this.createTwoColumnRow([
                 this.getFieldGroup('inputCity', 'Cidade', 'Sua cidade'),
-                this.getFieldGroup('inputPostcode', 'CEP', '00000-000')
-            ]),
-            this.createTwoColumnRow([
-                this.createCountryField(), // CORREÇÃO: Campo país customizado
                 this.getFieldGroup('stateinput', 'Estado', 'Seu estado')
-            ])
+            ]),
+            this.createCountryField()
         ]);
 
         // Passo 3: Senha e Finalização
@@ -106,6 +106,21 @@ class StepByStepForm {
             personalInfo.innerHTML = '';
             personalInfo.appendChild(stepsContainer);
         }
+    }
+
+    fetchAddressFromCep(cep) {
+        fetch(`https://brasilapi.com.br/api/cep/v1/${cep}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data && !data.erro) {
+                    document.getElementById('inputAddress1').value = data.street || '';
+                    document.getElementById('inputCity').value = data.city || '';
+                    document.getElementById('stateinput').value = data.state || '';
+                } else {
+                    alert("CEP não encontrado.");
+                }
+            })
+            .catch(error => alert("Erro ao buscar o CEP."));
     }
 
     createStep(stepNumber, fields) {
@@ -162,6 +177,17 @@ class StepByStepForm {
         return group;
     }
 
+    setupCepFieldListener() {
+        const cepField = document.getElementById('inputPostcode');
+        if (cepField) {
+            cepField.addEventListener('blur', (e) => {
+                const cep = e.target.value.replace(/\D/g, ''); // Remove tudo que não for número
+                if (cep.length === 8) { // Verifica se o CEP tem 8 dígitos
+                    this.fetchAddressFromCep(cep);
+                }
+            });
+        }
+    }
     createTwoColumnRow(fields) {
         const row = document.createElement('div');
         row.className = 'row';
