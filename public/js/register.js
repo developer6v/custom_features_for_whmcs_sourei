@@ -110,18 +110,30 @@ class StepByStepForm {
     }
 
     fetchAddressFromCep(cep) {
-        fetch(`https://brasilapi.com.br/api/cep/v1/${cep}`)
+        fetch(`https://viacep.com.br/ws/${cep}/json/`)
             .then(response => response.json())
             .then(data => {
-                if (data && !data.erro) {
-                    document.getElementById('inputAddress1').value = data.street || '';
-                    document.getElementById('inputCity').value = data.city || '';
-                   // document?.getElementById('stateinput').value = data.state || '';
+                if (data && !(data.errors && data.errors.length > 0)) {
+                    document.getElementById('inputAddress1').value = data.logradouro || '';
+                    document.getElementById('inputCity').value = data.localidade || '';
+                    //document.getElementById('stateinput').value = data.uf || '';
                 } else {
-                    alert("CEP não encontrado.");
+                    this.handleInvalidCep();
                 }
             })
-            .catch(error => alert("Erro ao buscar o CEP." + error));
+            .catch(error => {
+                console.error(error);
+                this.handleInvalidCep();
+            });
+    }
+
+    // Função para lidar com o CEP inválido
+    handleInvalidCep() {
+        alert("CEP Inválido");
+        const cepField = document.getElementById('inputPostcode');
+        if (cepField) {
+            cepField.value = ''; // Limpar o campo de CEP
+        }
     }
 
     createStep(stepNumber, fields) {
@@ -777,10 +789,11 @@ setupInputMasks() {
 
         field.value = value;
     }
-
+    
     applyCepMask(field) {
-        let value = field.value.replace(/\D/g, '');
+        let value = field.value.replace(/\D/g, ''); // Remove qualquer caractere não numérico
 
+        // Limita a 8 caracteres no formato do CEP
         if (value.length <= 8) {
             value = value.replace(/^(\d{5})(\d)/, '$1-$2');
         }
