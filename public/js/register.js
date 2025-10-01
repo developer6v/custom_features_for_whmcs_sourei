@@ -134,6 +134,7 @@ class StepByStepForm {
         if (cepField) {
             cepField.value = ''; // Limpar o campo de CEP
         }
+        this.validateField(cepField);
     }
 
     createStep(stepNumber, fields) {
@@ -197,11 +198,13 @@ class StepByStepForm {
                 const cep = e.target.value.replace(/\D/g, ''); // Remove tudo que não for número
                 if (cep.length === 8) { // Verifica se o CEP tem 8 dígitos
                     this.fetchAddressFromCep(cep);
+                } else {
+                    this.handleInvalidCep();
                 }
             });
         }
 
-        
+
     }
     createTwoColumnRow(fields) {
         const row = document.createElement('div');
@@ -698,6 +701,19 @@ setupInputMasks() {
             }
         }
 
+        // Validação de nome completo
+        if (value && field.id === 'inputFirstName') {
+            // Verificar se o nome contém pelo menos um espaço
+            const nameParts = value.trim().split(/\s+/); // Divide o valor por espaços em branco
+
+            // Se o nome contiver menos de 2 partes, ou seja, sem espaço entre nome e sobrenome
+            if (nameParts.length < 2) {
+                isValid = false;
+                errorMessage = 'Por favor, insira seu nome e sobrenome';
+            }
+        }
+
+
         // Aplicar classes visuais
         field.classList.remove('error', 'success');
         if (!isValid) {
@@ -796,12 +812,16 @@ setupInputMasks() {
         let value = field.value.replace(/\D/g, ''); // Remove qualquer caractere não numérico
 
         // Limita a 8 caracteres no formato do CEP
-        if (value.length <= 8) {
-            value = value.replace(/^(\d{5})(\d)/, '$1-$2');
+        if (value.length > 8) {
+            value = value.substring(0, 8); // Garantir que não ultrapasse 8 caracteres
         }
 
-        field.value = value;
+        // Aplica a máscara: 00000-000
+        value = value.replace(/^(\d{5})(\d)/, '$1-$2');
+
+        field.value = value; // Atualiza o campo com a máscara de CEP
     }
+
 
     submitForm() {
         const form = document.querySelector('.loginForm');

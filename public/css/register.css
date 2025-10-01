@@ -198,6 +198,10 @@ body {
     background: white !important;
 }
 
+#inputPhone {
+    padding-left: 83px !important;
+}
+
 .form-control:focus {
     outline: none !important;
     border-color: #6366f1 !important;
