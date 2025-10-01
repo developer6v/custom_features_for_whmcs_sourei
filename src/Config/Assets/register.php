@@ -6,8 +6,7 @@ function assets_register() {
 
     
     // Registra os assets do intl-tel-input
-    $assets = '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.css">';
-    $assets .= '<script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>';
+
     $assets .= '<script src="https://cdnjs.cloudflare.com/ajax/libs/inputmask/5.0.7/inputmask.min.js"></script>';
 
 
