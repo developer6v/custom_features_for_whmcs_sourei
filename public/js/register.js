@@ -16,6 +16,7 @@ class StepByStepForm {
             this.setupInputMasks();
             this.showStep(1);
             this.initializePhoneInputWithTimeout(); 
+            this.setupCepFieldListener();
         });
     }
 
@@ -470,7 +471,7 @@ setupInputMasks() {
                 clearInterval(interval); // Parar o intervalo quando o campo for encontrado
 
                 const iti = window.intlTelInput(phoneInput, {
-                    initialCountry: "auto", // Detecta o país automaticamente com base no IP
+                    initialCountry: "br", // Detecta o país automaticamente com base no IP
                     separateDialCode: true, // Exibe o código de discagem separadamente
                     preferredCountries: ['br', 'us', 'ca', 'gb'], // Países preferidos, por exemplo
                     utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js" // Script de validação
