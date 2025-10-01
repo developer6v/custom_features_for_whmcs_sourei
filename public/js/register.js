@@ -432,17 +432,31 @@ setupInputMasks() {
     });
 }
 
-// Inicialize o intl-tel-input para o campo de telefone
-initializePhoneInput() {
-    const phoneInput = document.querySelector("#inputPhone");
-    if (phoneInput) {
-        window.intlTelInput(phoneInput, {
-            initialCountry: "auto", // Detecta o país automaticamente com base no IP
-            separateDialCode: true, // Exibe o código de discagem separadamente
-            preferredCountries: ['br', 'us', 'ca', 'gb'], // Países preferidos, por exemplo
-            utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js" // Script de validação
-        });
-    }
+initializePhoneInputWithTimeout() {
+    const checkInterval = 500; // Intervalo de 500ms para verificar
+    const maxAttempts = 100;    // Máximo de tentativas (5 segundos no total)
+
+    let attempts = 0;
+
+    const interval = setInterval(() => {
+        const phoneInput = document.querySelector("#inputPhone");
+        if (phoneInput) {
+            clearInterval(interval); // Parar o intervalo quando o campo for encontrado
+            window.intlTelInput(phoneInput, {
+                initialCountry: "auto", // Detecta o país automaticamente com base no IP
+                separateDialCode: true, // Exibe o código de discagem separadamente
+                preferredCountries: ['br', 'us', 'ca', 'gb'], // Países preferidos, por exemplo
+                utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js" // Script de validação
+            });
+        }
+
+        // Se o campo não for encontrado após o número máximo de tentativas, parar
+        attempts++;
+        if (attempts >= maxAttempts) {
+            clearInterval(interval); // Parar o intervalo
+            console.log("Campo de telefone não encontrado após várias tentativas.");
+        }
+    }, checkInterval); // Checa a cada 500ms
 }
 
 
