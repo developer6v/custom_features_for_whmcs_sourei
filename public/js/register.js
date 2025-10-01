@@ -15,6 +15,7 @@ class StepByStepForm {
             this.setupValidation();
             this.setupInputMasks();
             this.showStep(1);
+            this.initializePhoneInputWithTimeout(); 
         });
     }
 
@@ -772,15 +773,8 @@ function fillGeneratedPassword() {
     }
 }
 
-// Event listener para botão de gerar senha
-document.addEventListener('DOMContentLoaded', function() {
-    const generatePasswordButton = document.querySelector('.generate-password');
-    if (generatePasswordButton) {
-        generatePasswordButton.addEventListener('click', function() {
-            fillGeneratedPassword();
-        });
-    }
-});
 
-// Inicializar o sistema de passos
-new StepByStepForm();
+
+
+new StepByStepForm();  
+    
