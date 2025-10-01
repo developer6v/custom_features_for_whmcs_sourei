@@ -439,8 +439,10 @@ initializePhoneInputWithTimeout() {
     let attempts = 0;
 
     const interval = setInterval(() => {
+                    console.log("Campo de telefone - cron");
         const phoneInput = document.querySelector("#inputPhone");
         if (phoneInput) {
+                                console.log("Campo de telefone - encontrou");
             clearInterval(interval); // Parar o intervalo quando o campo for encontrado
             window.intlTelInput(phoneInput, {
                 initialCountry: "auto", // Detecta o país automaticamente com base no IP
@@ -448,6 +450,8 @@ initializePhoneInputWithTimeout() {
                 preferredCountries: ['br', 'us', 'ca', 'gb'], // Países preferidos, por exemplo
                 utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js" // Script de validação
             });
+        } else {
+            console.log("Campo de telefone - nao encontrou");
         }
 
         // Se o campo não for encontrado após o número máximo de tentativas, parar
