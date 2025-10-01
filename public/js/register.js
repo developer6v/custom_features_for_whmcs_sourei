@@ -1,4 +1,4 @@
-// JavaScript para Sistema de Passos (Step-by-Step)
+// JavaScript para Sistema de Passos (Step-by-Step) - VERSÃO CORRIGIDA
 
 class StepByStepForm {
     constructor() {
@@ -10,7 +10,6 @@ class StepByStepForm {
 
     init() {
         document.addEventListener('DOMContentLoaded', () => {
-
             this.setupFormStructure();
             this.setupEventListeners();
             this.setupValidation();
@@ -68,12 +67,11 @@ class StepByStepForm {
                 this.getFieldGroup('inputPhone', 'Telefone', 'Seu número'),
                 this.getFieldGroup('inputEmail', 'E-mail', 'Insira seu e-mail')
             ]),
-                this.createTwoColumnRow([
-            // Exibe os dois campos: CPF (obrigatório) e CNPJ (opcional)
-            this.getFieldGroup('inputCompanyName', 'CPF', 'Coloque seu CPF'),
-            this.getFieldGroup('customfield5', 'CNPJ (opcional)', 'Digite seu CNPJ (opcional)')
-        ]),
-            this.createDateField('inputBirthDate', 'Data de Nascimento', 'data de nascimento'),
+            this.createTwoColumnRow([
+                this.getFieldGroup('inputCompanyName', 'CPF', 'Coloque seu CPF'),
+                this.createCnpjField() // CORREÇÃO: Criar campo CNPJ separado
+            ]),
+            this.createDateField('inputBirthDate', 'Data de Nascimento', 'dd/mm/aaaa'), // CORREÇÃO: Máscara de data
         ]);
 
         // Passo 2: Endereço
@@ -126,7 +124,7 @@ class StepByStepForm {
 
     getFieldGroup(fieldId, label, placeholder, type = 'input') {
         const originalField = document.getElementById(fieldId);
-        if (!originalField) return null;
+        if (!originalField && fieldId !== 'inputBirthDate') return null; // Permitir campo de data mesmo sem original
 
         const group = document.createElement('div');
         group.className = 'form-group';
@@ -141,21 +139,23 @@ class StepByStepForm {
             inputEl = originalField.cloneNode(true);
         } else {
             inputEl = document.createElement('input');
-            inputEl.type = originalField.type || 'text';
+            inputEl.type = originalField ? originalField.type || 'text' : 'text';
             inputEl.id = fieldId;
-            inputEl.name = originalField.name;
+            inputEl.name = originalField ? originalField.name : fieldId.replace('input', '').toLowerCase();
             inputEl.className = 'form-control';
             inputEl.placeholder = placeholder;
-            inputEl.value = originalField.value || '';
-            if (originalField.required) inputEl.required = true;
+            inputEl.value = originalField ? originalField.value || '' : '';
+            if (originalField && originalField.required) inputEl.required = true;
         }
 
         group.appendChild(labelEl);
         group.appendChild(inputEl);
 
-        // Remover campo original
-        const originalGroup = originalField.closest('.form-group, .row');
-        if (originalGroup) originalGroup.remove();
+        // Remover campo original se existir
+        if (originalField) {
+            const originalGroup = originalField.closest('.form-group, .row');
+            if (originalGroup) originalGroup.remove();
+        }
 
         return group;
     }
@@ -176,6 +176,7 @@ class StepByStepForm {
         return row;
     }
 
+    // CORREÇÃO: Campo de data com máscara correta
     createDateField(fieldId, label, placeholder) {
         const group = document.createElement('div');
         group.className = 'form-group';
@@ -186,14 +187,43 @@ class StepByStepForm {
         labelEl.textContent = label;
 
         const inputEl = document.createElement('input');
-        inputEl.type = 'text';
+        inputEl.type = 'text'; // CORREÇÃO: Usar text em vez de date para aplicar máscara
         inputEl.id = fieldId;
         inputEl.name = 'birth_date';
         inputEl.className = 'form-control';
+        inputEl.placeholder = placeholder;
         inputEl.required = true;
+        inputEl.maxLength = 10; // dd/mm/aaaa
 
         group.appendChild(labelEl);
         group.appendChild(inputEl);
+
+        return group;
+    }
+
+    // CORREÇÃO: Criar campo CNPJ separado
+    createCnpjField() {
+        const group = document.createElement('div');
+        group.className = 'form-group';
+
+        const labelEl = document.createElement('label');
+        labelEl.setAttribute('for', 'inputCnpj');
+        labelEl.textContent = 'CNPJ (opcional)';
+
+        const inputEl = document.createElement('input');
+        inputEl.type = 'text';
+        inputEl.id = 'inputCnpj';
+        inputEl.name = 'cnpj';
+        inputEl.className = 'form-control';
+        inputEl.placeholder = 'Digite seu CNPJ (opcional)';
+        inputEl.style.display = 'none'; // Inicialmente oculto
+
+        group.appendChild(labelEl);
+        group.appendChild(inputEl);
+        
+        // Ocultar grupo inicialmente
+        group.style.display = 'none';
+        group.id = 'cnpjGroup';
 
         return group;
     }
@@ -249,7 +279,7 @@ class StepByStepForm {
         const container = document.createElement('div');
         container.className = 'checkbox-container';
         container.innerHTML = `
-            <input type="checkbox" id="acceptTerms" name="accept_terms" required>
+            <input type="checkbox" id="acceptTerms" name="accept_terms" checked required>
             <label for="acceptTerms">Aceito os <a href="#" target="_blank">termos de uso</a> e <a href="#" target="_blank">política de privacidade</a></label>
         `;
         return container;
@@ -290,10 +320,10 @@ class StepByStepForm {
             }
         });
 
-        // Checkbox pessoa jurídica
+        // CORREÇÃO: Checkbox pessoa jurídica para mostrar/ocultar campo CNPJ
         document.addEventListener('change', (e) => {
             if (e.target.id === 'pessoaJuridica') {
-                this.toggleCpfCnpj(e.target.checked);
+                this.toggleCnpjField(e.target.checked);
             }
         });
 
@@ -307,32 +337,6 @@ class StepByStepForm {
                 }
             }
         });
-    }
-
-    validateName(field) {
-        const value = field.value.trim();
-        let isValid = true;
-        let errorMessage = '';
-
-        // Verificar se o nome contém pelo menos dois nomes (nome e sobrenome)
-        if (value.split(' ').length < 2) {
-            isValid = false;
-            errorMessage = 'Por favor, insira o nome e sobrenome.';
-        }
-
-        // Aplica classes e mensagem de erro
-        field.classList.remove('error', 'success');
-        if (!isValid) {
-            field.classList.add('error');
-            const errorEl = document.createElement('span');
-            errorEl.className = 'error-message';
-            errorEl.textContent = errorMessage;
-            field.parentNode.appendChild(errorEl);
-        } else if (value) {
-            field.classList.add('success');
-        }
-
-        return isValid;
     }
 
     setupValidation() {
@@ -350,27 +354,39 @@ class StepByStepForm {
         });
     }
 
-   setupInputMasks() {
+    // CORREÇÃO: Máscaras de input corrigidas
+    setupInputMasks() {
         document.addEventListener('input', (e) => {
             const field = e.target;
             
             if (field.id === 'inputCompanyName') {
-                this.applyCpfCnpjMask(field);
+                this.applyCpfMask(field); // Sempre CPF para este campo
+            } else if (field.id === 'inputCnpj') {
+                this.applyCnpjMask(field); // CNPJ para o campo separado
             } else if (field.id === 'inputPhone') {
                 this.applyPhoneMask(field);
             } else if (field.id === 'inputPostcode') {
                 this.applyCepMask(field);
             } else if (field.id === 'inputBirthDate') {
-                this.applyDateMask(field); // Adicionando a máscara para data de nascimento
+                this.applyDateMask(field); // CORREÇÃO: Máscara de data corrigida
             }
         });
     }
 
+    // CORREÇÃO: Máscara de data funcionando
     applyDateMask(field) {
-        const im = new Inputmask('99/99/9999');  // Máscara de data: dd/mm/aaaa
-        im.mask(field);  // Aplica a máscara no campo
+        let value = field.value.replace(/\D/g, ''); // Remove tudo que não é dígito
+        
+        // Aplica a máscara dd/mm/aaaa
+        if (value.length >= 2) {
+            value = value.substring(0, 2) + '/' + value.substring(2);
+        }
+        if (value.length >= 5) {
+            value = value.substring(0, 5) + '/' + value.substring(5, 9);
+        }
+        
+        field.value = value;
     }
-
 
     showStep(stepNumber) {
         // Ocultar todos os passos
@@ -520,6 +536,15 @@ class StepByStepForm {
             }
         }
 
+        // Validação de data
+        if (value && field.id === 'inputBirthDate') {
+            const dateRegex = /^\d{2}\/\d{2}\/\d{4}$/;
+            if (!dateRegex.test(value)) {
+                isValid = false;
+                errorMessage = 'Data inválida (use dd/mm/aaaa)';
+            }
+        }
+
         // Aplicar classes visuais
         field.classList.remove('error', 'success');
         if (!isValid) {
@@ -559,42 +584,52 @@ class StepByStepForm {
         return isValid;
     }
 
-    toggleCpfCnpj(isPJ) {
-        const field = document.getElementById('inputCompanyName');
-        const label = document.querySelector('label[for="inputCompanyName"]');
+    // CORREÇÃO: Função para mostrar/ocultar campo CNPJ
+    toggleCnpjField(showCnpj) {
+        const cnpjGroup = document.getElementById('cnpjGroup');
+        const cpfField = document.getElementById('inputCompanyName');
+        const cpfLabel = document.querySelector('label[for="inputCompanyName"]');
 
-        if (field && label) {
-            if (isPJ) {
-                label.textContent = 'CNPJ';
-                field.placeholder = 'Coloque seu CNPJ';
+        if (cnpjGroup) {
+            if (showCnpj) {
+                cnpjGroup.style.display = 'block';
+                if (cpfField) cpfField.required = false; // CPF não obrigatório se CNPJ está sendo usado
+                if (cpfLabel) cpfLabel.textContent = 'CPF (opcional)';
             } else {
-                label.textContent = 'CPF';
-                field.placeholder = 'Coloque seu CPF';
+                cnpjGroup.style.display = 'none';
+                if (cpfField) cpfField.required = true; // CPF obrigatório se CNPJ não está sendo usado
+                if (cpfLabel) cpfLabel.textContent = 'CPF';
+                // Limpar campo CNPJ
+                const cnpjField = document.getElementById('inputCnpj');
+                if (cnpjField) cnpjField.value = '';
             }
-            field.value = ''; // Limpar campo ao alternar
         }
     }
 
-
-    applyCpfCnpjMask(field) {
+    // CORREÇÃO: Máscara CPF separada
+    applyCpfMask(field) {
         let value = field.value.replace(/\D/g, '');
-        const isPJ = document.getElementById('pessoaJuridica')?.checked;
+        
+        // Máscara CPF: 000.000.000-00
+        if (value.length <= 11) {
+            value = value.replace(/(\d{3})(\d)/, '$1.$2');
+            value = value.replace(/(\d{3})(\d)/, '$1.$2');
+            value = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+        }
 
-        if (isPJ) {
-            // Máscara CNPJ: 00.000.000/0000-00
-            if (value.length <= 14) {
-                value = value.replace(/^(\d{2})(\d)/, '$1.$2');
-                value = value.replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3');
-                value = value.replace(/\.(\d{3})(\d)/, '.$1/$2');
-                value = value.replace(/(\d{4})(\d)/, '$1-$2');
-            }
-        } else {
-            // Máscara CPF: 000.000.000-00
-            if (value.length <= 11) {
-                value = value.replace(/(\d{3})(\d)/, '$1.$2');
-                value = value.replace(/(\d{3})(\d)/, '$1.$2');
-                value = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
-            }
+        field.value = value;
+    }
+
+    // CORREÇÃO: Máscara CNPJ separada
+    applyCnpjMask(field) {
+        let value = field.value.replace(/\D/g, '');
+        
+        // Máscara CNPJ: 00.000.000/0000-00
+        if (value.length <= 14) {
+            value = value.replace(/^(\d{2})(\d)/, '$1.$2');
+            value = value.replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3');
+            value = value.replace(/\.(\d{3})(\d)/, '.$1/$2');
+            value = value.replace(/(\d{4})(\d)/, '$1-$2');
         }
 
         field.value = value;
@@ -637,9 +672,8 @@ class StepByStepForm {
             form.submit();
         }
     }
-
-
 }
+
 // Função para gerar uma senha aleatória
 function generateRandomPassword(length = 8) {
     const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+";
@@ -653,69 +687,27 @@ function generateRandomPassword(length = 8) {
 
 // Função para preencher os campos de senha
 function fillGeneratedPassword() {
-    const password = generateRandomPassword(12); // Gera uma senha de 12 caracteres
+    const password = generateRandomPassword(12);
 
     // Preenche os campos de senha
-    document.getElementById('inputNewPassword1').value = password;
-    document.getElementById('inputNewPassword2').value = password;
+    const passwordField1 = document.getElementById('inputNewPassword1') || document.getElementById('inputPassword');
+    const passwordField2 = document.getElementById('inputNewPassword2') || document.getElementById('inputPasswordConfirm');
+
+    if (passwordField1 && passwordField2) {
+        passwordField1.value = password;
+        passwordField2.value = password;
+    }
 }
 
+// Event listener para botão de gerar senha
 document.addEventListener('DOMContentLoaded', function() {
-    const im = new Inputmask('99/99/9999');
-    const birthDateField = document.getElementById('inputBirthDate');
-    if (birthDateField) {
-        im.mask(birthDateField);
-    }
-});
-
-
-document.addEventListener('DOMContentLoaded', function() {
-    console.log("DOM completamente carregado");
-
-    
-    // Função para gerar uma senha aleatória
-    function generateRandomPassword(length = 8) {
-        console.log("Gerando senha...");
-        const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+";
-        let password = "";
-        for (let i = 0; i < length; i++) {
-            const randomIndex = Math.floor(Math.random() * charset.length);
-            password += charset[randomIndex];
-        }
-        console.log("Senha gerada: " + password);
-        return password;
-    }
-
-    // Função para preencher os campos de senha
-    function fillGeneratedPassword() {
-        console.log("Preenchendo campos com a senha gerada");
-        const password = generateRandomPassword(12); // Gera uma senha de 12 caracteres
-
-        // Preenche os campos de senha
-        const passwordField1 = document.getElementById('inputNewPassword1');
-        const passwordField2 = document.getElementById('inputNewPassword2');
-
-        if (passwordField1 && passwordField2) {
-            passwordField1.value = password;
-            passwordField2.value = password;
-            console.log("Campos preenchidos com a senha gerada");
-        } else {
-            console.error("Campos de senha não encontrados");
-        }
-    }
-
-    // Atribuindo ao botão de gerar senha
     const generatePasswordButton = document.querySelector('.generate-password');
     if (generatePasswordButton) {
         generatePasswordButton.addEventListener('click', function() {
-            console.log("Botão de gerar senha clicado");
             fillGeneratedPassword();
         });
-    } else {
-        console.error("Botão de gerar senha não encontrado");
     }
 });
-
 
 // Inicializar o sistema de passos
 new StepByStepForm();
