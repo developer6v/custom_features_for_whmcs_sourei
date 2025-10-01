@@ -116,7 +116,7 @@ class StepByStepForm {
                 if (data && !data.erro) {
                     document.getElementById('inputAddress1').value = data.street || '';
                     document.getElementById('inputCity').value = data.city || '';
-                    document.getElementById('stateinput').value = data.state || '';
+                   // document?.getElementById('stateinput').value = data.state || '';
                 } else {
                     alert("CEP não encontrado.");
                 }
