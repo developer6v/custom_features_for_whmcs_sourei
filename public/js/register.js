@@ -216,7 +216,7 @@ class StepByStepForm {
         inputEl.name = 'cnpj';
         inputEl.className = 'form-control';
         inputEl.placeholder = 'Digite seu CNPJ (opcional)';
-        inputEl.style.display = 'none'; // Inicialmente oculto
+        inputEl.style.display = 'block'; // Inicialmente oculto
 
         group.appendChild(labelEl);
         group.appendChild(inputEl);
