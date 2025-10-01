@@ -413,23 +413,38 @@ class StepByStepForm {
         });
     }
 
-    setupInputMasks() {
-        document.addEventListener('input', (e) => {
-            const field = e.target;
-            
-            if (field.id === 'inputCompanyName') {
-                this.applyCpfMask(field);
-            } else if (field.id === 'inputCnpj') {
-                this.applyCnpjMask(field);
-            } else if (field.id === 'inputPhone') {
-                this.applyPhoneMask(field);
-            } else if (field.id === 'inputPostcode') {
-                this.applyCepMask(field);
-            } else if (field.id === 'inputBirthDate') {
-                this.applyDateMask(field);
-            }
+setupInputMasks() {
+    document.addEventListener('input', (e) => {
+        const field = e.target;
+
+        if (field.id === 'inputCompanyName') {
+            this.applyCpfMask(field);
+        } else if (field.id === 'inputCnpj') {
+            this.applyCnpjMask(field);
+        } else if (field.id === 'inputPhone') {
+            this.applyPhoneMask(field);
+            this.initializePhoneInput(); // Inicializa o seletor de telefone
+        } else if (field.id === 'inputPostcode') {
+            this.applyCepMask(field);
+        } else if (field.id === 'inputBirthDate') {
+            this.applyDateMask(field);
+        }
+    });
+}
+
+// Inicialize o intl-tel-input para o campo de telefone
+initializePhoneInput() {
+    const phoneInput = document.querySelector("#inputPhone");
+    if (phoneInput) {
+        window.intlTelInput(phoneInput, {
+            initialCountry: "auto", // Detecta o país automaticamente com base no IP
+            separateDialCode: true, // Exibe o código de discagem separadamente
+            preferredCountries: ['br', 'us', 'ca', 'gb'], // Países preferidos, por exemplo
+            utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js" // Script de validação
         });
     }
+}
+
 
     applyDateMask(field) {
         let value = field.value.replace(/\D/g, '');
