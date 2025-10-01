@@ -121,7 +121,7 @@ class StepByStepForm {
                     alert("CEP não encontrado.");
                 }
             })
-            .catch(error => alert("Erro ao buscar o CEP."));
+            .catch(error => alert("Erro ao buscar o CEP." + error));
     }
 
     createStep(stepNumber, fields) {
