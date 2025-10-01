@@ -422,47 +422,73 @@ setupInputMasks() {
             this.applyCpfMask(field);
         } else if (field.id === 'inputCnpj') {
             this.applyCnpjMask(field);
-        } else if (field.id === 'inputPhone') {
-            this.applyPhoneMask(field);
-            this.initializePhoneInput(); // Inicializa o seletor de telefone
-        } else if (field.id === 'inputPostcode') {
+        }  else if (field.id === 'inputPostcode') {
             this.applyCepMask(field);
         } else if (field.id === 'inputBirthDate') {
             this.applyDateMask(field);
         }
     });
 }
+    initializePhoneInputWithTimeout() {
+        const checkInterval = 500; // Intervalo de 500ms para verificar
+        const maxAttempts = 100;    // Máximo de tentativas (5 segundos no total)
 
-initializePhoneInputWithTimeout() {
-    const checkInterval = 500; // Intervalo de 500ms para verificar
-    const maxAttempts = 100;    // Máximo de tentativas (5 segundos no total)
+        let attempts = 0;
 
-    let attempts = 0;
+        const interval = setInterval(() => {
+            console.log("Campo de telefone - cron", attempts); // Verificando se está entrando no intervalo
 
-    const interval = setInterval(() => {
-                    console.log("Campo de telefone - cron");
-        const phoneInput = document.querySelector("#inputPhone");
-        if (phoneInput) {
-                                console.log("Campo de telefone - encontrou");
-            clearInterval(interval); // Parar o intervalo quando o campo for encontrado
-            window.intlTelInput(phoneInput, {
-                initialCountry: "auto", // Detecta o país automaticamente com base no IP
-                separateDialCode: true, // Exibe o código de discagem separadamente
-                preferredCountries: ['br', 'us', 'ca', 'gb'], // Países preferidos, por exemplo
-                utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js" // Script de validação
-            });
+            const phoneInput = document.querySelector("#inputPhone");
+            if (phoneInput) {
+                console.log("Campo de telefone - encontrou");
+                clearInterval(interval); // Parar o intervalo quando o campo for encontrado
+
+                const iti = window.intlTelInput(phoneInput, {
+                    initialCountry: "auto", // Detecta o país automaticamente com base no IP
+                    separateDialCode: true, // Exibe o código de discagem separadamente
+                    preferredCountries: ['br', 'us', 'ca', 'gb'], // Países preferidos, por exemplo
+                    utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js" // Script de validação
+                });
+
+                // Aplica a máscara de telefone conforme o país
+                phoneInput.addEventListener("input", () => {
+                    this.applyPhoneMaskBasedOnCountry(phoneInput, iti);
+                });
+
+                // Inicializa com a máscara baseada no país selecionado
+                this.applyPhoneMaskBasedOnCountry(phoneInput, iti);
+            } else {
+                console.log("Campo de telefone - nao encontrou");
+            }
+
+            // Se o campo não for encontrado após o número máximo de tentativas, parar
+            attempts++;
+            if (attempts >= maxAttempts) {
+                clearInterval(interval); // Parar o intervalo
+                console.log("Campo de telefone não encontrado após várias tentativas.");
+            }
+        }, checkInterval); // Checa a cada 500ms
+    }
+
+    // Função para aplicar a máscara de telefone de acordo com o país selecionado
+    applyPhoneMaskBasedOnCountry(phoneInput, iti) {
+        const countryData = iti.getSelectedCountryData();
+        const countryCode = countryData.dialCode;
+
+        // Aplica a máscara de telefone de acordo com o país
+        let phoneValue = phoneInput.value.replace(/\D/g, ''); // Remover qualquer coisa que não seja número
+
+        if (countryCode === '55') { // Brasil
+            phoneValue = phoneValue.replace(/^(\d{2})(\d{4})(\d{4})$/, "($1) $2-$3");
+        } else if (countryCode === '1') { // EUA, Canadá
+            phoneValue = phoneValue.replace(/^(\d{1})(\d{3})(\d{3})(\d{4})$/, "($1) $2-$3-$4");
         } else {
-            console.log("Campo de telefone - nao encontrou");
+            // Adicione aqui para outros países, dependendo do formato que você precisar
+            phoneValue = phoneValue.replace(/^(\d{1})(\d{3})(\d{3})(\d{4})$/, "($1) $2-$3-$4");
         }
 
-        // Se o campo não for encontrado após o número máximo de tentativas, parar
-        attempts++;
-        if (attempts >= maxAttempts) {
-            clearInterval(interval); // Parar o intervalo
-            console.log("Campo de telefone não encontrado após várias tentativas.");
-        }
-    }, checkInterval); // Checa a cada 500ms
-}
+        phoneInput.value = phoneValue;
+    }
 
 
     applyDateMask(field) {
