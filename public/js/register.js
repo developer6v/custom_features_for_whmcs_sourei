@@ -200,6 +200,8 @@ class StepByStepForm {
                 }
             });
         }
+
+        
     }
     createTwoColumnRow(fields) {
         const row = document.createElement('div');
@@ -789,7 +791,7 @@ setupInputMasks() {
 
         field.value = value;
     }
-    
+
     applyCepMask(field) {
         let value = field.value.replace(/\D/g, ''); // Remove qualquer caractere não numérico
 
