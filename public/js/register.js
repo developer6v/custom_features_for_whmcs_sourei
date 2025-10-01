@@ -72,7 +72,7 @@ class StepByStepForm {
                 this.createCnpjField()
             ]),
             this.createDateField('inputBirthDate', 'Data de Nascimento', 'dd/mm/aaaa'),
-            this.createCheckboxField() // Adicionar checkbox para pessoa jurídica
+           // this.createCheckboxField() // Adicionar checkbox para pessoa jurídica
         ]);
 
         // Passo 2: Endereço

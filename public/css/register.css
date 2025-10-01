@@ -490,6 +490,9 @@ body {
     font-size: 25px!important;
 }
 
+.generate-password {
+    display: none!important;
+}
 
 @media screen and (max-width: 720px) {
     .app-main {
