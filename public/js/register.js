@@ -222,7 +222,7 @@ class StepByStepForm {
         group.appendChild(inputEl);
         
         // Ocultar grupo inicialmente
-        group.style.display = 'none';
+        group.style.display = 'block';
         group.id = 'cnpjGroup';
 
         return group;
@@ -323,7 +323,7 @@ class StepByStepForm {
         // CORREÇÃO: Checkbox pessoa jurídica para mostrar/ocultar campo CNPJ
         document.addEventListener('change', (e) => {
             if (e.target.id === 'pessoaJuridica') {
-                this.toggleCnpjField(e.target.checked);
+               // this.toggleCnpjField(e.target.checked);
             }
         });
 
