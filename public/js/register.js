@@ -676,8 +676,8 @@ setupInputMasks() {
                 });
 
                 // Aplica a máscara de telefone conforme o país
-                phoneInput.addEventListener("input", () => {
-                    this.applyPhoneMask();
+                phoneInput.addEventListener("input", (event) => {
+                    this.applyPhoneMask(phoneInput, iti, event);
                 });
 
             } else {
@@ -694,24 +694,7 @@ setupInputMasks() {
     }
 
     // Função para aplicar a máscara de telefone de acordo com o país selecionado
-    applyPhoneMaskBasedOnCountry(phoneInput, iti) {
-        const countryData = iti.getSelectedCountryData();
-        const countryCode = countryData.dialCode;
 
-        // Aplica a máscara de telefone de acordo com o país
-        let phoneValue = phoneInput.value.replace(/\D/g, ''); // Remover qualquer coisa que não seja número
-
-        if (countryCode === '55') { // Brasil
-            phoneValue = phoneValue.replace(/^(\d{2})(\d{4})(\d{4})$/, "($1) $2-$3");
-        } else if (countryCode === '1') { // EUA, Canadá
-            phoneValue = phoneValue.replace(/^(\d{1})(\d{3})(\d{3})(\d{4})$/, "($1) $2-$3-$4");
-        } else {
-            // Adicione aqui para outros países, dependendo do formato que você precisar
-            phoneValue = phoneValue.replace(/^(\d{1})(\d{3})(\d{3})(\d{4})$/, "($1) $2-$3-$4");
-        }
-
-        phoneInput.value = phoneValue;
-    }
 applyDateMask(field) {
     let value = field.value.replace(/\D/g, '');  // Remove qualquer caractere não numérico
 
@@ -900,6 +883,23 @@ applyDateMask(field) {
                 errorMessage = 'Por favor, insira seu nome e sobrenome';
             }
         }
+        // Validação de CPF
+        if (field.id === 'inputCompanyName') {
+            const digits = value.replace(/\D/g, ''); 
+            if (digits.length < 11) {
+                isValid = false;
+                errorMessage = 'CPF inválido (11 dígitos obrigatórios)';
+            }
+        }
+
+        // Validação de CNPJ
+        if (field.id === 'inputCnpj' && value) { 
+            const digits = value.replace(/\D/g, '');
+            if (digits.length < 14) {
+                isValid = false;
+                errorMessage = 'CNPJ inválido (14 dígitos obrigatórios)';
+            }
+        }
 
 
         // Aplicar classes visuais
@@ -996,18 +996,47 @@ applyDateMask(field) {
     }
 
 
-     applyPhoneMask(event) {
-        const countryData = phoneInput.getSelectedCountryData();
+   getMaxDigitsForCountry(countryCode) {
+      const countryMaxDigits = {
+          US: 10, 
+          CA: 10, 
+          BR: 11, 
+          GB: 10, 
+          FR: 9,  
+          DE: 11, 
+          IN: 10, 
+          MX: 10, 
+          AU: 9, 
+          JP: 10, 
+          PT: 9
+      };
+
+      return countryMaxDigits[countryCode] || 15; 
+  }
+
+    applyPhoneMask(phoneInput, iti, event) {
+        if (!phoneInput || !iti) return;
+
+        const countryData = iti.getSelectedCountryData();
         const countryCode = countryData.iso2.toUpperCase();
-        let rawNumber = phoneInputField.value.replace(/\D/g, ""); 
 
-        const maxDigits = getMaxDigitsForCountry(countryCode);
+        // Extrai apenas os números digitados
+        let rawNumber = phoneInput.value.replace(/\D/g, ""); 
 
+        // Define o limite de dígitos baseado no país
+        const maxDigits = this.getMaxDigitsForCountry(countryCode);
         if (rawNumber.length > maxDigits) {
             event.preventDefault();
             rawNumber = rawNumber.substring(0, maxDigits);
         }
 
+        // Caso esteja apagando (deleteContentBackward), não forçar formatação
+        if (event && event.inputType === "deleteContentBackward") {
+            phoneInput.value = rawNumber; // mantém só os dígitos limpos
+            return;
+        }
+
+        // Formata o número usando libphonenumber (se disponível)
         let formattedNumber = "";
         try {
             formattedNumber = new libphonenumber.AsYouType(countryCode).input(rawNumber);
@@ -1015,14 +1044,11 @@ applyDateMask(field) {
             formattedNumber = rawNumber;
         }
 
-        if (event && event.inputType === "deleteContentBackward") {
-            lastValue = phoneInputField.value;
-            return;
-        }
-
-        phoneInputField.value = formattedNumber;
-        lastValue = formattedNumber;
+        // Atualiza o campo com o valor formatado
+        phoneInput.value = formattedNumber;
     }
+
+
 
     applyCepMask(field) {
         let value = field.value.replace(/\D/g, ''); // Remove qualquer caractere não numérico
