@@ -30,7 +30,7 @@ add_hook('ClientAreaFooterOutput', 1, function($vars) {
 
 add_hook('ClientAreaFooterOutput', 1, function($vars) {
     // Detecta a página de login tanto com Friendly URLs quanto sem
-    $isLogin =(($vars['filename'] ?? '') === 'register');
+    $isLogin =(($vars['filename'] ?? '') === 'regisdfaster');
 
     if ($isLogin) {
         return assets_register();

@@ -16,8 +16,7 @@ body.lagom {
 }
 
 /* Oculta elementos desnecessários do WHMCS */
-.app-sidebar, .main-top, .main-footer, .breadcrumb, .app-nav, .page-header,
-#containerNewUserSecurity, #containerNewUserSignup .section.section-sm:nth-of-type(2),
+.app-sidebar, .main-top, .main-footer, .breadcrumb, .app-nav, .page-header, #containerNewUserSignup .section.section-sm:nth-of-type(2),
 #containerNewUserSignup .section.section-sm:nth-of-type(3), .section-title,
 .login-title, .generate-password {
     display: none !important;

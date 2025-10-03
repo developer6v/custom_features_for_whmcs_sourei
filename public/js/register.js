@@ -8,7 +8,6 @@ class StepByStepForm {
 
     init() {
         document.addEventListener('DOMContentLoaded', () => {
-            // Um pequeno atraso para garantir que outros scripts (como o intl-tel-input) já tenham rodado
             setTimeout(() => {
                 this.setupFormStructure();
                 this.setupEventListeners();
@@ -16,8 +15,8 @@ class StepByStepForm {
                 this.setupInputMasks();
                 this.showStep(1);
                 this.setupCepFieldListener();
-                this.toggleCnpjField(false); // Garante que o CNPJ comece oculto
-            }, 200); // Aumentei um pouco o tempo para garantir
+                this.toggleCnpjField(false);
+            }, 200);
         });
     }
 
@@ -31,7 +30,6 @@ class StepByStepForm {
     findMoveableGroup(elementId) {
         const el = document.getElementById(elementId);
         if (!el) return null;
-        // Prioriza a coluna (col-md-6) para manter a estrutura de duas colunas
         return el.closest('.col-md-6') || el.closest('.form-group');
     }
 
@@ -63,70 +61,53 @@ class StepByStepForm {
 
         // Passo 1: Dados Pessoais
         const step1 = this.createStep(1, [
-            this.createTwoColumnRow([
-                this.findMoveableGroup('inputFirstName'),
-                this.findMoveableGroup('inputLastName')
-            ]),
-            this.createTwoColumnRow([
-                this.findMoveableGroup('inputPhone'),
-                this.findMoveableGroup('inputEmail')
-            ]),
-            this.createTwoColumnRow([
-                this.findMoveableGroup('customfield2'), // CPF
-                this.findMoveableGroup('customfield3')  // Data de Nascimento
-            ]),
+            this.createTwoColumnRow([this.findMoveableGroup('inputFirstName'), this.findMoveableGroup('inputLastName')]),
+            this.createTwoColumnRow([this.findMoveableGroup('inputPhone'), this.findMoveableGroup('inputEmail')]),
+            this.createTwoColumnRow([this.findMoveableGroup('customfield2'), this.findMoveableGroup('customfield3')]),
             this.createCheckboxField(),
-            this.findMoveableGroup('customfield5') // CNPJ
+            this.createTwoColumnRow([this.findMoveableGroup('customfield5'), this.findMoveableGroup('inputCompanyName')]),
         ]);
 
         // Passo 2: Endereço
         const step2 = this.createStep(2, [
-             this.createTwoColumnRow([
-                this.findMoveableGroup('inputPostcode'),
-                this.findMoveableGroup('inputCountry')
-            ]),
-            this.createTwoColumnRow([
-                this.findMoveableGroup('inputAddress1'),
-                this.findMoveableGroup('customfield18') // Número
-            ]),
-             this.createTwoColumnRow([
-                this.findMoveableGroup('inputAddress2'),
-                this.findMoveableGroup('customfield19') // Complemento
-            ]),
-            this.createTwoColumnRow([
-                this.findMoveableGroup('inputCity'),
-                this.findMoveableGroup('stateselect')
-            ]),
+            this.createTwoColumnRow([this.findMoveableGroup('inputPostcode'), this.findMoveableGroup('inputCountry')]),
+            this.createTwoColumnRow([this.findMoveableGroup('inputAddress1'), this.findMoveableGroup('customfield18')]),
+            this.createTwoColumnRow([this.findMoveableGroup('inputAddress2'), this.findMoveableGroup('customfield19')]),
+            this.createTwoColumnRow([this.findMoveableGroup('inputCity'), this.findMoveableGroup('stateselect')])
         ]);
 
+        
+        const address2Group = this.findMoveableGroup('inputAddress2');
+        if (address2Group) {
+            const label = address2Group.querySelector('label');
+            if (label) label.textContent = 'Bairro';
+        }
+
+
+        // --- CORREÇÃO APLICADA AQUI ---
         // Passo 3: Senha e Finalização
-        const passwordSection = document.getElementById('containerNewUserSecurity');
+        // Em vez de pegar só o container, pegamos a seção inteira que o envolve.
+        // Passo 3: Senha e Finalização
+        const passwordSection = document.getElementById('containerNewUserSecurity'); // já é a section
         const termsSection = document.querySelector('input[name="accepttos"]').closest('.section');
         const mailingListSection = document.querySelector('input[name="marketingoptin"]').closest('.section');
-        
+
         const step3 = this.createStep(3, [
             passwordSection,
             mailingListSection,
             termsSection
         ]);
 
+
         stepsContainer.appendChild(step1);
         stepsContainer.appendChild(step2);
         stepsContainer.appendChild(step3);
 
-        // Esconde elementos que não serão usados ou já foram movidos
-        const companyName = this.findMoveableGroup('inputCompanyName');
-        if(companyName) companyName.style.display = 'none';
-        
-        const additionalInfoTitle = document.querySelector('label[for="customfield2"]')?.closest('.section');
-        if(additionalInfoTitle) additionalInfoTitle.style.display = 'none';
-
-        // Substitui o conteúdo do formulário original pelos passos
-        const personalInfoSection = document.getElementById('personalInformation')?.closest('.section');
-        if (personalInfoSection) {
-            const mainContainer = personalInfoSection.parentElement;
-            mainContainer.innerHTML = ''; // Limpa o container
-            mainContainer.appendChild(stepsContainer);
+        // Limpeza de elementos que não serão mais exibidos no fluxo original
+        const originalSectionsContainer = document.getElementById('containerNewUserSignup');
+        if (originalSectionsContainer) {
+            originalSectionsContainer.innerHTML = ''; // Limpa o container original
+            originalSectionsContainer.appendChild(stepsContainer); // Adiciona a nova estrutura de passos
         }
     }
 
@@ -147,20 +128,18 @@ class StepByStepForm {
         const row = document.createElement('div');
         row.className = 'row';
         elements.forEach(element => {
-            if (element) {
-                row.appendChild(element);
-            }
+            if (element) row.appendChild(element);
         });
         return row;
     }
     
     createCheckboxField() {
         const container = document.createElement('div');
-        container.className = 'checkbox-container form-group col-md-12';
+        container.className = 'form-group col-md-12';
         container.innerHTML = `
             <div class="checkbox">
                 <label>
-                    <input type="checkbox" id="pessoaJuridica" name="pessoa_juridica">
+                    <input type="checkbox" id="pessoaJuridica" name="pessoa_juridica" style="margin-right: 5px;">
                     Sou Pessoa Jurídica (usar CNPJ)
                 </label>
             </div>
@@ -184,9 +163,7 @@ class StepByStepForm {
 
     adjustContainer() {
         const container = document.querySelector('.login-wrapper');
-        if (container) {
-            container.style.maxWidth = '700px';
-        }
+        if (container) container.style.maxWidth = '700px';
     }
 
     setupEventListeners() {
@@ -195,9 +172,7 @@ class StepByStepForm {
             if (e.target.id === 'prevBtn') this.prevStep();
         });
         document.addEventListener('change', (e) => {
-            if (e.target.id === 'pessoaJuridica') {
-                this.toggleCnpjField(e.target.checked);
-            }
+            if (e.target.id === 'pessoaJuridica') this.toggleCnpjField(e.target.checked);
         });
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' && !e.shiftKey) {
@@ -210,27 +185,50 @@ class StepByStepForm {
         });
     }
 
-    toggleCnpjField(showCnpj) {
-        const cnpjGroup = this.findMoveableGroup('customfield5');
-        const cpfGroup = this.findMoveableGroup('customfield2');
-        const cpfField = document.getElementById('customfield2');
-        const cnpjField = document.getElementById('customfield5');
+toggleCnpjField(showCnpj) {
+    const cnpjGroup = this.findMoveableGroup('customfield5');
+    const cpfGroup = this.findMoveableGroup('customfield2');
+    const companyNameGroup = this.findMoveableGroup('inputCompanyName');
 
-        if (cnpjGroup && cpfGroup && cpfField && cnpjField) {
-            if (showCnpj) {
-                cnpjGroup.style.display = 'block';
-                cpfGroup.style.display = 'none';
-                cpfField.required = false;
-                cnpjField.required = true;
-            } else {
-                cnpjGroup.style.display = 'none';
-                cpfGroup.style.display = 'block';
-                cpfField.required = true;
-                cnpjField.required = false;
-                cnpjField.value = '';
-            }
+    const cpfField = document.getElementById('customfield2');
+    const cnpjField = document.getElementById('customfield5');
+    const companyNameField = document.getElementById('inputCompanyName');
+
+    const cnpjLabel = document.querySelector('label[for="customfield5"]');
+    const companyNameLabel = document.querySelector('label[for="inputCompanyName"]');
+
+    if (cnpjGroup && cpfGroup && cpfField && cnpjField && companyNameGroup && companyNameField) {
+        if (showCnpj) {
+            cnpjGroup.style.display = 'block';
+            companyNameGroup.style.display = 'block';
+            cpfGroup.style.display = 'none';
+
+            cpfField.required = false;
+            cnpjField.required = true;
+            companyNameField.required = true;
+
+            // 🔹 Ajusta labels (remove "(opcional)")
+            if (cnpjLabel) cnpjLabel.textContent = 'CNPJ';
+            if (companyNameLabel) companyNameLabel.textContent = 'Empresa';
+        } else {
+            cnpjGroup.style.display = 'none';
+            companyNameGroup.style.display = 'none';
+            cpfGroup.style.display = 'block';
+
+            cpfField.required = true;
+            cnpjField.required = false;
+            companyNameField.required = false;
+
+            cnpjField.value = '';
+            companyNameField.value = '';
+
+            // 🔹 Volta labels para opcionais
+            if (cnpjLabel) cnpjLabel.textContent = 'CNPJ (opcional)';
+            if (companyNameLabel) companyNameLabel.textContent = 'Empresa (opcional)';
         }
     }
+}
+
 
     setupValidation() {
         document.querySelectorAll('.form-control').forEach(field => {
@@ -251,25 +249,49 @@ class StepByStepForm {
 
     setupCepFieldListener() {
         const cepField = document.getElementById('inputPostcode');
+        const addressFields = [
+            'inputAddress1',
+            'inputAddress2',
+            'customfield18',
+            'customfield19',
+            'inputCity',
+            'stateselect'
+        ];
+
+        // 🔹 Esconde todos de início
+        addressFields.forEach(id => {
+            const group = this.findMoveableGroup(id);
+            if (group) group.style.display = 'none';
+        });
+
         if (cepField) {
             cepField.addEventListener('blur', (e) => {
                 const cep = e.target.value.replace(/\D/g, '');
                 if (cep.length === 8) {
-                    this.fetchAddressFromCep(cep);
+                    this.fetchAddressFromCep(cep, addressFields);
                 }
             });
         }
     }
 
-    fetchAddressFromCep(cep) {
-        fetch(`https://viacep.com.br/ws/${cep}/json/` )
+
+    fetchAddressFromCep(cep, addressFields) {
+        fetch(`https://viacep.com.br/ws/${cep}/json/`)
             .then(response => response.json())
             .then(data => {
                 if (data && !data.erro) {
                     document.getElementById('inputAddress1').value = data.logradouro || '';
                     document.getElementById('inputCity').value = data.localidade || '';
+                    document.getElementById('inputAddress2').value = data.bairro || '';
+
                     const stateSelect = document.getElementById('stateselect');
                     if (stateSelect) stateSelect.value = data.uf || '';
+
+                    // 🔹 Mostra todos os campos porque o CEP foi validado
+                    addressFields.forEach(id => {
+                        const group = this.findMoveableGroup(id);
+                        if (group) group.style.display = 'block';
+                    });
                 } else {
                     alert("CEP não encontrado.");
                 }
@@ -282,13 +304,11 @@ class StepByStepForm {
             step.style.display = 'none';
             step.classList.remove('active');
         });
-
         const currentStepEl = document.querySelector(`.form-step.step-${stepNumber}`);
         if (currentStepEl) {
             currentStepEl.style.display = 'block';
             currentStepEl.classList.add('active');
         }
-
         this.currentStep = stepNumber;
         this.updateProgressIndicator();
         this.updateNavigation();
@@ -299,11 +319,8 @@ class StepByStepForm {
         document.querySelectorAll('.step-indicator').forEach((indicator, index) => {
             const stepNum = index + 1;
             indicator.classList.remove('active', 'completed');
-            if (stepNum < this.currentStep) {
-                indicator.classList.add('completed');
-            } else if (stepNum === this.currentStep) {
-                indicator.classList.add('active');
-            }
+            if (stepNum < this.currentStep) indicator.classList.add('completed');
+            else if (stepNum === this.currentStep) indicator.classList.add('active');
         });
         const progressLine = document.getElementById('progressLine');
         if (progressLine) {
@@ -315,16 +332,9 @@ class StepByStepForm {
     updateNavigation() {
         const prevBtn = document.getElementById('prevBtn');
         const nextBtn = document.getElementById('nextBtn');
-        const originalSubmit = document.querySelector('.loginForm button[type="submit"]');
-
         if (prevBtn) prevBtn.style.display = this.currentStep > 1 ? 'inline-block' : 'none';
-
         if (nextBtn) {
-            if (this.currentStep === this.totalSteps) {
-                nextBtn.textContent = 'Finalizar Cadastro';
-            } else {
-                nextBtn.textContent = 'Próximo';
-            }
+            nextBtn.textContent = this.currentStep === this.totalSteps ? 'Finalizar Cadastro' : 'Próximo';
         }
     }
 
@@ -338,9 +348,7 @@ class StepByStepForm {
     }
 
     nextStep() {
-        if (!this.validateCurrentStep()) {
-            return;
-        }
+        if (!this.validateCurrentStep()) return;
         if (this.currentStep < this.totalSteps) {
             this.showStep(this.currentStep + 1);
         } else {
@@ -349,24 +357,17 @@ class StepByStepForm {
     }
 
     prevStep() {
-        if (this.currentStep > 1) {
-            this.showStep(this.currentStep - 1);
-        }
+        if (this.currentStep > 1) this.showStep(this.currentStep - 1);
     }
 
     validateCurrentStep() {
         const currentStepEl = document.querySelector(`.form-step.step-${this.currentStep}`);
         if (!currentStepEl) return false;
-
         const fields = currentStepEl.querySelectorAll('input[required], select[required]');
         let isStepValid = true;
-
         fields.forEach(field => {
-            // Apenas valida campos que estão visíveis
             if (field.offsetParent !== null) {
-                if (!this.validateField(field)) {
-                    isStepValid = false;
-                }
+                if (!this.validateField(field)) isStepValid = false;
             }
         });
         return isStepValid;
@@ -378,11 +379,9 @@ class StepByStepForm {
         let errorMessage = '';
         const group = field.closest('.form-group');
         if (!group) return true;
-
         const existingError = group.querySelector('.error-message');
         if (existingError) existingError.remove();
         field.classList.remove('error', 'success');
-
         if (field.required && !value) {
             isValid = false;
             errorMessage = 'Este campo é obrigatório.';
@@ -396,7 +395,6 @@ class StepByStepForm {
             isValid = false;
             errorMessage = 'CNPJ inválido.';
         }
-
         if (!isValid) {
             field.classList.add('error');
             const errorEl = document.createElement('span');
@@ -414,48 +412,39 @@ class StepByStepForm {
     submitForm() {
         const form = document.querySelector('.loginForm');
         const submitButton = form.querySelector('button[type="submit"]');
-        if (submitButton) {
-            // Clica no botão de submit original para disparar qualquer evento do WHMCS
-            submitButton.click();
-        } else {
-            // Fallback caso o botão não seja encontrado
-            form.submit();
-        }
+        if (submitButton) submitButton.click();
+        else form.submit();
     }
 
     applyCpfMask(field) {
-        let value = field.value.replace(/\D/g, '').slice(0, 11);
-        value = value.replace(/(\d{3})(\d)/, '$1.$2');
-        value = value.replace(/(\d{3})(\d)/, '$1.$2');
-        value = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
-        field.value = value;
+        let v = field.value.replace(/\D/g, '').slice(0, 11);
+        v = v.replace(/(\d{3})(\d)/, '$1.$2');
+        v = v.replace(/(\d{3})(\d)/, '$1.$2');
+        v = v.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+        field.value = v;
     }
 
     applyCnpjMask(field) {
-        let value = field.value.replace(/\D/g, '').slice(0, 14);
-        value = value.replace(/^(\d{2})(\d)/, '$1.$2');
-        value = value.replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3');
-        value = value.replace(/\.(\d{3})(\d)/, '.$1/$2');
-        value = value.replace(/(\d{4})(\d)/, '$1-$2');
-        field.value = value;
+        let v = field.value.replace(/\D/g, '').slice(0, 14);
+        v = v.replace(/^(\d{2})(\d)/, '$1.$2');
+        v = v.replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3');
+        v = v.replace(/\.(\d{3})(\d)/, '.$1/$2');
+        v = v.replace(/(\d{4})(\d)/, '$1-$2');
+        field.value = v;
     }
 
     applyCepMask(field) {
-        let value = field.value.replace(/\D/g, '').slice(0, 8);
-        value = value.replace(/^(\d{5})(\d)/, '$1-$2');
-        field.value = value;
+        let v = field.value.replace(/\D/g, '').slice(0, 8);
+        v = v.replace(/^(\d{5})(\d)/, '$1-$2');
+        field.value = v;
     }
 
     applyDateMask(field) {
-        let value = field.value.replace(/\D/g, '').slice(0, 8);
-        if (value.length > 4) {
-            value = value.replace(/(\d{2})(\d{2})(\d{1,4})/, '$1/$2/$3');
-        } else if (value.length > 2) {
-            value = value.replace(/(\d{2})(\d{1,2})/, '$1/$2');
-        }
-        field.value = value;
+        let v = field.value.replace(/\D/g, '').slice(0, 8);
+        if (v.length > 4) v = v.replace(/(\d{2})(\d{2})(\d{1,4})/, '$1/$2/$3');
+        else if (v.length > 2) v = v.replace(/(\d{2})(\d{1,2})/, '$1/$2');
+        field.value = v;
     }
 }
 
-// Inicia a classe
 new StepByStepForm();
