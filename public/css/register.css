@@ -14,6 +14,10 @@ body.lagom {
     margin: 0;
     padding: 0;
 }
+.btn-next:disabled {
+    background-color: #a5b4fc !important; /* Um roxo mais claro */
+    cursor: not-allowed !important;
+}
 
 /* Oculta elementos desnecessários do WHMCS */
 .app-sidebar, .main-top, .main-footer, .breadcrumb, .app-nav, .page-header, #containerNewUserSignup .section.section-sm:nth-of-type(2),
@@ -21,6 +25,7 @@ body.lagom {
 .login-title, .generate-password {
     display: none !important;
 }
+
 
 /* =============================================== */
 /* =========== LAYOUT PRINCIPAL DO APP =========== */
@@ -194,7 +199,6 @@ body.lagom {
 /* Campos de input */
 .form-control {
     width: 100% !important;
-    padding: 12px 16px !important;
     border: 1px solid #d1d5db !important;
     border-radius: 8px !important;
     font-size: 16px !important;
@@ -347,6 +351,18 @@ body.lagom {
 /* =============================================== */
 /* ============ RESPONSIVIDADE (MOBILE) ========== */
 /* =============================================== */
+.btn-next:disabled {
+    background-color: #a5b4fc !important;
+    cursor: not-allowed !important;
+}
+input[name="accepttos"] {
+  display: none !important;   /* esconde */
+}
+input[name="accepttos"]::before {
+  content: ""; /* evita espaço visual */
+}
+
+
 @media (max-width: 768px) {
 .main-body {
     width: 100% !important;
@@ -395,8 +411,6 @@ body.lagom {
     .form-group label { font-size: 15px !important; }
     .form-control {
         font-size: 16px !important;
-        padding-top: 14px !important;
-        padding-bottom: 14px !important;
     }
 
     /* --- 4. Organização dos Elementos --- */
