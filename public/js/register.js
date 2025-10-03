@@ -150,7 +150,7 @@ class StepByStepForm {
             this.getFieldGroup('inputAddress2', 'Complemento', 'Apartamento, bloco (opcional)'),
             this.createTwoColumnRow([
                 this.getFieldGroup('inputCity', 'Cidade', 'Sua cidade'),
-                this.getFieldGroup('stateinput', 'stateselect', 'Seu estado')
+                this.getFieldGroup('stateinput', 'Estado', 'Seu estado')
             ]),
         ]);
 
