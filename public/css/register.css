@@ -1,44 +1,31 @@
-/* Reset e Esconde Elementos Indesejados */
-body.lagom {
-    background-color: #F0F2F5 !important; /* Fundo da página */
-    background-image: url('https://auth.staycloud.com.br/images/background-staycloud.png' ) !important; /* Imagem de fundo com linhas */
-    background-repeat: no-repeat !important;
-    background-position: center !important;
-    background-size: cover !important;
-}
-
-/* Ocultar sidebar e elementos desnecessários */
-.app-sidebar,
-.main-top,
-.main-footer,
-.breadcrumb,
-.app-nav,
-.page-header {
-    display: none !important;
-}
+/* =============================================== */
+/* =========== ESTILOS GERAIS E RESET ========== */
+/* =============================================== */
 * {
     box-sizing: border-box;
 }
+body.lagom {
+    background-color: #F0F2F5 !important;
+    background-image: url('https://auth.staycloud.com.br/images/background-staycloud.png' ) !important;
+    background-repeat: no-repeat !important;
+    background-position: center !important;
+    background-size: cover !important;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
 
-/* Ocultar sidebar e elementos desnecessários */
-.app-sidebar,
-.main-top,
-.main-footer,
-.breadcrumb,
-.page-header {
+/* Oculta elementos desnecessários do WHMCS */
+.app-sidebar, .main-top, .main-footer, .breadcrumb, .app-nav, .page-header,
+#containerNewUserSecurity, #containerNewUserSignup .section.section-sm:nth-of-type(2),
+#containerNewUserSignup .section.section-sm:nth-of-type(3), .section-title,
+.login-title, .generate-password {
     display: none !important;
 }
 
-/* Configurar body e html para layout centralizado */
-body {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
-    min-height: 100vh;
-    margin: 0;
-    padding: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-}
-
-/* Container principal centralizado */
+/* =============================================== */
+/* =========== LAYOUT PRINCIPAL DO APP =========== */
+/* =============================================== */
 .app-main {
     display: flex !important;
     justify-content: center !important;
@@ -49,7 +36,13 @@ body {
     background: none !important;
 }
 
-/* Card principal do formulário */
+.main-body {
+    padding: 0 !important;
+}
+
+/* =============================================== */
+/* ============ CARD DO FORMULÁRIO ============= */
+/* =============================================== */
 .login-container {
     background: white !important;
     border-radius: 16px !important;
@@ -62,72 +55,29 @@ body {
     overflow: hidden !important;
 }
 
-/* Header do card com indicador de progresso */
+.loginForm {
+    padding: 24px 40px; /* Padding padrão para desktop */
+}
+
+/* Header do card */
 .step-header {
     background: #f8fafc !important;
     padding: 30px 40px 20px !important;
     border-bottom: 1px solid #e2e8f0 !important;
 }
 
-/* Indicador de progresso */
-.progress-indicator {
+.header-top {
     display: flex !important;
-    justify-content: space-between !important;
-    align-items: center !important;
-    margin-bottom: 20px !important;
-    position: relative !important;
+    justify-content: flex-end !important;
+    margin-bottom: 16px;
 }
 
-.progress-indicator::before {
-    content: '' !important;
-    position: absolute !important;
-    top: 50% !important;
-    left: 0 !important;
-    right: 0 !important;
-    height: 2px !important;
-    background: #e2e8f0 !important;
-    z-index: 1 !important;
-}
-
-.progress-line {
-    position: absolute !important;
-    top: 50% !important;
-    left: 0 !important;
-    height: 2px !important;
-    background: #6366f1 !important;
-    transition: width 0.3s ease !important;
-    z-index: 2 !important;
-}
-
-.step-indicator {
-    width: 32px !important;
-    height: 32px !important;
-    border-radius: 50% !important;
-    background: #e2e8f0 !important;
-    color: #64748b !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    font-size: 14px !important;
-    font-weight: 600 !important;
-    position: relative !important;
-    z-index: 3 !important;
-    transition: all 0.3s ease !important;
-}
-
-.step-indicator.active {
-    background: #6366f1 !important;
-    color: white !important;
-}
-
-.step-indicator.completed {
-    background: #10b981 !important;
-    color: white !important;
-}
-
-.step-indicator.completed::after {
-    content: '✓' !important;
-    font-size: 12px !important;
+.header-select {
+    border: 1px solid #d1d5db !important;
+    border-radius: 6px;
+    padding: 4px 8px !important;
+    background: white;
+    font-size: 14px;
 }
 
 /* Título e subtítulo */
@@ -144,41 +94,96 @@ body {
     margin: 0 !important;
 }
 
-/* Conteúdo do formulário */
-.step-content {
-    padding: 40px !important;
+/* =============================================== */
+/* ========== INDICADOR DE PROGRESSO =========== */
+/* =============================================== */
+.progress-indicator {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    margin-bottom: 20px !important;
+    position: relative !important;
 }
 
-/* Container dos passos */
+.progress-indicator::before {
+    content: '' !important;
+    position: absolute !important;
+    top: 50% !important;
+    left: 16px !important;
+    right: 16px !important;
+    height: 2px !important;
+    background: #e2e8f0 !important;
+    z-index: 1 !important;
+    transform: translateY(-50%);
+}
+
+.progress-line {
+    position: absolute !important;
+    top: 50% !important;
+    left: 0 !important;
+    height: 2px !important;
+    background: #6366f1 !important;
+    transition: width 0.3s ease !important;
+    z-index: 2 !important;
+    transform: translateY(-50%);
+}
+
+.step-indicator {
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: 50% !important;
+    background: #f1f5f9 !important;
+    color: #64748b !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    position: relative !important;
+    z-index: 3 !important;
+    transition: all 0.3s ease !important;
+    border: 2px solid #e2e8f0;
+}
+
+.step-indicator.active {
+    background: #6366f1 !important;
+    color: white !important;
+    border-color: #6366f1 !important;
+}
+
+.step-indicator.completed {
+    background: #10b981 !important;
+    color: white !important;
+    border-color: #10b981 !important;
+}
+
+.step-indicator.completed::after {
+    content: '✓' !important;
+    font-size: 14px !important;
+    font-weight: bold;
+}
+
+/* =============================================== */
+/* ============ CONTEÚDO DOS PASSOS ============ */
+/* =============================================== */
 .steps-container {
     position: relative !important;
     overflow: hidden !important;
 }
 
-/* Cada passo individual */
 .form-step {
-    display: none !important;
-    opacity: 0 !important;
-    transform: translateX(30px) !important;
-    transition: all 0.4s ease !important;
+    display: none;
 }
 
 .form-step.active {
-    display: block !important;
-    opacity: 1 !important;
-    transform: translateX(0) !important;
-}
-
-.form-step.prev {
-    transform: translateX(-30px) !important;
+    display: block;
 }
 
 /* Grupos de campos */
 .form-group {
-    margin-bottom: 24px !important;
+    margin-bottom: 20px !important;
 }
 
-/* Labels */
 .form-group label {
     display: block !important;
     color: #374151 !important;
@@ -198,39 +203,48 @@ body {
     background: white !important;
 }
 
-#inputPhone {
-    padding-left: 83px !important;
-}
-
 .form-control:focus {
     outline: none !important;
     border-color: #6366f1 !important;
     box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1) !important;
 }
 
-.form-control::placeholder {
-    color: #9ca3af !important;
-}
-
 /* Layout de duas colunas */
 .row {
     display: flex !important;
-    gap: 16px !important;
+    flex-wrap: wrap;
+    gap: 20px !important;
     margin: 0 !important;
 }
 
 .col-md-6 {
-    flex: 1 !important;
+    flex: 1 1 calc(50% - 10px) !important;
+    min-width: 200px; /* Evita que os campos fiquem muito espremidos */
     padding: 0 !important;
 }
 
-/* Botões de navegação */
+/* =============================================== */
+/* ========= CAMPO DE TELEFONE (intl-tel-input) ==== */
+/* =============================================== */
+/* Garante que o plugin ocupe 100% da largura */
+.iti {
+    width: 100% !important;
+}
+
+/* Ajusta o padding do input para não sobrepor o código do país */
+#inputPhone {
+    padding-left: 92px !important;
+}
+
+/* =============================================== */
+/* ============ BOTÕES DE NAVEGAÇÃO ============ */
+/* =============================================== */
 .step-navigation {
     display: flex !important;
     justify-content: space-between !important;
     align-items: center !important;
-    margin-top: 0 !important;
-    padding-top: 24px !important;
+    padding-top: 16px !important;
+    margin-top: 24px;
     border-top: 1px solid #e5e7eb !important;
 }
 
@@ -240,21 +254,10 @@ body {
     font-size: 16px !important;
     font-weight: 600 !important;
     cursor: pointer !important;
-    transition: all 0.2s ease !important;
     border: none !important;
-    text-decoration: none !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    gap: 8px !important;
 }
 
 .btn-prev {
-    background: #f8fafc !important;
-    color: #64748b !important;
-    border: 1px solid #e2e8f0 !important;
-}
-
-.btn-prev:hover {
     background: #f1f5f9 !important;
     color: #475569 !important;
 }
@@ -264,251 +267,153 @@ body {
     color: white !important;
 }
 
-.btn-next:hover {
-    background: #5856eb !important;
-    transform: translateY(-1px) !important;
-    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3) !important;
+/* =============================================== */
+/* ============= BLOCOS DE RESUMO ============== */
+/* =============================================== */
+.summary-box {
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 16px 24px;
+    margin-bottom: 24px;
+    cursor: pointer;
+    transition: all 0.3s ease;
 }
 
-.btn-next:disabled {
-    background: #cbd5e1 !important;
-    cursor: not-allowed !important;
-    transform: none !important;
-    box-shadow: none !important;
+.summary-box:hover {
+    border-color: #6366f1;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.1);
 }
 
-/* Ícones dos botões */
-.btn-step::before {
-    font-size: 14px !important;
+.summary-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
 }
 
-.btn-prev::before {
-    content: '←' !important;
+.summary-header h4 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #1e293b;
 }
 
-.btn-next::after {
-    content: '→' !important;
+.edit-step-btn {
+    background: transparent;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
 }
 
-.btn-submit::after {
-    content: '✓' !important;
+.summary-content p {
+    margin: 4px 0;
+    font-size: 14px;
+    color: #475569;
 }
 
-/* Checkbox para pessoa jurídica */
-.checkbox-container {
-    display: flex !important;
-    align-items: center !important;
-    gap: 8px !important;
-    margin: 20px 0 !important;
-    padding: 12px !important;
-    background: #f8fafc !important;
-    border-radius: 8px !important;
-    border: 1px solid #e2e8f0 !important;
-}
-
-.checkbox-container input[type="checkbox"] {
-    width: 18px !important;
-    height: 18px !important;
-    accent-color: #6366f1 !important;
-}
-
-.checkbox-container label {
-    margin: 0 !important;
-    font-size: 14px !important;
-    color: #374151 !important;
-    cursor: pointer !important;
-}
-
-/* Validação visual */
+/* =============================================== */
+/* ============ VALIDAÇÃO E ERROS ============== */
+/* =============================================== */
 .form-control.error {
     border-color: #ef4444 !important;
     background: #fef2f2 !important;
 }
 
 .form-control.success {
-    border-color: #10b981 !important;
-    background: #f0fdf4 !important;
+    border-color: rgb(16, 185, 129) !important;
+    background: #ffffff !important;
 }
 
 .error-message {
     color: #ef4444 !important;
     font-size: 12px !important;
-    margin-top: 4px !important;
+    margin-top: 6px !important;
     display: block !important;
 }
-.main-header-title {
-    display: none!important;
+
+.header-select {
+    width: 70px;
 }
 
-/* Animações */
-@keyframes slideInRight {
-    from {
-        opacity: 0;
-        transform: translateX(30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
+.selector-group {
+    display: inline-block;
 }
-
-@keyframes slideInLeft {
-    from {
-        opacity: 0;
-        transform: translateX(-30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
-
-.form-step.slide-in-right {
-    animation: slideInRight 0.4s ease !important;
-}
-
-.form-step.slide-in-left {
-    animation: slideInLeft 0.4s ease !important;
-}
-
-/* Responsividade */
+/* =============================================== */
+/* ============ RESPONSIVIDADE (MOBILE) ========== */
+/* =============================================== */
+/* =============================================== */
+/* ============ RESPONSIVIDADE (MOBILE) ========== */
+/* =============================================== */
+/* =============================================== */
+/* ============ RESPONSIVIDADE (MOBILE) ========== */
+/* =============================================== */
 @media (max-width: 768px) {
+.main-body {
+    width: 100% !important;
+}
+
+    /* --- 1. Força o Layout de Tela Cheia --- */
+    /* Remove o padding do container principal para o card colar nas bordas */
+    .app-main {
+        padding: 0 !important;
+        align-items: center !important;
+    }
+
+    /* ZERA o padding de containers-pai do WHMCS que causam o problema */
+    .container, .login-body {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+
+    /* Faz o card ocupar 100% da LARGURA DA TELA (vw), ignorando o pai */
     .login-container {
-        margin: 10px !important;
-        max-width: none !important;
+        margin: 0 !important;
+        max-width: 100vw !important;
+        width: 100vw !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        min-height: 100vh;
     }
     
-    .step-header {
-        padding: 20px 24px 16px !important;
+    /* --- 2. Cria um Espaçamento Interno Seguro --- */
+    /* Agora que temos controle, adicionamos nosso próprio padding */
+    .step-header,
+    .loginForm,
+    .step-navigation {
+        padding-left: 25px !important;
+        padding-right: 25px !important;
     }
-    
-    .step-content {
-        padding: 24px !important;
+
+    .step-header { padding-top: 30px !important; padding-bottom: 20px !important; }
+    .loginForm { padding-top: 24px !important; padding-bottom: 0 !important; }
+    .step-navigation { padding-top: 24px !important; padding-bottom: 24px !important; }
+
+    /* --- 3. Ajustes de Tipografia e UI --- */
+    .step-title { font-size: 22px !important; }
+    .step-subtitle { font-size: 15px !important; }
+
+    .form-group label { font-size: 15px !important; }
+    .form-control {
+        font-size: 16px !important;
+        padding-top: 14px !important;
+        padding-bottom: 14px !important;
     }
-    
-    .row {
-        flex-direction: column !important;
-        gap: 0 !important;
-    }
+
+    /* --- 4. Organização dos Elementos --- */
+    .row { flex-direction: column !important; gap: 0 !important; }
+    .col-md-6 { flex-basis: 100% !important; }
     
     .step-navigation {
-        flex-direction: column !important;
+        flex-direction: column-reverse !important;
         gap: 12px !important;
+        background-color: #fff;
     }
     
     .btn-step {
         width: 100% !important;
         justify-content: center !important;
-    }
-    
-    .progress-indicator {
-        margin-bottom: 16px !important;
-    }
-    
-    .step-indicator {
-        width: 28px !important;
-        height: 28px !important;
-        font-size: 12px !important;
+        padding: 14px 24px !important;
     }
 }
 
-/* Ocultar campos de senha por padrão */
-.password-section {
-    display: none !important;
-}
-
-/* Mostrar campos de senha no último passo */
-.form-step.step-3 .password-section {
-    display: block !important;
-}
-
-/* Estilos para campos de senha */
-.password-strength {
-    margin-top: 8px !important;
-}
-
-.progress {
-    height: 4px !important;
-    border-radius: 2px !important;
-    background: #e5e7eb !important;
-    overflow: hidden !important;
-}
-
-.progress-bar {
-    height: 100% !important;
-    border-radius: 2px !important;
-    transition: width 0.3s ease !important;
-}
-
-.progress-bar-danger {
-    background: #ef4444 !important;
-}
-
-.progress-bar-warning {
-    background: #f59e0b !important;
-}
-
-.progress-bar-success {
-    background: #10b981 !important;
-}
-
-/* Loading state */
-.btn-step.loading {
-    position: relative !important;
-    color: transparent !important;
-}
-
-.btn-step.loading::before,
-.btn-step.loading::after {
-    content: '' !important;
-}
-
-.btn-step.loading .spinner {
-    position: absolute !important;
-    top: 50% !important;
-    left: 50% !important;
-    transform: translate(-50%, -50%) !important;
-}
-
-#containerNewUserSecurity {
-    display: none!important;
-}
-
-/* Esconde o segundo .section.section-sm dentro do #containerNewUserSignup */
-#containerNewUserSignup .section.section-sm:nth-of-type(2) {
-    display: none!important;
-}
-
-/* Esconde o terceiro .section.section-sm dentro do #containerNewUserSignup */
-#containerNewUserSignup .section.section-sm:nth-of-type(3) {
-    display: none!important;
-}
-
-.section-title {
-    display: none!important;
-}
-
-.login-title {
-    text-align: left!important;
-    color: #6366f1!important;
-    font-size: 25px!important;
-}
-
-.generate-password {
-    display: none!important;
-}
-
-@media screen and (max-width: 720px) {
-    .app-main {
-        padding: 0 !important;
-    }
-
-    .container {
-        padding-right: 0!important;
-        padding-left: 0!important;
-    }
-
-    .main-body {
-        padding: 0!important;
-    }
-}

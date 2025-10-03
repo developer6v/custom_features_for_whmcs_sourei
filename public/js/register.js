@@ -1,10 +1,9 @@
-// JavaScript para Sistema de Passos (Step-by-Step) - VERSÃO FINAL CORRIGIDA
-
 class StepByStepForm {
     constructor() {
         this.currentStep = 1;
         this.totalSteps = 3;
         this.formData = {};
+        this.summaryData = {}; 
         this.init();
     }
 
@@ -34,24 +33,88 @@ class StepByStepForm {
         this.adjustContainer();
     }
 
+
     createStepHeader() {
-        const container = document.querySelector('.login-container');
-        if (!container) return;
+        const interval = setInterval(() => {
+            console.log("header - cron"); // Verificando se está entrando no intervalo
 
-        const header = document.createElement('div');
-        header.className = 'step-header';
-        header.innerHTML = `
-            <div class="progress-indicator">
-                <div class="progress-line" id="progressLine"></div>
-                <div class="step-indicator active" data-step="1">1</div>
-                <div class="step-indicator" data-step="2">2</div>
-                <div class="step-indicator" data-step="3">3</div>
-            </div>
-            <h1 class="step-title" id="stepTitle">Dados Pessoais</h1>
-            <p class="step-subtitle" id="stepSubtitle">Preencha suas informações básicas</p>
-        `;
+            const container = document.querySelector('.login-wrapper');
+            if (container) {
+                // Criar o header
+                const header = document.createElement('div');
+                header.className = 'step-header';
+                header.innerHTML = `
+                    <div class="header-top">
+                        <div class="header-selectors">
+                            <div class="selector-group">
+                                <select id="headerCountry" class="header-select">
+                                    <option value="BR" selected>Brasil</option>
+                                    <option value="US">Estados Unidos</option>
+                                    <option value="AR">Argentina</option>
+                                    <option value="CA">Canadá</option>
+                                    <option value="CL">Chile</option>
+                                    <option value="CO">Colômbia</option>
+                                    <option value="FR">França</option>
+                                    <option value="DE">Alemanha</option>
+                                    <option value="IT">Itália</option>
+                                    <option value="JP">Japão</option>
+                                    <option value="MX">México</option>
+                                    <option value="PE">Peru</option>
+                                    <option value="PT">Portugal</option>
+                                    <option value="ES">Espanha</option>
+                                    <option value="GB">Reino Unido</option>
+                                    <option value="UY">Uruguai</option>
+                                    <option value="VE">Venezuela</option>
+                                </select>
+                            </div>
+                            <div class="selector-group">
+                                <select id="headerCurrency" class="header-select">
+                                    <option value="1" selected>BRL</option>
+                                    <option value="2">EUR</option>
+                                    <option value="3">USD</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="progress-indicator">
+                        <div class="progress-line" id="progressLine"></div>
+                        <div class="step-indicator active" data-step="1">1</div>
+                        <div class="step-indicator" data-step="2">2</div>
+                        <div class="step-indicator" data-step="3">3</div>
+                    </div>
+                    <h1 class="step-title" id="stepTitle">Dados Pessoais</h1>
+                    <p class="step-subtitle" id="stepSubtitle">Preencha suas informações básicas</p>
+                `;
 
-        container.insertBefore(header, container.firstChild);
+                container.insertBefore(header, container.firstChild);
+                
+                // Sincronizar seleções com campos do formulário
+                this.syncHeaderSelectors();
+
+                // Parar o intervalo quando o campo for encontrado
+                clearInterval(interval);
+            }
+        }, 100); // Verificar a cada 100ms
+    }
+
+
+    syncHeaderSelectors() {
+        const headerCountry = document.getElementById('headerCountry');
+        const headerCurrency = document.getElementById('headerCurrency');
+        
+        if (headerCountry) {
+            headerCountry.addEventListener('change', (e) => {
+                const formCountry = document.getElementById('inputCountry');
+                if (formCountry) formCountry.value = e.target.value;
+            });
+        }
+        
+        if (headerCurrency) {
+            headerCurrency.addEventListener('change', (e) => {
+                const formCurrency = document.getElementById('inputCurrency');
+                if (formCurrency) formCurrency.value = e.target.value;
+            });
+        }
     }
 
     organizeFieldsIntoSteps() {
@@ -71,10 +134,11 @@ class StepByStepForm {
             ]),
             this.createTwoColumnRow([
                 this.getFieldGroup('inputCompanyName', 'CPF', 'Coloque seu CPF'),
-                this.createCnpjField()
+                this.createDateFieldWithCalendar('inputBirthDate', 'Data de Nascimento', 'dd/mm/aaaa'),
             ]),
-            this.createDateField('inputBirthDate', 'Data de Nascimento', 'dd/mm/aaaa'),
-           // this.createCheckboxField() // Adicionar checkbox para pessoa jurídica
+            this.createCheckboxField(),
+            this.createCnpjField()
+
         ]);
 
         // Passo 2: Endereço
@@ -88,7 +152,6 @@ class StepByStepForm {
                 this.getFieldGroup('inputCity', 'Cidade', 'Sua cidade'),
                 this.getFieldGroup('stateinput', 'Estado', 'Seu estado')
             ]),
-            this.createCountryField()
         ]);
 
         // Passo 3: Senha e Finalização
@@ -117,6 +180,7 @@ class StepByStepForm {
                     document.getElementById('inputAddress1').value = data.logradouro || '';
                     document.getElementById('inputCity').value = data.localidade || '';
                     //document.getElementById('stateinput').value = data.uf || '';
+                    this.showAddressFields();
                 } else {
                     this.handleInvalidCep();
                 }
@@ -125,6 +189,21 @@ class StepByStepForm {
                 console.error(error);
                 this.handleInvalidCep();
             });
+    }
+
+    showAddressFields() {
+        const addressFields = [
+            document.getElementById('inputAddress1'),
+            document.getElementById('inputAddress2'),
+            document.getElementById('inputCity'),
+            document.getElementById('stateinput')
+        ];
+
+        addressFields.forEach(field => {
+            if (field) {
+                field.closest('.form-group').style.display = 'block'; // Exibe os campos de endereço
+            }
+        });
     }
 
     // Função para lidar com o CEP inválido
@@ -193,8 +272,21 @@ class StepByStepForm {
 
     setupCepFieldListener() {
         const cepField = document.getElementById('inputPostcode');
+        const addressFields = [
+            document.getElementById('inputAddress1'),
+            document.getElementById('inputAddress2'),
+            document.getElementById('inputCity'),
+            document.getElementById('stateinput')
+        ];
+
+        // Inicialmente, esconder os campos de endereço
+        addressFields.forEach(field => {
+            if (field) {
+                field.closest('.form-group').style.display = 'none'; // Esconde os campos de endereço
+            }
+        });
         if (cepField) {
-            cepField.addEventListener('blur', (e) => {
+            cepField.addEventListener('change', (e) => {
                 const cep = e.target.value.replace(/\D/g, ''); // Remove tudo que não for número
                 if (cep.length === 8) { // Verifica se o CEP tem 8 dígitos
                     this.fetchAddressFromCep(cep);
@@ -307,6 +399,58 @@ class StepByStepForm {
         return group;
     }
 
+
+    createDateFieldWithCalendar(fieldId, label, placeholder) {
+        const group = document.createElement('div');
+        group.className = 'form-group';
+
+        const labelEl = document.createElement('label');
+        labelEl.setAttribute('for', fieldId);
+        labelEl.className = 'label-required';
+        labelEl.textContent = label;
+
+        const inputEl = document.createElement('input');
+        inputEl.type = 'text';
+        inputEl.id = fieldId;
+        inputEl.name = 'birth_date';
+        inputEl.className = 'form-control';
+        inputEl.placeholder = placeholder;
+        inputEl.required = true;
+        inputEl.maxLength = 10;
+
+        // Criar o ícone de calendário fora do campo
+        const calendarIcon = document.createElement('i');
+        calendarIcon.classList.add('calendar-icon');
+        calendarIcon.textContent = '';
+
+        // Adiciona o ícone ao lado do campo de data
+        const inputContainer = document.createElement('div');
+        inputContainer.classList.add('input-with-icon');
+        inputContainer.appendChild(inputEl);
+        inputContainer.appendChild(calendarIcon);
+
+        // Adiciona o container no grupo
+        group.appendChild(labelEl);
+        group.appendChild(inputContainer);
+
+        // Inicializa o flatpickr para o campo de data
+        flatpickr(inputEl, {
+            dateFormat: "d/m/Y", // Formato da data
+            allowInput: true,    // Permite digitar manualmente
+            onChange: function(selectedDates, dateStr, instance) {
+                inputEl.value = dateStr; // Atualiza o valor do input com a data selecionada
+            }
+        });
+
+        // Abre o calendário ao clicar no ícone
+        calendarIcon.addEventListener('click', function () {
+            inputEl._flatpickr.open(); // Abre o calendário ao clicar no ícone
+        });
+
+        return group;
+    }
+
+
     createCnpjField() {
         const group = document.createElement('div');
         group.className = 'form-group';
@@ -326,11 +470,48 @@ class StepByStepForm {
         group.appendChild(inputEl);
         
         // Inicialmente oculto
-        group.style.display = 'block';
+        group.style.display = 'none';
         group.id = 'cnpjGroup';
 
         return group;
     }
+
+    createCurrencyField() {
+        const group = document.createElement('div');
+        group.className = 'form-group';
+
+        const labelEl = document.createElement('label');
+        labelEl.setAttribute('for', 'inputCurrency');
+        labelEl.className = 'label-required';
+        labelEl.textContent = 'Escolha a Moeda';
+
+        const selectEl = document.createElement('select');
+        selectEl.id = 'inputCurrency';
+        selectEl.name = 'currency';
+        selectEl.className = 'form-control';
+        selectEl.required = true;
+
+        // Adiciona as opções de moeda
+        const options = [
+            { value: '1', text: 'BRL', selected: true },
+            { value: '2', text: 'EUR' },
+            { value: '3', text: 'USD' }
+        ];
+
+        options.forEach(option => {
+            const optionEl = document.createElement('option');
+            optionEl.value = option.value;
+            optionEl.textContent = option.text;
+            if (option.selected) optionEl.selected = true;
+            selectEl.appendChild(optionEl);
+        });
+
+        group.appendChild(labelEl);
+        group.appendChild(selectEl);
+
+        return group;
+    }
+
 
     createCheckboxField() {
         const container = document.createElement('div');
@@ -427,7 +608,7 @@ class StepByStepForm {
         // Checkbox pessoa jurídica
         document.addEventListener('change', (e) => {
             if (e.target.id === 'pessoaJuridica') {
-                //this.toggleCnpjField(e.target.checked);
+                this.toggleCnpjField(e.target.checked);
             }
         });
 
@@ -496,11 +677,9 @@ setupInputMasks() {
 
                 // Aplica a máscara de telefone conforme o país
                 phoneInput.addEventListener("input", () => {
-                    this.applyPhoneMaskBasedOnCountry(phoneInput, iti);
+                    this.applyPhoneMask();
                 });
 
-                // Inicializa com a máscara baseada no país selecionado
-                this.applyPhoneMaskBasedOnCountry(phoneInput, iti);
             } else {
                 console.log("Campo de telefone - nao encontrou");
             }
@@ -533,20 +712,26 @@ setupInputMasks() {
 
         phoneInput.value = phoneValue;
     }
+applyDateMask(field) {
+    let value = field.value.replace(/\D/g, '');  // Remove qualquer caractere não numérico
 
-
-    applyDateMask(field) {
-        let value = field.value.replace(/\D/g, '');
-        
-        if (value.length >= 2) {
-            value = value.substring(0, 2) + '/' + value.substring(2);
-        }
-        if (value.length >= 5) {
-            value = value.substring(0, 5) + '/' + value.substring(5, 9);
-        }
-        
-        field.value = value;
+    // Limita a 8 dígitos (ddmmaaaa)
+    if (value.length > 8) {
+        value = value.substring(0, 8);
     }
+
+    // Formata apenas se houver dígitos suficientes
+    if (value.length > 4) {
+        value = value.substring(0, 2) + '/' + value.substring(2, 4) + '/' + value.substring(4);
+    } else if (value.length > 2) {
+        value = value.substring(0, 2) + '/' + value.substring(2);
+    }
+
+    // Atualiza o valor do campo
+    field.value = value;
+}
+
+
 
     showStep(stepNumber) {
         // Ocultar todos os passos
@@ -570,6 +755,7 @@ setupInputMasks() {
         this.updateProgressIndicator();
         this.updateNavigation();
         this.updateStepInfo();
+        this.renderSummaries(); 
     }
 
     updateProgressIndicator() {
@@ -635,12 +821,15 @@ setupInputMasks() {
             return;
         }
 
+        this.saveStepData(); // <-- ADICIONE ESTA LINHA
+
         if (this.currentStep < this.totalSteps) {
             this.showStep(this.currentStep + 1);
         } else {
             this.submitForm();
         }
     }
+
 
     prevStep() {
         if (this.currentStep > 1) {
@@ -673,7 +862,6 @@ setupInputMasks() {
         let isValid = true;
         let errorMessage = '';
 
-        // Remover mensagens de erro anteriores
         const existingError = field.parentNode.querySelector('.error-message');
         if (existingError) existingError.remove();
 
@@ -761,7 +949,7 @@ setupInputMasks() {
             if (showCnpj) {
                 cnpjGroup.style.display = 'block';
                 if (cpfField) cpfField.required = false;
-                if (cpfLabel) cpfLabel.textContent = 'CPF (opcional)';
+                if (cpfLabel) cpfLabel.textContent = 'CPF';
             } else {
                 cnpjGroup.style.display = 'none';
                 if (cpfField) cpfField.required = true;
@@ -773,19 +961,29 @@ setupInputMasks() {
     }
 
     applyCpfMask(field) {
-        let value = field.value.replace(/\D/g, '');
+        let value = field.value.replace(/\D/g, ''); // Remove todos os caracteres não numéricos
         
+        // Limita o valor a no máximo 11 dígitos
+        if (value.length > 11) {
+            value = value.slice(0, 11); 
+        }
+
+        // Aplica a máscara do CPF
         if (value.length <= 11) {
             value = value.replace(/(\d{3})(\d)/, '$1.$2');
             value = value.replace(/(\d{3})(\d)/, '$1.$2');
             value = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
         }
 
-        field.value = value;
+        field.value = value; // Atualiza o campo com o valor formatado
     }
 
     applyCnpjMask(field) {
         let value = field.value.replace(/\D/g, '');
+        
+        if (value.length > 14) {
+            value = value.slice(0, 14); 
+        }
         
         if (value.length <= 14) {
             value = value.replace(/^(\d{2})(\d)/, '$1.$2');
@@ -797,15 +995,33 @@ setupInputMasks() {
         field.value = value;
     }
 
-    applyPhoneMask(field) {
-        let value = field.value.replace(/\D/g, '');
 
-        if (value.length <= 11) {
-            value = value.replace(/^(\d{2})(\d)/, '($1) $2');
-            value = value.replace(/(\d{5})(\d)/, '$1-$2');
+     applyPhoneMask(event) {
+        const countryData = phoneInput.getSelectedCountryData();
+        const countryCode = countryData.iso2.toUpperCase();
+        let rawNumber = phoneInputField.value.replace(/\D/g, ""); 
+
+        const maxDigits = getMaxDigitsForCountry(countryCode);
+
+        if (rawNumber.length > maxDigits) {
+            event.preventDefault();
+            rawNumber = rawNumber.substring(0, maxDigits);
         }
 
-        field.value = value;
+        let formattedNumber = "";
+        try {
+            formattedNumber = new libphonenumber.AsYouType(countryCode).input(rawNumber);
+        } catch (error) {
+            formattedNumber = rawNumber;
+        }
+
+        if (event && event.inputType === "deleteContentBackward") {
+            lastValue = phoneInputField.value;
+            return;
+        }
+
+        phoneInputField.value = formattedNumber;
+        lastValue = formattedNumber;
     }
 
     applyCepMask(field) {
@@ -835,34 +1051,109 @@ setupInputMasks() {
             form.submit();
         }
     }
-}
 
-// Função para gerar uma senha aleatória
-function generateRandomPassword(length = 8) {
-    const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+";
-    let password = "";
-    for (let i = 0; i < length; i++) {
-        const randomIndex = Math.floor(Math.random() * charset.length);
-        password += charset[randomIndex];
+        /**
+     * Salva os dados do passo atual no objeto formData.
+     */
+    saveStepData() {
+        const currentStepEl = document.querySelector(`.form-step.step-${this.currentStep}`);
+        if (!currentStepEl) return;
+
+        const fields = currentStepEl.querySelectorAll('input, select');
+        this.formData[this.currentStep] = {};
+
+        fields.forEach(field => {
+            if (field.id && field.value) {
+                // Para o campo de telefone, obtemos o número completo com o código do país
+                if (field.id === 'inputPhone' && window.intlTelInput) {
+                    const iti = window.intlTelInputGlobals.getInstance(field);
+                    if (iti) {
+                        this.formData[this.currentStep][field.id] = iti.getNumber();
+                    }
+                } else {
+                    this.formData[this.currentStep][field.id] = field.value;
+                }
+            }
+        });
     }
-    return password;
-}
 
-// Função para preencher os campos de senha
-function fillGeneratedPassword() {
-    const password = generateRandomPassword(12);
+    /**
+     * Cria e exibe os resumos dos passos anteriores.
+     */
+    renderSummaries() {
+        const stepsContainer = document.querySelector('.steps-container');
+        if (!stepsContainer) return;
 
-    const passwordField1 = document.getElementById('inputNewPassword1') || document.getElementById('inputPassword');
-    const passwordField2 = document.getElementById('inputNewPassword2') || document.getElementById('inputPasswordConfirm');
+        // Limpa resumos antigos para não duplicar
+        stepsContainer.querySelectorAll('.summary-box').forEach(box => box.remove());
 
-    if (passwordField1 && passwordField2) {
-        passwordField1.value = password;
-        passwordField2.value = password;
+        // Itera pelos passos anteriores ao atual
+        for (let i = 1; i < this.currentStep; i++) {
+            const stepData = this.formData[i];
+            if (!stepData) continue;
+
+            const summaryBox = this.createSummaryBox(i, stepData);
+            const currentStepEl = stepsContainer.querySelector(`.step-${this.currentStep}`);
+            
+            // Insere o resumo antes do conteúdo do passo atual
+            if (currentStepEl) {
+                currentStepEl.before(summaryBox);
+            }
+        }
     }
+
+    /**
+     * Cria o HTML para um único bloco de resumo.
+     * @param {number} stepNumber - O número do passo.
+     * @param {object} data - Os dados do passo.
+     * @returns {HTMLElement} - O elemento div do resumo.
+     */
+    createSummaryBox(stepNumber, data) {
+        const summaryBox = document.createElement('div');
+        summaryBox.className = 'summary-box';
+        summaryBox.setAttribute('data-step-target', stepNumber);
+
+        let content = '';
+        const titles = ['Informações Pessoais', 'Endereço']; // Títulos para cada passo
+
+        // Constrói o conteúdo do resumo baseado no passo
+        if (stepNumber === 1) { // Resumo do Passo 1
+            content = `
+                <div class="summary-content">
+                    <p><strong>${data.inputFirstName || ''}</strong></p>
+                    <p>${data.inputPhone || ''}</p>
+                    <p>${data.inputEmail || ''}</p>
+                    <p>${data.inputCompanyName || ''}</p>
+                    <p>${data.inputBirthDate || ''}</p>
+                </div>
+            `;
+        } else if (stepNumber === 2) { // Resumo do Passo 2
+             content = `
+                <div class="summary-content">
+                    <p><strong>${data.inputAddress1 || ''}, ${data.inputAddress2 || ''}</strong></p>
+                    <p>${data.inputCity || ''} - ${data.stateinput || ''}</p>
+                    <p>CEP: ${data.inputPostcode || ''}</p>
+                </div>
+            `;
+        }
+
+        summaryBox.innerHTML = `
+            <div class="summary-header">
+                <h4>${titles[stepNumber - 1]}</h4>
+                <button type="button" class="edit-step-btn">✏️</button>
+            </div>
+            ${content}
+        `;
+
+        // Adiciona o evento de clique para voltar ao passo
+        summaryBox.addEventListener('click', () => {
+            this.showStep(stepNumber);
+        });
+
+        return summaryBox;
+    }
+
 }
-
-
-
 
 new StepByStepForm();  
     
