@@ -133,11 +133,11 @@ class StepByStepForm {
                 this.getFieldGroup('inputEmail', 'E-mail', 'Insira seu e-mail')
             ]),
             this.createTwoColumnRow([
-                this.getFieldGroup('inputCompanyName', 'CPF', 'Coloque seu CPF'),
-                this.createDateFieldWithCalendar('inputBirthDate', 'Data de Nascimento', 'dd/mm/aaaa'),
+                this.getFieldGroup('customfield2', 'CPF', 'Coloque seu CPF'),
+                this.getFieldGroup('customfield3', 'Data de Nascimento', 'dd/mm/aaaa'),
             ]),
             this.createCheckboxField(),
-            this.createCnpjField()
+            this.getFieldGroup('customfield5', 'CNPJ', 'Coloque seu CNPJ'),
 
         ]);
 
@@ -150,7 +150,7 @@ class StepByStepForm {
             this.getFieldGroup('inputAddress2', 'Complemento', 'Apartamento, bloco (opcional)'),
             this.createTwoColumnRow([
                 this.getFieldGroup('inputCity', 'Cidade', 'Sua cidade'),
-                this.getFieldGroup('stateinput', 'Estado', 'Seu estado')
+                this.getFieldGroup('stateinput', 'stateselect', 'Seu estado')
             ]),
         ]);
 
@@ -234,7 +234,7 @@ class StepByStepForm {
 
     getFieldGroup(fieldId, label, placeholder, type = 'input') {
         const originalField = document.getElementById(fieldId);
-        if (!originalField && fieldId !== 'inputBirthDate') return null;
+        if (!originalField && fieldId !== 'customfield3') return null;
 
         const group = document.createElement('div');
         group.className = 'form-group';
@@ -456,12 +456,12 @@ class StepByStepForm {
         group.className = 'form-group';
 
         const labelEl = document.createElement('label');
-        labelEl.setAttribute('for', 'inputCnpj');
+        labelEl.setAttribute('for', 'customfield5');
         labelEl.textContent = 'CNPJ (opcional)';
 
         const inputEl = document.createElement('input');
         inputEl.type = 'text';
-        inputEl.id = 'inputCnpj';
+        inputEl.id = 'customfield5';
         inputEl.name = 'cnpj';
         inputEl.className = 'form-control';
         inputEl.placeholder = 'Digite seu CNPJ (opcional)';
@@ -643,13 +643,13 @@ setupInputMasks() {
     document.addEventListener('input', (e) => {
         const field = e.target;
 
-        if (field.id === 'inputCompanyName') {
+        if (field.id === 'customfield2') {
             this.applyCpfMask(field);
-        } else if (field.id === 'inputCnpj') {
+        } else if (field.id === 'customfield5') {
             this.applyCnpjMask(field);
         }  else if (field.id === 'inputPostcode') {
             this.applyCepMask(field);
-        } else if (field.id === 'inputBirthDate') {
+        } else if (field.id === 'customfield3') {
             this.applyDateMask(field);
         }
     });
@@ -864,7 +864,7 @@ applyDateMask(field) {
         }
 
         // Validação de data
-        if (value && field.id === 'inputBirthDate') {
+        if (value && field.id === 'customfield3') {
             const dateRegex = /^\d{2}\/\d{2}\/\d{4}$/;
             if (!dateRegex.test(value)) {
                 isValid = false;
@@ -884,7 +884,7 @@ applyDateMask(field) {
             }
         }
         // Validação de CPF
-        if (field.id === 'inputCompanyName') {
+        if (field.id === 'customfield2') {
             const digits = value.replace(/\D/g, ''); 
             if (digits.length < 11) {
                 isValid = false;
@@ -893,7 +893,7 @@ applyDateMask(field) {
         }
 
         // Validação de CNPJ
-        if (field.id === 'inputCnpj' && value) { 
+        if (field.id === 'customfield5' && value) { 
             const digits = value.replace(/\D/g, '');
             if (digits.length < 14) {
                 isValid = false;
@@ -942,8 +942,8 @@ applyDateMask(field) {
 
     toggleCnpjField(showCnpj) {
         const cnpjGroup = document.getElementById('cnpjGroup');
-        const cpfField = document.getElementById('inputCompanyName');
-        const cpfLabel = document.querySelector('label[for="inputCompanyName"]');
+        const cpfField = document.getElementById('customfield2');
+        const cpfLabel = document.querySelector('label[for="customfield2"]');
 
         if (cnpjGroup) {
             if (showCnpj) {
@@ -954,7 +954,7 @@ applyDateMask(field) {
                 cnpjGroup.style.display = 'none';
                 if (cpfField) cpfField.required = true;
                 if (cpfLabel) cpfLabel.textContent = 'CPF';
-                const cnpjField = document.getElementById('inputCnpj');
+                const cnpjField = document.getElementById('customfield5');
                 if (cnpjField) cnpjField.value = '';
             }
         }
@@ -1149,8 +1149,8 @@ applyDateMask(field) {
                     <p><strong>${data.inputFirstName || ''}</strong></p>
                     <p>${data.inputPhone || ''}</p>
                     <p>${data.inputEmail || ''}</p>
-                    <p>${data.inputCompanyName || ''}</p>
-                    <p>${data.inputBirthDate || ''}</p>
+                    <p>${data.customfield2 || ''}</p>
+                    <p>${data.customfield3 || ''}</p>
                 </div>
             `;
         } else if (stepNumber === 2) { // Resumo do Passo 2
