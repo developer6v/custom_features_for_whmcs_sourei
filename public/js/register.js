@@ -26,7 +26,7 @@ class StepByStepForm {
                         termsCheckbox.checked = true;
                         termsCheckbox.dispatchEvent(new Event('change', { bubbles: true }));
                         console.log("✅ Checkbox de termos marcado automaticamente");
-                        clearInterval(interval); // para de checar
+                        clearInterval(interval);
                     }
                 };
 
@@ -48,13 +48,11 @@ class StepByStepForm {
         if (phoneInput && window.intlTelInputGlobals) {
             this.iti = window.intlTelInputGlobals.getInstance(phoneInput);
 
-            // Mascara + limitação em tempo real
             phoneInput.addEventListener("input", (e) => {
                 this.applyPhoneMask(phoneInput, e);
             });
         }
     }
-
 
     createStepHeader() {
         const container = document.querySelector('.login-wrapper');
@@ -155,6 +153,7 @@ class StepByStepForm {
             stateSelect.appendChild(option);
         }
     }
+
     applyPhoneMask(phoneInputField, event) {
         if (!this.iti) {
             console.warn("❌ iti não inicializado");
@@ -178,16 +177,12 @@ class StepByStepForm {
         try {
             const formatted = this.iti.getNumber(intlTelInputUtils.numberFormat.INTERNATIONAL);
             console.log("✅ Formatado pelo iti:", formatted);
-
-            // atualiza o campo com o que o iti acha válido
             phoneInputField.value = formatted;
         } catch (e) {
             console.error("⚠️ Erro formatando:", e);
             phoneInputField.value = rawNumber;
         }
     }
-
-
 
     getMaxDigitsForCountry(countryCode) {
         const countryMaxDigits = {
@@ -207,6 +202,9 @@ class StepByStepForm {
         return countryMaxDigits[countryCode] || 15; 
     }
 
+    // ============================================
+    // MÉTODO MODIFICADO: organizeFieldsIntoSteps
+    // ============================================
     organizeFieldsIntoSteps() {
         const form = document.querySelector('.loginForm');
         if (!form) return;
@@ -214,8 +212,9 @@ class StepByStepForm {
         const stepsContainer = document.createElement('div');
         stepsContainer.className = 'steps-container';
 
+        // STEP 1 - MODIFICADO: Agora usa createFullNameField()
         const step1 = this.createStep(1, [
-            this.createTwoColumnRow([this.findMoveableGroup('inputFirstName'), this.findMoveableGroup('inputLastName')]),
+            this.createFullNameField(), // ← CAMPO DE NOME COMPLETO
             this.createTwoColumnRow([this.findMoveableGroup('inputPhone'), this.findMoveableGroup('inputEmail')]),
             this.createTwoColumnRow([this.findMoveableGroup('customfield2'), this.findMoveableGroup('customfield3')]),
             this.createCheckboxField(),
@@ -245,12 +244,135 @@ class StepByStepForm {
         }
     }
 
-    findMoveableGroup(elementId) { const el = document.getElementById(elementId); if (!el) return null; return el.closest('.col-md-6') || el.closest('.form-group'); }
-    createStep(stepNumber, elements) { const step = document.createElement('div'); step.className = `form-step step-${stepNumber}`; step.setAttribute('data-step', stepNumber); const content = document.createElement('div'); content.className = 'step-content'; elements.forEach(element => { if (element) content.appendChild(element); }); step.appendChild(content); return step; }
-    createTwoColumnRow(elements) { const row = document.createElement('div'); row.className = 'row'; elements.forEach(element => { if (element) row.appendChild(element); }); return row; }
-    createCheckboxField() { const container = document.createElement('div'); container.className = 'form-group col-md-12'; container.innerHTML = `<div class="checkbox"><label><input type="checkbox" id="pessoaJuridica" name="pessoa_juridica" style="margin-right: 5px;"> Sou Pessoa Jurídica (usar CNPJ)</label></div>`; return container; }
-    createNavigation() { const form = document.querySelector('.loginForm'); if (!form) return; const navigation = document.createElement('div'); navigation.className = 'step-navigation'; navigation.innerHTML = `<button type="button" class="btn btn-lg btn-default btn-prev" id="prevBtn" style="display: none;">Anterior</button><button type="button" class="btn btn-lg btn-primary btn-next" id="nextBtn" disabled>Próximo</button>`; form.appendChild(navigation); const originalSubmit = form.querySelector('button[type="submit"]'); if (originalSubmit) originalSubmit.style.display = 'none'; }
-    adjustContainer() { const container = document.querySelector('.login-wrapper'); if (container) container.style.maxWidth = '700px'; }
+    // ============================================
+    // MÉTODO NOVO: createFullNameField
+    // ============================================
+    createFullNameField() {
+        // Oculta os campos originais
+        const firstNameGroup = this.findMoveableGroup('inputFirstName');
+        const lastNameGroup = this.findMoveableGroup('inputLastName');
+        
+        if (firstNameGroup) firstNameGroup.style.display = 'none';
+        if (lastNameGroup) lastNameGroup.style.display = 'none';
+
+        // Cria o novo campo de nome completo
+        const container = document.createElement('div');
+        container.className = 'form-group col-md-12';
+        container.innerHTML = `
+            <label for="inputFullName">Nome Completo <span >*</span></label>
+            <input 
+                type="text" 
+                id="inputFullName" 
+                name="fullname" 
+                class="form-control" 
+                placeholder="Digite seu nome completo"
+                required
+                autocomplete="name"
+            >
+            <span class="error-message" id="fullNameError"></span>
+        `;
+
+        return container;
+    }
+
+    // ============================================
+    // MÉTODO NOVO: validateAndMapFullName
+    // ============================================
+    validateAndMapFullName(fullNameInput) {
+        const fullName = fullNameInput.value.trim();
+        const errorSpan = document.getElementById('fullNameError');
+        const firstNameInput = document.getElementById('inputFirstName');
+        const lastNameInput = document.getElementById('inputLastName');
+
+        // Remove mensagens de erro anteriores
+        if (errorSpan) errorSpan.textContent = '';
+        fullNameInput.classList.remove('error', 'success');
+
+        // Valida se há pelo menos 2 palavras
+        const nameParts = fullName.split(/\s+/).filter(part => part.length > 0);
+
+        if (fullName === '') {
+            // Campo vazio
+            if (fullNameInput.dataset.touched === "true") {
+                fullNameInput.classList.add('error');
+                if (errorSpan) errorSpan.textContent = 'Por favor, insira seu nome completo';
+            }
+            return false;
+        }
+
+        if (nameParts.length < 2) {
+            // Menos de 2 palavras
+            fullNameInput.classList.add('error');
+            if (errorSpan) errorSpan.textContent = 'Por favor, insira nome e sobrenome';
+            return false;
+        }
+
+        // Validação bem-sucedida
+        fullNameInput.classList.add('success');
+
+        // Mapeia para os campos ocultos
+        if (firstNameInput && lastNameInput) {
+            firstNameInput.value = nameParts[0]; // Primeiro nome
+            lastNameInput.value = nameParts.slice(1).join(' '); // Restante como sobrenome
+            
+            // Marca os campos ocultos como válidos
+            firstNameInput.classList.add('success');
+            lastNameInput.classList.add('success');
+        }
+
+        return true;
+    }
+
+    findMoveableGroup(elementId) { 
+        const el = document.getElementById(elementId); 
+        if (!el) return null; 
+        return el.closest('.col-md-6') || el.closest('.form-group'); 
+    }
+
+    createStep(stepNumber, elements) { 
+        const step = document.createElement('div'); 
+        step.className = `form-step step-${stepNumber}`; 
+        step.setAttribute('data-step', stepNumber); 
+        const content = document.createElement('div'); 
+        content.className = 'step-content'; 
+        elements.forEach(element => { 
+            if (element) content.appendChild(element); 
+        }); 
+        step.appendChild(content); 
+        return step; 
+    }
+
+    createTwoColumnRow(elements) { 
+        const row = document.createElement('div'); 
+        row.className = 'row'; 
+        elements.forEach(element => { 
+            if (element) row.appendChild(element); 
+        }); 
+        return row; 
+    }
+
+    createCheckboxField() { 
+        const container = document.createElement('div'); 
+        container.className = 'form-group col-md-12'; 
+        container.innerHTML = `<div class="checkbox"><label><input type="checkbox" id="pessoaJuridica" name="pessoa_juridica" style="margin-right: 5px;"> Sou Pessoa Jurídica (usar CNPJ)</label></div>`; 
+        return container; 
+    }
+
+    createNavigation() { 
+        const form = document.querySelector('.loginForm'); 
+        if (!form) return; 
+        const navigation = document.createElement('div'); 
+        navigation.className = 'step-navigation'; 
+        navigation.innerHTML = `<button type="button" class="btn btn-lg btn-default btn-prev" id="prevBtn" style="display: none;">Anterior</button><button type="button" class="btn btn-lg btn-primary btn-next" id="nextBtn" disabled>Próximo</button>`; 
+        form.appendChild(navigation); 
+        const originalSubmit = form.querySelector('button[type="submit"]'); 
+        if (originalSubmit) originalSubmit.style.display = 'none'; 
+    }
+
+    adjustContainer() { 
+        const container = document.querySelector('.login-wrapper'); 
+        if (container) container.style.maxWidth = '700px'; 
+    }
 
     setupEventListeners() {
         document.addEventListener('click', (e) => {
@@ -308,25 +430,40 @@ class StepByStepForm {
         this.checkStepValidationForButton();
     }
     
+    // ============================================
+    // MÉTODO MODIFICADO: setupValidation
+    // ============================================
     setupValidation() {
         const form = document.querySelector('.loginForm');
         if (!form) return;
 
-        // Marca campo como "tocado" quando o usuário sai dele
+        // Event listener de BLUR - MODIFICADO
         form.addEventListener('blur', (e) => {
             if (e.target.matches('.form-control, input[type="checkbox"]')) {
                 e.target.dataset.touched = "true";
-                this.validateField(e.target);
+                
+                // Validação especial para nome completo
+                if (e.target.id === 'inputFullName') {
+                    this.validateAndMapFullName(e.target);
+                } else {
+                    this.validateField(e.target);
+                }
+                
                 this.checkStepValidationForButton();
             }
         }, true);
 
-        // Validação em tempo real, mas só aplica erro se já foi tocado
+        // Event listener de INPUT - MODIFICADO
         form.addEventListener('input', (e) => {
             if (e.target.matches('.form-control, input[type="checkbox"]')) {
-                if (e.target.dataset.touched === "true") {
+                
+                // Validação em tempo real para nome completo
+                if (e.target.id === 'inputFullName' && e.target.dataset.touched === "true") {
+                    this.validateAndMapFullName(e.target);
+                } else if (e.target.dataset.touched === "true") {
                     this.validateField(e.target);
                 }
+                
                 this.checkStepValidationForButton();
             }
         });
@@ -334,169 +471,144 @@ class StepByStepForm {
 
     setupInputMasks() {
         document.addEventListener('input', (e) => {
-            const field = e.target;
-            if (field.id === 'customfield2') this.applyCpfMask(field);
-            else if (field.id === 'customfield5') this.applyCnpjMask(field);
-            else if (field.id === 'customfield3') this.applyDateMask(field);
-            else if (field.id === 'inputPostcode') {
+            if (e.target.id === 'customfield2') this.applyCpfMask(e.target);
+            if (e.target.id === 'customfield5') this.applyCnpjMask(e.target);
+            if (e.target.id === 'inputPostcode') {
                 const country = document.getElementById('inputCountry').value;
-                if (country === 'US') this.applyZipCodeMask(field);
-                else if (country === 'BR') this.applyCepMask(field);
+                if (country === 'BR') this.applyCepMask(e.target);
+                else if (country === 'US') this.applyZipCodeMask(e.target);
+            }
+            if (e.target.id === 'customfield3') this.applyDateMask(e.target);
+        });
+    }
+
+setupCepFieldListener() {
+    const cepField = document.getElementById('inputPostcode');
+    if (!cepField) return;
+
+    // Verifica o CEP quando o campo perder o foco (evento blur)
+    cepField.addEventListener('blur', async () => {
+        await this.validateCepField(cepField);
+    });
+
+    // Verifica o CEP quando o valor do campo mudar (evento change)
+    cepField.addEventListener('change', async () => {
+        await this.validateCepField(cepField);
+    });
+}
+
+async validateCepField(cepField) {
+    const cep = cepField.value.replace(/\D/g, '');  // Remove tudo que não for número
+    const country = document.getElementById('inputCountry')?.value;
+
+    if (country !== 'BR' || cep.length !== 8) return;  // Só valida se for CEP do Brasil com 8 dígitos
+
+    try {
+        const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+        const data = await response.json();
+
+        if (data.erro) {
+            this.showCepError('CEP inválido. Verifique e tente novamente.');
+            this.checkStepValidationForButton();  // Atualiza o botão "Próximo"
+        } else {
+            this.showCepError('');
+            // Preenche os campos de endereço com os dados do CEP
+            const addressField = document.getElementById('inputAddress1');
+            const neighborhoodField = document.getElementById('inputAddress2');
+            const cityField = document.getElementById('inputCity');
+            const stateField = document.getElementById('stateselect');
+
+            if (addressField) addressField.value = data.logradouro || '';
+            if (neighborhoodField) neighborhoodField.value = data.bairro || '';
+            if (cityField) cityField.value = data.localidade || '';
+            if (stateField) stateField.value = data.uf || '';
+
+            this.showAddressFields(true);  // Exibe os campos de endereço
+            this.checkStepValidationForButton();  // Atualiza o botão "Próximo"
+        }
+    } catch (error) {
+        console.error('Erro ao buscar CEP:', error);
+        this.showCepError('Erro ao buscar CEP. Tente novamente.');
+    }
+}
+
+    showAddressFields(shouldShow) {
+        const addressFields = ['inputAddress1', 'inputAddress2', 'inputCity', 'stateselect'];
+        
+        addressFields.forEach(id => {
+            const group = this.findMoveableGroup(id);
+            if (group) {
+                group.style.display = shouldShow ? 'block' : 'none';
             }
         });
     }
+    showStep(stepNumber) {
+        document.querySelectorAll('.form-step').forEach(step => step.classList.remove('active'));
+        const targetStep = document.querySelector(`.form-step[data-step="${stepNumber}"]`);
+        if (targetStep) targetStep.classList.add('active');
 
-    setupCepFieldListener() {
-        const cepField = document.getElementById('inputPostcode');
-        if (cepField) {
-            cepField.addEventListener('blur', () => {
-                const cep = cepField.value.replace(/\D/g, '');
-                if (cep.length === 8 && document.getElementById('inputCountry').value === 'BR') {
-                    this.fetchAddressFromCep();
-                }
-            });
-        }
-    }
-
-    fetchAddressFromCep() {
-        const cepField = document.getElementById('inputPostcode');
-        const cep = cepField.value.replace(/\D/g, '');
-        
-        fetch(`https://viacep.com.br/ws/${cep}/json/` )
-            .then(response => response.json())
-            .then(data => {
-                const group = cepField.closest('.form-group');
-                const existingError = group.querySelector('.error-message');
-                if (existingError) existingError.remove();
-
-                if (data && !data.erro) {
-                    cepField.classList.remove('error');
-                    cepField.classList.add('success');
-                    document.getElementById('inputAddress1').value = data.logradouro || '';
-                    document.getElementById('inputCity').value = data.localidade || '';
-                    document.getElementById('inputAddress2').value = data.bairro || '';
-                    const stateSelect = document.getElementById('stateselect');
-                    if (stateSelect) stateSelect.value = data.uf || '';
-
-                    const addressFields = ['inputAddress1', 'inputAddress2', 'customfield18', 'customfield19', 'inputCity', 'stateselect'];
-                    addressFields.forEach(id => {
-                        const group = this.findMoveableGroup(id);
-                        if (group) group.style.display = 'block';
-                    });
-                } else {
-                    cepField.classList.remove('success');
-                    cepField.classList.add('error');
-                    const errorEl = document.createElement('span');
-                    errorEl.className = 'error-message';
-                    errorEl.textContent = 'CEP não encontrado.';
-                    group.appendChild(errorEl);
-                }
-                this.checkStepValidationForButton();
-            })
-            .catch(error => {
-                cepField.classList.add('error');
-                console.error('Erro ao buscar CEP:', error);
-                this.checkStepValidationForButton();
-            });
-    }
-
-    showStep(stepNumber) { 
-        document.querySelectorAll('.form-step').forEach(step => { 
-            step.style.display = 'none'; 
-            step.classList.remove('active'); 
-        }); 
-        const currentStepEl = document.querySelector(`.form-step.step-${stepNumber}`); 
-        if (currentStepEl) { 
-            currentStepEl.style.display = 'block'; 
-            currentStepEl.classList.add('active'); 
-        } 
-        this.currentStep = stepNumber; 
-        this.updateProgressIndicator(); 
-        this.updateNavigation(); 
-        this.updateStepInfo();
-        this.checkStepValidationForButton(); // Valida o botão sempre que um passo é mostrado
-    }
-
-    updateProgressIndicator() {
         document.querySelectorAll('.step-indicator').forEach((indicator, index) => {
-            const stepNum = index + 1;
             indicator.classList.remove('active', 'completed');
-            if (stepNum < this.currentStep) indicator.classList.add('completed');
-            else if (stepNum === this.currentStep) indicator.classList.add('active');
+            if (index + 1 < stepNumber) indicator.classList.add('completed');
+            if (index + 1 === stepNumber) indicator.classList.add('active');
         });
+
         const progressLine = document.getElementById('progressLine');
         if (progressLine) {
-            const progress = ((this.currentStep - 1) / (this.totalSteps - 1)) * 100;
+            const progress = ((stepNumber - 1) / (this.totalSteps - 1)) * 100;
             progressLine.style.width = `${progress}%`;
         }
-    }
 
-    updateNavigation() {
         const prevBtn = document.getElementById('prevBtn');
         const nextBtn = document.getElementById('nextBtn');
-        if (prevBtn) prevBtn.style.display = this.currentStep > 1 ? 'inline-block' : 'none';
-        if (nextBtn) {
-            nextBtn.textContent = this.currentStep === this.totalSteps ? 'Finalizar Cadastro' : 'Próximo';
-        }
+        if (prevBtn) prevBtn.style.display = stepNumber === 1 ? 'none' : 'block';
+        if (nextBtn) nextBtn.textContent = stepNumber === this.totalSteps ? 'Finalizar' : 'Próximo';
+
+        this.updateStepContent(stepNumber);
+        this.checkStepValidationForButton();
     }
 
-    updateStepInfo() {
-        const titles = ['Dados Pessoais', 'Endereço', 'Segurança e Finalização'];
+    updateStepContent(stepNumber) {
+        const titles = ['Dados Pessoais', 'Endereço', 'Segurança'];
         const subtitles = [
             'Preencha suas informações básicas',
             'Informe seu endereço completo',
-            'Crie uma senha e finalize seu cadastro'
+            'Crie sua senha de acesso'
         ];
+
         const titleEl = document.getElementById('stepTitle');
         const subtitleEl = document.getElementById('stepSubtitle');
-        if (titleEl) titleEl.textContent = titles[this.currentStep - 1];
-        if (subtitleEl) subtitleEl.textContent = subtitles[this.currentStep - 1];
+        if (titleEl) titleEl.textContent = titles[stepNumber - 1] || '';
+        if (subtitleEl) subtitleEl.textContent = subtitles[stepNumber - 1] || '';
     }
 
     nextStep() {
-        // Aqui forçamos a validação final com mensagens de erro
-        if (!this.validateCurrentStep(true)) return;
         if (this.currentStep < this.totalSteps) {
-            this.showStep(this.currentStep + 1);
+            this.currentStep++;
+            this.showStep(this.currentStep);
         } else {
             this.submitForm();
         }
     }
 
     prevStep() {
-        if (this.currentStep > 1) this.showStep(this.currentStep - 1);
-    }
-    validateCurrentStep(force = false) {
-        const currentStepEl = document.querySelector(`.form-step.step-${this.currentStep}`);
-        if (!currentStepEl) return false;
-
-        const fields = currentStepEl.querySelectorAll('input[required], select[required]');
-        let isStepValid = true;
-
-        fields.forEach(field => {
-            if (field.offsetParent !== null) {
-                if (!this.validateField(field, force)) {
-                    isStepValid = false;
-                }
-            }
-        });
-        return isStepValid;
-    }
-    validateField(field, force = false) {
-        const value = field.value.trim();
-        let isValid = true;
-        let errorMessage = '';
-        const group = field.closest('.form-group, .checkbox');
-        if (!group) return true;
-
-        // Se não foi tocado ainda e não estamos forçando (ex: clique em "Próximo"), não mostra erro
-        if (!force && field.dataset.touched !== "true") {
-            return !!value || field.type === 'checkbox' ? field.checked : true;
+        if (this.currentStep > 1) {
+            this.currentStep--;
+            this.showStep(this.currentStep);
         }
+    }
+
+    validateField(field) {
+        const group = field.closest('.form-group') || field.closest('.col-md-6');
+        if (!group) return true;
 
         const existingError = group.querySelector('.error-message');
         if (existingError) existingError.remove();
         field.classList.remove('error', 'success');
+
+        const value = field.value.trim();
+        let isValid = true;
+        let errorMessage = '';
 
         if (field.type === 'checkbox') {
             isValid = field.checked;
@@ -532,19 +644,24 @@ class StepByStepForm {
         return isValid;
     }
 
+async checkStepValidationForButton() {
+    const nextBtn = document.getElementById('nextBtn');
+    if (!nextBtn) return;
 
-    checkStepValidationForButton() {
-        const nextBtn = document.getElementById('nextBtn');
-        if (!nextBtn) return;
+    const currentStepEl = document.querySelector(`.form-step.step-${this.currentStep}`);
+    if (!currentStepEl) return;
 
-        const currentStepEl = document.querySelector(`.form-step.step-${this.currentStep}`);
-        if (!currentStepEl) return;
+    const fields = currentStepEl.querySelectorAll('input[required], select[required]');
+    let allValid = true;
 
-        const fields = currentStepEl.querySelectorAll('input[required], select[required]');
-        let allValid = true;
-
-        fields.forEach(field => {
-            if (field.offsetParent !== null) {
+    // Valida os outros campos
+    fields.forEach(field => {
+        if (field.offsetParent !== null) {
+            // Validação especial para nome completo
+            if (field.id === 'inputFullName') {
+                const isValid = this.validateAndMapFullName(field);
+                if (!isValid) allValid = false;
+            } else {
                 if (!field.value.trim() && field.type !== 'checkbox') {
                     allValid = false;
                 }
@@ -552,10 +669,59 @@ class StepByStepForm {
                     allValid = false;
                 }
             }
-        });
+        }
+    });
 
-        nextBtn.disabled = !allValid;
+    // Verifica se estamos no step de endereço (step 2)
+    if (this.currentStep === 2) {
+        const cepField = document.getElementById('inputPostcode');
+        if (cepField) {
+            const cep = cepField.value.trim().replace(/\D/g, '');
+
+            if (!cep) {
+                allValid = false;  // Se o CEP estiver vazio
+            } else {
+                // Realiza a requisição para validar o CEP
+                const isValid = await this.validateCep(cep);
+                if (!isValid) {
+                    allValid = false;
+                    this.showCepError('CEP inválido. Verifique e tente novamente.');
+                } else {
+                    this.showCepError(''); // Limpa qualquer erro anterior
+                }
+            }
+        }
     }
+
+    // Atualiza o estado do botão "Próximo"
+    nextBtn.disabled = !allValid;
+}
+
+// Função para validar o CEP via API viaCEP
+async validateCep(cep) {
+    try {
+        const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+        const data = await response.json();
+        return !data.erro;  // Retorna true se o CEP for válido, caso contrário false
+    } catch (error) {
+        return false;  // Se ocorrer erro na requisição, considera como inválido
+    }
+}
+
+// Função para exibir mensagens de erro do CEP
+showCepError(message) {
+    const cepField = document.getElementById('inputPostcode');
+    const errorMessage = document.createElement('span');
+    errorMessage.classList.add('error-message');
+    errorMessage.textContent = message;
+    
+    // Remover qualquer erro anterior
+    const existingError = document.querySelector('#inputPostcode + .error-message');
+    if (existingError) existingError.remove();
+
+    cepField.parentNode.appendChild(errorMessage);
+}
+
 
     submitForm() {
         const form = document.querySelector('.loginForm');
