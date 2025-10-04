@@ -227,10 +227,7 @@ class StepByStepForm {
             this.createTwoColumnRow([this.findMoveableGroup('inputAddress2'), this.findMoveableGroup('customfield19')]),
             this.createTwoColumnRow([this.findMoveableGroup('inputCity'), this.findMoveableGroup('stateselect')])
         ]);
-        const numberField = document.getElementById('customfield18');
-        if (numberField) {
-            numberField.required = true;
-        }
+
         const passwordSection = document.getElementById('containerNewUserSecurity');
         const termsSection = document.querySelector('input[name="accepttos"]').closest('.section');
         const mailingListSection = document.querySelector('input[name="marketingoptin"]').closest('.section');
