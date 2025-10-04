@@ -533,7 +533,7 @@ async validateCepField(cepField) {
 }
 
     showAddressFields(shouldShow) {
-        const addressFields = ['inputAddress1', 'inputAddress2', 'inputCity', 'stateselect'];
+        const addressFields = ['inputAddress1', 'inputAddress2', 'inputCity', 'stateselect', 'customfield18', 'customfield19'];
         
         addressFields.forEach(id => {
             const group = this.findMoveableGroup(id);
