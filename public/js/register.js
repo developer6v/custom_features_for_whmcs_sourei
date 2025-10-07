@@ -391,22 +391,7 @@ class StepByStepForm {
 
                 const interval = setInterval(ensureTermsChecked, 200);
 
-
-                const recaptchaElement = document.querySelector('.g-recaptcha');
-                if (recaptchaElement) {
-                    // Força o display do reCAPTCHA para 'block'
-                    recaptchaElement.style.display = 'block';
-
-                    // Verifica se o reCAPTCHA está configurado como invisível e modifica
-                    if (recaptchaElement.getAttribute('data-size') === 'invisible') {
-                        recaptchaElement.setAttribute('data-size', 'normal'); // Altera para 'normal'
-                        grecaptcha.render(recaptchaElement, {
-                            sitekey: '6Le_ipkqAAAAACrkcW2WjeuqSUyDhh8aSCWgcE7Q', // Seu sitekey real
-                            theme: 'light',
-                            size: 'normal'
-                        });
-                    }
-                }
+                
 
             }, 200);
         });
