@@ -776,9 +776,19 @@ class StepByStepForm {
         ]);
 
         const passwordSection = document.getElementById('containerNewUserSecurity');
-        const termsSection = document.querySelector('input[name="accepttos"]').closest('.section');
-        const mailingListSection = document.querySelector('input[name="marketingoptin"]').closest('.section');
-        const step3 = this.createStep(3, [passwordSection, mailingListSection, termsSection]);
+        const termsSection = document.querySelector('input[name="accepttos"]')?.closest('.section');
+        const mailingListSection = document.querySelector('input[name="marketingoptin"]')?.closest('.section');
+
+        // ← NOVO: Localiza o CAPTCHA
+        const captchaSection = this.findCaptchaSection();
+
+        // STEP 3 - MODIFICADO: Agora inclui o CAPTCHA
+        const step3Elements = [passwordSection, mailingListSection, termsSection];
+        if (captchaSection) {
+            step3Elements.push(captchaSection); // Adiciona o CAPTCHA ao Step 3
+            console.log('[CAPTCHA] CAPTCHA adicionado ao Step 3');
+        }
+        const step3 = this.createStep(3, step3Elements.filter(el => el !== null));
 
         stepsContainer.appendChild(step1);
         stepsContainer.appendChild(step2);
@@ -790,6 +800,54 @@ class StepByStepForm {
             originalSectionsContainer.appendChild(stepsContainer);
         }
     }
+
+
+        // ============================================
+    // MÉTODO NOVO: findCaptchaSection
+    // Localiza o campo de CAPTCHA do WHMCS
+    // ============================================
+    findCaptchaSection() {
+        console.log('[CAPTCHA] Procurando campo de CAPTCHA...');
+        
+        // Procura por diferentes tipos de CAPTCHA
+        const captchaSelectors = [
+            '.g-recaptcha',                    // Google reCAPTCHA v2
+            '[data-sitekey]',                  // reCAPTCHA com data-sitekey
+            '.h-captcha',                      // hCaptcha
+            '#divDynamicRecaptcha',            // WHMCS reCAPTCHA container
+            'iframe[src*="recaptcha"]',        // iframe do reCAPTCHA
+            'iframe[src*="hcaptcha"]',         // iframe do hCaptcha
+            '[name="recaptcha"]',              // Input hidden do reCAPTCHA
+            '.captcha-container',              // Container genérico
+            '#captchacontainer',               // Container do WHMCS
+        ];
+
+        for (const selector of captchaSelectors) {
+            const captchaElement = document.querySelector(selector);
+            if (captchaElement) {
+                console.log(`[CAPTCHA] ✅ Encontrado: ${selector}`);
+                
+                // Retorna o container pai (geralmente uma section ou div)
+                const captchaSection = captchaElement.closest('.section') || 
+                                    captchaElement.closest('.form-group') ||
+                                    captchaElement.closest('div[class*="captcha"]') ||
+                                    captchaElement.parentElement;
+                
+                if (captchaSection) {
+                    // Garante que o CAPTCHA seja visível
+                    captchaSection.style.display = 'block';
+                    console.log('[CAPTCHA] Container do CAPTCHA configurado como visível');
+                    return captchaSection;
+                }
+                
+                return captchaElement;
+            }
+        }
+
+        console.warn('[CAPTCHA] ⚠️ Nenhum campo de CAPTCHA encontrado na página');
+        return null;
+    }
+
 
     // ============================================
     // MÉTODO NOVO: createFullNameField
@@ -1519,9 +1577,99 @@ async checkStepValidationForButton() {
     }
 
     submitForm() { 
-        const form = document.querySelector('.loginForm'); 
-        if (form) form.submit(); 
+        console.log('[Submit] Iniciando processo de envio do formulário...');
+        
+        const form = document.querySelector('.loginForm');
+        
+        if (!form) {
+            console.error('[Submit] ❌ Formulário não encontrado');
+            return;
+        }
+        
+        // Valida se o CAPTCHA foi preenchido (se existir)
+        console.log('[Submit] Validando CAPTCHA...');
+        const captchaValidation = this.validateCaptcha();
+        
+        if (!captchaValidation.valid) {
+            console.error('[Submit] ❌ CAPTCHA não validado:', captchaValidation.message);
+            alert(captchaValidation.message);
+            return;
+        }
+        
+        console.log('[Submit] ✅ Todas as validações passaram. Enviando formulário...');
+        form.submit(); 
     }
+
+
+    // ============================================
+// MÉTODO NOVO: validateCaptcha
+// Valida se o CAPTCHA foi preenchido
+// ============================================
+    validateCaptcha() {
+        console.log('[CAPTCHA] Iniciando validação do CAPTCHA...');
+        
+        // Verifica Google reCAPTCHA v2
+        if (typeof grecaptcha !== 'undefined') {
+            console.log('[CAPTCHA] Google reCAPTCHA detectado');
+            try {
+                const response = grecaptcha.getResponse();
+                console.log('[CAPTCHA] Resposta do reCAPTCHA:', response ? 'Preenchido' : 'Vazio');
+                
+                if (!response || response.length === 0) {
+                    console.warn('[CAPTCHA] ⚠️ reCAPTCHA não foi preenchido');
+                    return {
+                        valid: false,
+                        message: 'Por favor, complete a verificação de segurança (CAPTCHA).'
+                    };
+                }
+                console.log('[CAPTCHA] ✅ Google reCAPTCHA validado com sucesso');
+                return { valid: true };
+            } catch (e) {
+                console.error('[CAPTCHA] ❌ Erro ao validar reCAPTCHA:', e);
+            }
+        }
+
+        // Verifica hCaptcha
+        if (typeof hcaptcha !== 'undefined') {
+            console.log('[CAPTCHA] hCaptcha detectado');
+            try {
+                const response = hcaptcha.getResponse();
+                console.log('[CAPTCHA] Resposta do hCaptcha:', response ? 'Preenchido' : 'Vazio');
+                
+                if (!response || response.length === 0) {
+                    console.warn('[CAPTCHA] ⚠️ hCaptcha não foi preenchido');
+                    return {
+                        valid: false,
+                        message: 'Por favor, complete a verificação de segurança (CAPTCHA).'
+                    };
+                }
+                console.log('[CAPTCHA] ✅ hCaptcha validado com sucesso');
+                return { valid: true };
+            } catch (e) {
+                console.error('[CAPTCHA] ❌ Erro ao validar hCaptcha:', e);
+            }
+        }
+
+        // Verifica se existe um input hidden do CAPTCHA
+        const captchaInput = document.querySelector('input[name*="captcha"]');
+        if (captchaInput) {
+            console.log('[CAPTCHA] Input de CAPTCHA encontrado:', captchaInput.name);
+            console.log('[CAPTCHA] Valor do input:', captchaInput.value ? 'Preenchido' : 'Vazio');
+            
+            if (!captchaInput.value || captchaInput.value.trim() === '') {
+                console.warn('[CAPTCHA] ⚠️ Input de CAPTCHA está vazio');
+                return {
+                    valid: false,
+                    message: 'Por favor, complete a verificação de segurança (CAPTCHA).'
+                };
+            }
+        }
+
+        // Se não encontrou nenhum CAPTCHA, permite o envio
+        console.log('[CAPTCHA] ℹ️ Nenhum CAPTCHA encontrado ou já validado - permitindo envio');
+        return { valid: true };
+    }
+
 }
 
 new StepByStepForm();
