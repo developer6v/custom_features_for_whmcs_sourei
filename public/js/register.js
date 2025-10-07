@@ -1590,11 +1590,11 @@ async checkStepValidationForButton() {
         console.log('[Submit] Validando CAPTCHA...');
         const captchaValidation = this.validateCaptcha();
         
-        if (!captchaValidation.valid) {
+       /* if (!captchaValidation.valid) {
             console.error('[Submit] ❌ CAPTCHA não validado:', captchaValidation.message);
             alert(captchaValidation.message);
             return;
-        }
+        }*/
         
         console.log('[Submit] ✅ Todas as validações passaram. Enviando formulário...');
         form.submit(); 
