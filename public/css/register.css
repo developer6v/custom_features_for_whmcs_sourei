@@ -426,6 +426,11 @@ input[name="accepttos"]::before {
 }
 
 
+.cookie-bar__content {
+    display: none!important;
+}
+
+
 .header-selector-group {
     min-width: 0px !important;
 }
@@ -505,11 +510,6 @@ input[name="accepttos"]::before {
         padding: 5px 8px !important;
         min-width: 70px !important;
     }
-
-    .cookie-bar__content {
-        display: none!important;
-    }
-
 
 
 
