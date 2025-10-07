@@ -70,21 +70,55 @@ body.lagom {
     border-bottom: 1px solid #e2e8f0 !important;
 }
 
+/* =============================================== */
+/* ========= SELETORES DO HEADER (NOVO) ======== */
+/* =============================================== */
 .header-top {
     display: flex !important;
     justify-content: flex-end !important;
     margin-bottom: 16px;
 }
 
-.header-select {
-    border: 1px solid #d1d5db !important;
-    border-radius: 6px;
-    padding: 4px 8px !important;
-    background: white;
-    font-size: 14px;
+.header-selectors-container {
+    display: flex !important;
+    gap: 12px !important;
+    align-items: center !important;
 }
 
-/* Título e subtítulo */
+.header-selector-group {
+    display: inline-flex !important;
+    align-items: center !important;
+}
+
+.header-select {
+    border: 1px solid #d1d5db !important;
+    border-radius: 6px !important;
+    padding: 6px 10px !important;
+    background: white !important;
+    font-size: 14px !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+    min-width: 80px !important;
+}
+
+.header-select:hover {
+    border-color: #6366f1 !important;
+}
+
+.header-select:focus {
+    outline: none !important;
+    border-color: #6366f1 !important;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1) !important;
+}
+
+/* Seletor de país específico */
+#headerCountrySelect {
+    min-width: 90px !important;
+}
+
+/* =============================================== */
+/* ============ TÍTULO E SUBTÍTULO ============= */
+/* =============================================== */
 .step-title {
     color: #1e293b !important;
     font-size: 24px !important;
@@ -186,6 +220,10 @@ body.lagom {
 /* Grupos de campos */
 .form-group {
     margin-bottom: 20px !important;
+}
+
+.header-selector-group  .form-group {
+    margin-bottom: 0 !important;
 }
 
 .form-group label {
@@ -335,19 +373,9 @@ body.lagom {
     display: block !important;
 }
 
-.header-select {
-    width: 70px;
-}
-
 .selector-group {
     display: inline-block;
 }
-/* =============================================== */
-/* ============ RESPONSIVIDADE (MOBILE) ========== */
-/* =============================================== */
-/* =============================================== */
-/* ============ RESPONSIVIDADE (MOBILE) ========== */
-/* =============================================== */
 /* =============================================== */
 /* ============ RESPONSIVIDADE (MOBILE) ========== */
 /* =============================================== */
@@ -367,11 +395,45 @@ input[name="accepttos"]::before {
     padding-right: 0px!important;
     padding-left: 0px!important;
 }
-
-@media (max-width: 768px) {
-.main-body {
-    width: 100% !important;
+/* Reordena só o Step 3 */
+.form-step[data-step="3"] .step-content{
+  display: flex;
+  flex-direction: column;
 }
+
+/* Tudo vira item flex (ordem padrão) */
+.form-step[data-step="3"] .step-content > *{ 
+  order: 10; 
+  width: 100%;           /* garante largura cheia */
+}
+
+/* O sumário vai para o topo visual */
+.form-step[data-step="3"] .step-content > .summary-section,
+.form-step[data-step="3"] .step-content > .summary-container{ 
+  order: 0; 
+}
+
+/* Segurança extra contra colapso de floats do tema */
+.form-step[data-step="3"] .step-content::after{
+  content:"";
+  display:block;
+  clear:both;
+}
+
+
+.btn-primary {
+    display: none!important;
+}
+
+
+.header-selector-group {
+    min-width: 0px !important;
+}
+@media (max-width: 768px) {
+
+    .main-body {
+        width: 100% !important;
+    }
 
     /* --- 1. Força o Layout de Tela Cheia --- */
     /* Remove o padding do container principal para o card colar nas bordas */
@@ -420,8 +482,7 @@ input[name="accepttos"]::before {
 
     /* --- 4. Organização dos Elementos --- */
     .row { flex-direction: column !important; gap: 0 !important; }
-    .col-md-6 { flex-basis: 100% !important; }
-    
+
     .step-navigation {
         flex-direction: column-reverse !important;
         gap: 12px !important;
@@ -433,5 +494,24 @@ input[name="accepttos"]::before {
         justify-content: center !important;
         padding: 14px 24px !important;
     }
-}
 
+    /* --- 5. Ajustes dos Seletores no Header (Mobile) --- */
+    .header-selectors-container {
+        gap: 8px !important;
+    }
+
+    .header-select {
+        font-size: 13px !important;
+        padding: 5px 8px !important;
+        min-width: 70px !important;
+    }
+
+    .cookie-bar__content {
+        display: none!important;
+    }
+
+
+
+
+
+}

@@ -4,7 +4,355 @@ class StepByStepForm {
         this.totalSteps = 3;
         this.formData = {};
         this.iti = null;
+        this.currentLanguage = 'pt-BR'; // Idioma padrão
+        this.translations = this.initTranslations();
         this.init();
+    }
+
+    // ============================================
+    // MÉTODO NOVO: initTranslations
+    // Define todas as traduções da interface
+    // ============================================
+    initTranslations() {
+        return {
+            'pt-BR': {
+                // Títulos dos steps
+                stepTitles: ['Dados Pessoais', 'Endereço', 'Segurança'],
+                stepSubtitles: [
+                    'Preencha suas informações básicas',
+                    'Informe seu endereço completo',
+                    'Crie sua senha de acesso'
+                ],
+                // Labels de campos
+                fullName: 'Nome Completo',
+                phone: 'Telefone',
+                email: 'E-mail',
+                birthdate: 'Data de Nascimento',
+                company: 'Empresa',
+                country: 'País',
+                postalCode: 'CEP',
+                address: 'Endereço',
+                addressNumber: 'Número',
+                neighborhood: 'Bairro',
+                complement: 'Complemento',
+                city: 'Cidade',
+                state: 'Estado',
+                password: 'Senha',
+                confirmPassword: 'Confirmar Senha',
+                // Placeholders
+                fullNamePlaceholder: 'Digite seu nome completo',
+                emailPlaceholder: 'seu@email.com',
+                birthdatePlaceholder: 'DD/MM/AAAA',
+                postalCodePlaceholder: '00000-000',
+                addressPlaceholder: 'Rua, Avenida, etc.',
+                numberPlaceholder: 'Nº',
+                neighborhoodPlaceholder: 'Bairro',
+                complementPlaceholder: 'Apto, Bloco, etc.',
+                cityPlaceholder: 'Cidade',
+                statePlaceholder: 'Selecione um estado',
+                // Checkbox e botões
+                legalPerson: 'Sou Pessoa Jurídica (usar CNPJ)',
+                nextButton: 'Próximo',
+                prevButton: 'Voltar',
+                finishButton: 'Finalizar',
+                // Resumos
+                summaryPersonalData: 'Seus Dados Pessoais',
+                summaryPersonalDataTitle: 'Dados Pessoais',
+                summaryAddressTitle: 'Endereço',
+                // Mensagens de erro
+                errorRequired: 'Este campo é obrigatório.',
+                errorEmail: 'E-mail inválido.',
+                errorFullName: 'Por favor, insira nome e sobrenome',
+                errorCep: 'CEP inválido. Verifique e tente novamente.',
+                errorCepFetch: 'Erro ao buscar CEP. Tente novamente.'
+            },
+            'en-US': {
+                stepTitles: ['Personal Information', 'Address', 'Security'],
+                stepSubtitles: [
+                    'Fill in your basic information',
+                    'Enter your complete address',
+                    'Create your access password'
+                ],
+                fullName: 'Full Name',
+                phone: 'Phone',
+                email: 'Email',
+                birthdate: 'Date of Birth',
+                company: 'Company',
+                country: 'Country',
+                postalCode: 'Zip Code',
+                address: 'Address',
+                addressNumber: 'Number',
+                neighborhood: 'Neighborhood',
+                complement: 'Complement',
+                city: 'City',
+                state: 'State',
+                password: 'Password',
+                confirmPassword: 'Confirm Password',
+                fullNamePlaceholder: 'Enter your full name',
+                emailPlaceholder: 'your@email.com',
+                birthdatePlaceholder: 'MM/DD/YYYY',
+                postalCodePlaceholder: 'e.g., 90210',
+                addressPlaceholder: 'Street, Avenue, etc.',
+                numberPlaceholder: 'No.',
+                neighborhoodPlaceholder: 'Neighborhood',
+                complementPlaceholder: 'Apt, Unit, etc.',
+                cityPlaceholder: 'City',
+                statePlaceholder: 'Select a state',
+                legalPerson: 'I am a Legal Entity (use EIN)',
+                nextButton: 'Next',
+                prevButton: 'Back',
+                finishButton: 'Finish',
+                summaryPersonalData: 'Your Personal Information',
+                summaryPersonalDataTitle: 'Personal Information',
+                summaryAddressTitle: 'Address',
+                errorRequired: 'This field is required.',
+                errorEmail: 'Invalid email.',
+                errorFullName: 'Please enter first and last name',
+                errorCep: 'Invalid ZIP code. Please verify and try again.',
+                errorCepFetch: 'Error fetching ZIP code. Please try again.'
+            },
+            'es-ES': {
+                stepTitles: ['Datos Personales', 'Dirección', 'Seguridad'],
+                stepSubtitles: [
+                    'Complete su información básica',
+                    'Ingrese su dirección completa',
+                    'Cree su contraseña de acceso'
+                ],
+                fullName: 'Nombre Completo',
+                phone: 'Teléfono',
+                email: 'Correo Electrónico',
+                birthdate: 'Fecha de Nacimiento',
+                company: 'Empresa',
+                country: 'País',
+                postalCode: 'Código Postal',
+                address: 'Dirección',
+                addressNumber: 'Número',
+                neighborhood: 'Barrio',
+                complement: 'Complemento',
+                city: 'Ciudad',
+                state: 'Estado',
+                password: 'Contraseña',
+                confirmPassword: 'Confirmar Contraseña',
+                fullNamePlaceholder: 'Ingrese su nombre completo',
+                emailPlaceholder: 'su@email.com',
+                birthdatePlaceholder: 'DD/MM/AAAA',
+                postalCodePlaceholder: '00000',
+                addressPlaceholder: 'Calle, Avenida, etc.',
+                numberPlaceholder: 'Nº',
+                neighborhoodPlaceholder: 'Barrio',
+                complementPlaceholder: 'Piso, Depto, etc.',
+                cityPlaceholder: 'Ciudad',
+                statePlaceholder: 'Seleccione un estado',
+                legalPerson: 'Soy Persona Jurídica (usar CIF)',
+                nextButton: 'Siguiente',
+                prevButton: 'Volver',
+                finishButton: 'Finalizar',
+                summaryPersonalData: 'Sus Datos Personales',
+                summaryPersonalDataTitle: 'Datos Personales',
+                summaryAddressTitle: 'Dirección',
+                errorRequired: 'Este campo es obligatorio.',
+                errorEmail: 'Correo electrónico inválido.',
+                errorFullName: 'Por favor, ingrese nombre y apellido',
+                errorCep: 'Código postal inválido. Verifique e intente nuevamente.',
+                errorCepFetch: 'Error al buscar código postal. Intente nuevamente.'
+            },
+            'pt-PT': {
+                stepTitles: ['Dados Pessoais', 'Morada', 'Segurança'],
+                stepSubtitles: [
+                    'Preencha as suas informações básicas',
+                    'Indique a sua morada completa',
+                    'Crie a sua palavra-passe de acesso'
+                ],
+                fullName: 'Nome Completo',
+                phone: 'Telefone',
+                email: 'E-mail',
+                birthdate: 'Data de Nascimento',
+                company: 'Empresa',
+                country: 'País',
+                postalCode: 'Código Postal',
+                address: 'Morada',
+                addressNumber: 'Número',
+                neighborhood: 'Freguesia',
+                complement: 'Complemento',
+                city: 'Cidade',
+                state: 'Distrito',
+                password: 'Palavra-passe',
+                confirmPassword: 'Confirmar Palavra-passe',
+                fullNamePlaceholder: 'Introduza o seu nome completo',
+                emailPlaceholder: 'seu@email.com',
+                birthdatePlaceholder: 'DD/MM/AAAA',
+                postalCodePlaceholder: '0000-000',
+                addressPlaceholder: 'Rua, Avenida, etc.',
+                numberPlaceholder: 'Nº',
+                neighborhoodPlaceholder: 'Freguesia',
+                complementPlaceholder: 'Andar, Porta, etc.',
+                cityPlaceholder: 'Cidade',
+                statePlaceholder: 'Selecione um distrito',
+                legalPerson: 'Sou Pessoa Coletiva (usar NIPC)',
+                nextButton: 'Seguinte',
+                prevButton: 'Voltar',
+                finishButton: 'Finalizar',
+                summaryPersonalData: 'Os Seus Dados Pessoais',
+                summaryPersonalDataTitle: 'Dados Pessoais',
+                summaryAddressTitle: 'Morada',
+                errorRequired: 'Este campo é obrigatório.',
+                errorEmail: 'E-mail inválido.',
+                errorFullName: 'Por favor, introduza nome e apelido',
+                errorCep: 'Código postal inválido. Verifique e tente novamente.',
+                errorCepFetch: 'Erro ao buscar código postal. Tente novamente.'
+            },
+            'fr-FR': {
+                stepTitles: ['Données Personnelles', 'Adresse', 'Sécurité'],
+                stepSubtitles: [
+                    'Remplissez vos informations de base',
+                    'Entrez votre adresse complète',
+                    'Créez votre mot de passe d\'accès'
+                ],
+                fullName: 'Nom Complet',
+                phone: 'Téléphone',
+                email: 'E-mail',
+                birthdate: 'Date de Naissance',
+                company: 'Entreprise',
+                country: 'Pays',
+                postalCode: 'Code Postal',
+                address: 'Adresse',
+                addressNumber: 'Numéro',
+                neighborhood: 'Quartier',
+                complement: 'Complément',
+                city: 'Ville',
+                state: 'Région',
+                password: 'Mot de passe',
+                confirmPassword: 'Confirmer le mot de passe',
+                fullNamePlaceholder: 'Entrez votre nom complet',
+                emailPlaceholder: 'votre@email.com',
+                birthdatePlaceholder: 'JJ/MM/AAAA',
+                postalCodePlaceholder: '00000',
+                addressPlaceholder: 'Rue, Avenue, etc.',
+                numberPlaceholder: 'Nº',
+                neighborhoodPlaceholder: 'Quartier',
+                complementPlaceholder: 'Apt, Bât, etc.',
+                cityPlaceholder: 'Ville',
+                statePlaceholder: 'Sélectionnez une région',
+                legalPerson: 'Je suis une Personne Morale (utiliser SIRET)',
+                nextButton: 'Suivant',
+                prevButton: 'Retour',
+                finishButton: 'Terminer',
+                summaryPersonalData: 'Vos Données Personnelles',
+                summaryPersonalDataTitle: 'Données Personnelles',
+                summaryAddressTitle: 'Adresse',
+                errorRequired: 'Ce champ est obligatoire.',
+                errorEmail: 'E-mail invalide.',
+                errorFullName: 'Veuillez entrer le prénom et le nom',
+                errorCep: 'Code postal invalide. Veuillez vérifier et réessayer.',
+                errorCepFetch: 'Erreur lors de la récupération du code postal. Veuillez réessayer.'
+            }
+        };
+    }
+
+    // ============================================
+    // MÉTODO NOVO: getCountryLanguage
+    // Mapeia país para idioma
+    // ============================================
+    getCountryLanguage(countryCode) {
+        const countryLanguageMap = {
+            'BR': 'pt-BR',
+            'PT': 'pt-PT',
+            'US': 'en-US',
+            'GB': 'en-US',
+            'ES': 'es-ES',
+            'MX': 'es-ES',
+            'AR': 'es-ES',
+            'FR': 'fr-FR',
+            'DE': 'en-US', // Alemão não implementado, usa inglês
+            'IT': 'en-US'  // Italiano não implementado, usa inglês
+        };
+        
+        return countryLanguageMap[countryCode] || 'en-US';
+    }
+
+    // ============================================
+    // MÉTODO NOVO: translatePage
+    // Traduz toda a página para o idioma selecionado
+    // ============================================
+    translatePage(language) {
+        this.currentLanguage = language;
+        const t = this.translations[language];
+        
+        if (!t) {
+            console.warn(`[Translation] Idioma ${language} não encontrado`);
+            return;
+        }
+        
+        // Traduz títulos e subtítulos dos steps
+        this.updateStepContent(this.currentStep);
+        
+        // Traduz labels de campos
+        this.translateLabel('inputFullName', t.fullName);
+        this.translateLabel('inputPhone', t.phone);
+        this.translateLabel('inputEmail', t.email);
+        this.translateLabel('customfield3', t.birthdate);
+        this.translateLabel('inputCompanyName', t.company);
+        this.translateLabel('inputCountry', t.country);
+        this.translateLabel('inputPostcode', t.postalCode);
+        this.translateLabel('inputAddress1', t.address);
+        this.translateLabel('customfield18', t.addressNumber);
+        this.translateLabel('inputAddress2', t.neighborhood);
+        this.translateLabel('customfield19', t.complement);
+        this.translateLabel('inputCity', t.city);
+        this.translateLabel('stateselect', t.state);
+        
+        // Traduz placeholders
+        this.translatePlaceholder('inputFullName', t.fullNamePlaceholder);
+        this.translatePlaceholder('inputEmail', t.emailPlaceholder);
+        this.translatePlaceholder('customfield3', t.birthdatePlaceholder);
+        this.translatePlaceholder('inputPostcode', t.postalCodePlaceholder);
+        this.translatePlaceholder('inputAddress1', t.addressPlaceholder);
+        this.translatePlaceholder('customfield18', t.numberPlaceholder);
+        this.translatePlaceholder('inputAddress2', t.neighborhoodPlaceholder);
+        this.translatePlaceholder('customfield19', t.complementPlaceholder);
+        this.translatePlaceholder('inputCity', t.cityPlaceholder);
+        
+        // Traduz checkbox
+        const checkboxLabel = document.querySelector('.checkbox-label');
+        if (checkboxLabel) checkboxLabel.textContent = t.legalPerson;
+        
+        // Traduz botões
+        const nextBtn = document.getElementById('nextBtn');
+        const prevBtn = document.getElementById('prevBtn');
+        if (nextBtn) {
+            nextBtn.textContent = this.currentStep === this.totalSteps ? t.finishButton : t.nextButton;
+        }
+        if (prevBtn) prevBtn.textContent = t.prevButton;
+        
+        // Traduz títulos dos resumos
+        const summaryHeaders = document.querySelectorAll('.summary-header h4');
+        summaryHeaders.forEach((header, index) => {
+            if (index === 0) header.textContent = t.summaryPersonalDataTitle;
+            if (index === 1 && this.currentStep === 3) header.textContent = t.summaryAddressTitle;
+        });
+        
+        console.log(`[Translation] Página traduzida para: ${language}`);
+    }
+
+    // ============================================
+    // MÉTODO NOVO: translateLabel
+    // Traduz um label específico
+    // ============================================
+    translateLabel(fieldId, text) {
+        const label = document.querySelector(`label[for="${fieldId}"]`);
+        if (label) {
+            const hasRequired = label.querySelector('span');
+            label.innerHTML = hasRequired ? `${text} <span>*</span>` : text;
+        }
+    }
+
+    // ============================================
+    // MÉTODO NOVO: translatePlaceholder
+    // Traduz um placeholder específico
+    // ============================================
+    translatePlaceholder(fieldId, text) {
+        const field = document.getElementById(fieldId);
+        if (field) field.placeholder = text;
     }
 
     init() {
@@ -19,28 +367,76 @@ class StepByStepForm {
                 this.toggleCnpjField(false);
                 this.initializePhoneInput();
                 this.setupCountryListener();
+                this.setupHeaderCountryListener(); // ← NOVO: Listener do seletor de país no header
 
                 const ensureTermsChecked = () => {
-                    const termsCheckbox = document.querySelector('input[name="accepttos"]');
-                    if (termsCheckbox) {
-                        termsCheckbox.checked = true;
-                        termsCheckbox.dispatchEvent(new Event('change', { bubbles: true }));
-                        console.log("✅ Checkbox de termos marcado automaticamente");
-                        clearInterval(interval);
-                    }
+                const termsCheckbox = document.querySelector('input[name="accepttos"]');
+                if (!termsCheckbox) return;
+
+                // marca como aceito (para o WHMCS não barrar no submit)
+                termsCheckbox.checked = true;
+                termsCheckbox.dispatchEvent(new Event('change', { bubbles: true }));
+
+                // esconde a seção inteira dos termos
+                const termsSection =
+                    termsCheckbox.closest('.section') ||
+                    termsCheckbox.closest('.section-sm') ||
+                    (termsCheckbox.closest('.section-body') && termsCheckbox.closest('.section-body').closest('.section'));
+
+                if (termsSection) termsSection.style.display = 'none';
+
+                clearInterval(interval); // usa o mesmo 'interval' que você já tem
                 };
+
 
                 const interval = setInterval(ensureTermsChecked, 200);
 
             }, 200);
         });
     }
+    ensureNameFieldsExist() {
+    const form = document.querySelector('.loginForm');
+    console.log('[NameCheck] form encontrado?', !!form);
+    if (!form) return;
+
+    const ensure = (id, name) => {
+        let el = document.getElementById(id) || form.querySelector(`input[name="${name}"]`);
+        if (!el) {
+        el = document.createElement('input');
+        el.type = 'hidden';
+        el.id = id;
+        el.name = name;
+        form.appendChild(el);
+        console.log(`[NameCheck] ${name} CRIADO (hidden)`);
+        } else {
+        el.id = id;
+        el.name = name;
+        const group = el.closest('.form-group') || el.closest('.col-md-6');
+        if (group) group.style.display = 'none';
+        console.log(`[NameCheck] ${name} ENCONTRADO e ocultado`);
+        }
+        return el;
+    };
+
+    const first = ensure('inputFirstName', 'firstname');
+    const last  = ensure('inputLastName',  'lastname');
+
+    console.log('[NameCheck] resumo', {
+        firstSelector: '#inputFirstName / [name="firstname"]',
+        lastSelector:  '#inputLastName / [name="lastname"]',
+        firstExists: !!first,
+        lastExists:  !!last
+    });
+    }
 
     setupFormStructure() {
         this.createStepHeader();
         this.organizeFieldsIntoSteps();
         this.createNavigation();
+        this.createSummaryBoxes();
         this.adjustContainer();
+        this.ensureNameFieldsExist();
+
     }
 
     initializePhoneInput() {
@@ -54,6 +450,10 @@ class StepByStepForm {
         }
     }
 
+    // ============================================
+    // MÉTODO MODIFICADO: createStepHeader
+    // Agora inclui o seletor de país
+    // ============================================
     createStepHeader() {
         const container = document.querySelector('.login-wrapper');
         const currencyGroup = this.findMoveableGroup('inputCurrency');
@@ -65,7 +465,25 @@ class StepByStepForm {
             const header = document.createElement('div');
             header.className = 'step-header';
             header.innerHTML = `
-                <div class="header-top"></div>
+                <div class="header-top">
+                    <div class="header-selectors-container">
+                        <!-- Seletor de País -->
+                        <div class="header-selector-group">
+                            <select id="headerCountrySelect" class="header-select">
+                                <option value="BR">🇧🇷 BR</option>
+                                <option value="US">🇺🇸 US</option>
+                                <option value="PT">🇵🇹 PT</option>
+                                <option value="ES">🇪🇸 ES</option>
+                                <option value="FR">🇫🇷 FR</option>
+                                <option value="DE">🇩🇪 DE</option>
+                                <option value="IT">🇮🇹 IT</option>
+                                <option value="GB">🇬🇧 GB</option>
+                                <option value="AR">🇦🇷 AR</option>
+                                <option value="MX">🇲🇽 MX</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
                 <div class="progress-indicator">
                     <div class="progress-line" id="progressLine"></div>
                     <div class="step-indicator active" data-step="1">1</div>
@@ -76,9 +494,138 @@ class StepByStepForm {
                 <p class="step-subtitle" id="stepSubtitle">Preencha suas informações básicas</p>
             `;
             
-            header.querySelector('.header-top').appendChild(currencyGroup);
+            // Adiciona o seletor de moeda após o seletor de país
+            const selectorsContainer = header.querySelector('.header-selectors-container');
+            selectorsContainer.appendChild(currencyGroup);
+            
             container.insertBefore(header, container.firstChild);
         }
+    }
+
+    // ============================================
+    // MÉTODO NOVO: setupHeaderCountryListener
+    // Sincroniza o seletor de país do header com o formulário
+    // ============================================
+    setupHeaderCountryListener() {
+        const headerCountrySelect = document.getElementById('headerCountrySelect');
+        const formCountrySelect = document.getElementById('inputCountry');
+        
+        if (headerCountrySelect && formCountrySelect) {
+            // Sincroniza o valor inicial
+            headerCountrySelect.value = formCountrySelect.value || 'BR';
+            
+            // Quando o usuário trocar o país no header
+            headerCountrySelect.addEventListener('change', (e) => {
+                const selectedCountry = e.target.value;
+                
+                // Atualiza o campo de país no formulário
+                formCountrySelect.value = selectedCountry;
+                
+                // Dispara o evento change para acionar outras lógicas
+                formCountrySelect.dispatchEvent(new Event('change', { bubbles: true }));
+                
+                // Traduz a página para o idioma do país
+                const language = this.getCountryLanguage(selectedCountry);
+                this.translatePage(language);
+                
+                // Adapta os nomes dos campos conforme o país
+                this.adaptFieldLabels(selectedCountry);
+                
+                console.log(`[Header Country] País alterado para: ${selectedCountry}`);
+            });
+            
+            // Sincronização reversa: se o campo do formulário mudar, atualiza o header
+            formCountrySelect.addEventListener('change', (e) => {
+                headerCountrySelect.value = e.target.value;
+                this.adaptFieldLabels(e.target.value);
+            });
+            
+            // Aplica as labels iniciais
+            this.adaptFieldLabels(headerCountrySelect.value);
+        }
+    }
+
+    // ============================================
+    // MÉTODO NOVO: adaptFieldLabels
+    // Adapta os nomes dos campos conforme o país selecionado
+    // ============================================
+    adaptFieldLabels(countryCode) {
+        const cpfLabel = document.querySelector('label[for="customfield2"]');
+        const cnpjLabel = document.querySelector('label[for="customfield5"]');
+        const cpfField = document.getElementById('customfield2');
+        const cnpjField = document.getElementById('customfield5');
+        
+        // Define os labels conforme o país
+        const fieldLabels = {
+            'BR': {
+                cpf: 'CPF',
+                cnpj: 'CNPJ',
+                cpfPlaceholder: '000.000.000-00',
+                cnpjPlaceholder: '00.000.000/0000-00'
+            },
+            'US': {
+                cpf: 'SSN',
+                cnpj: 'EIN',
+                cpfPlaceholder: '000-00-0000',
+                cnpjPlaceholder: '00-0000000'
+            },
+            'PT': {
+                cpf: 'NIF',
+                cnpj: 'NIPC',
+                cpfPlaceholder: '000000000',
+                cnpjPlaceholder: '000000000'
+            },
+            'ES': {
+                cpf: 'DNI',
+                cnpj: 'CIF',
+                cpfPlaceholder: '00000000A',
+                cnpjPlaceholder: 'A00000000'
+            },
+            'AR': {
+                cpf: 'DNI',
+                cnpj: 'CUIT',
+                cpfPlaceholder: '00.000.000',
+                cnpjPlaceholder: '00-00000000-0'
+            },
+            'MX': {
+                cpf: 'CURP',
+                cnpj: 'RFC',
+                cpfPlaceholder: 'AAAA000000AAAAAA00',
+                cnpjPlaceholder: 'AAA000000AA0'
+            },
+            // Genérico para outros países
+            'DEFAULT': {
+                cpf: 'Documento de Identificação',
+                cnpj: 'Registro Empresarial',
+                cpfPlaceholder: '',
+                cnpjPlaceholder: ''
+            }
+        };
+        
+        // Seleciona as labels apropriadas
+        const labels = fieldLabels[countryCode] || fieldLabels['DEFAULT'];
+        
+        // Atualiza os labels
+        if (cpfLabel) {
+            const isRequired = cpfField?.required;
+            cpfLabel.innerHTML = `${labels.cpf} ${isRequired ? '<span>*</span>' : ''}`;
+        }
+        
+        if (cnpjLabel) {
+            const isRequired = cnpjField?.required;
+            cnpjLabel.innerHTML = `${labels.cnpj} ${isRequired ? '<span>*</span>' : ''}`;
+        }
+        
+        // Atualiza os placeholders
+        if (cpfField) {
+            cpfField.placeholder = labels.cpfPlaceholder;
+        }
+        
+        if (cnpjField) {
+            cnpjField.placeholder = labels.cnpjPlaceholder;
+        }
+        
+        console.log(`[Field Labels] Labels atualizados para: ${countryCode}`, labels);
     }
 
     setupCountryListener() {
@@ -323,6 +870,10 @@ class StepByStepForm {
         return true;
     }
 
+
+
+
+
     findMoveableGroup(elementId) { 
         const el = document.getElementById(elementId); 
         if (!el) return null; 
@@ -342,11 +893,14 @@ class StepByStepForm {
         return step; 
     }
 
-    createTwoColumnRow(elements) { 
+    createTwoColumnRow(groups) { 
         const row = document.createElement('div'); 
         row.className = 'row'; 
-        elements.forEach(element => { 
-            if (element) row.appendChild(element); 
+        groups.forEach(group => { 
+            if (group) { 
+                group.classList.add('col-md-6'); 
+                row.appendChild(group); 
+            } 
         }); 
         return row; 
     }
@@ -354,21 +908,147 @@ class StepByStepForm {
     createCheckboxField() { 
         const container = document.createElement('div'); 
         container.className = 'form-group col-md-12'; 
-        container.innerHTML = `<div class="checkbox"><label><input type="checkbox" id="pessoaJuridica" name="pessoa_juridica" style="margin-right: 5px;"> Sou Pessoa Jurídica (usar CNPJ)</label></div>`; 
+        container.innerHTML = ` 
+            <label class="checkbox-container"> 
+                <input type="checkbox" id="pessoaJuridica" name="pessoaJuridica"> 
+                <span class="checkbox-label">Sou Pessoa Jurídica (usar CNPJ)</span> 
+            </label> 
+        `; 
         return container; 
     }
 
     createNavigation() { 
         const form = document.querySelector('.loginForm'); 
         if (!form) return; 
-        const navigation = document.createElement('div'); 
-        navigation.className = 'step-navigation'; 
-        navigation.innerHTML = `<button type="button" class="btn btn-lg btn-default btn-prev" id="prevBtn" style="display: none;">Anterior</button><button type="button" class="btn btn-lg btn-primary btn-next" id="nextBtn" disabled>Próximo</button>`; 
-        form.appendChild(navigation); 
-        const originalSubmit = form.querySelector('button[type="submit"]'); 
-        if (originalSubmit) originalSubmit.style.display = 'none'; 
+        const nav = document.createElement('div'); 
+        nav.className = 'step-navigation'; 
+        nav.innerHTML = ` 
+            <button type="button" class="btn-step btn-prev" id="prevBtn">Voltar</button> 
+            <button type="button" class="btn-step btn-next" id="nextBtn">Próximo</button> 
+        `; 
+        form.appendChild(nav); 
     }
 
+    createSummaryBoxes() {
+        const step2 = document.querySelector('.form-step[data-step="2"]');
+
+        if (step2) {
+            const summaryBox = document.createElement('div');
+            summaryBox.className = 'summary-box';
+            summaryBox.innerHTML = `
+                <div class="summary-header">
+                    <h4>Seus Dados Pessoais</h4>
+                    <button type="button" class="edit-step-btn" data-target-step="1">✏️</button>
+                </div>
+                <div class="summary-content">
+                    <p><strong>Nome:</strong> <span id="summaryNameStep2">-</span></p>
+                    <p><strong>E-mail:</strong> <span id="summaryEmailStep2">-</span></p>
+                    <p><strong>Telefone:</strong> <span id="summaryPhoneStep2">-</span></p>
+                    <p><strong>CPF:</strong> <span id="summaryCpfStep2">-</span></p>
+                    <p><strong>Data de Nascimento:</strong> <span id="summaryBirthdateStep2">-</span></p>
+                </div>
+            `;
+            step2.querySelector('.step-content').insertBefore(summaryBox, step2.querySelector('.step-content').firstChild);
+        }
+
+        // Cria resumo no Step 3
+        const step3 = document.querySelector('.form-step[data-step="3"]');
+        if (step3) {
+            const summaryContainer3 = document.createElement('div');
+            summaryContainer3.className = 'summary-container';
+            summaryContainer3.innerHTML = `
+                <div class="summary-box" id="summaryPersonalInfoStep3" data-goto="1">
+                    <div class="summary-header">
+                        <h4>Informações Pessoais:</h4>
+                        <button type="button" class="edit-step-btn">✏️</button>
+                    </div>
+                    <div class="summary-content">
+                        <p><strong>Nome:</strong> <span id="summaryNameStep3">-</span></p>
+                        <p><strong>E-mail:</strong> <span id="summaryEmailStep3">-</span></p>
+                        <p><strong>Telefone:</strong> <span id="summaryPhoneStep3">-</span></p>
+                        <p><strong>CPF:</strong> <span id="summaryCpfStep3">-</span></p>
+                        <p><strong>Data de Nascimento:</strong> <span id="summaryBirthdateStep3">-</span></p>
+                    </div>
+                </div>
+
+                <div class="summary-box" id="summaryAddressStep3" data-goto="2">
+                    <div class="summary-header">
+                        <h4>Endereço:</h4>
+                        <button type="button" class="edit-step-btn">✏️</button>
+                    </div>
+                    <div class="summary-content">
+                        <p><strong>Rua:</strong> <span id="summaryStreetStep3">-</span></p>
+                        <p><strong>CEP:</strong> <span id="summaryCepStep3">-</span> | <strong>Cidade:</strong> <span id="summaryCityStep3">-</span></p>
+                    </div>
+                </div>
+            `;
+            // === PATCH STEP 3: sumário DEPOIS do bloco de senha ===
+            const stepContent3 = step3.querySelector('.step-content');
+            if (stepContent3) {
+            const pwd = document.getElementById('containerNewUserSecurity');
+            if (pwd && stepContent3.contains(pwd)) {
+                // senha fica na frente; sumário vem logo depois
+                pwd.insertAdjacentElement('afterend', summaryContainer3);
+            } else {
+                stepContent3.appendChild(summaryContainer3);
+            }
+            }
+
+        }
+
+        document.querySelectorAll('.edit-step-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const targetStep = parseInt(e.target.getAttribute('data-target-step'));
+                this.currentStep = targetStep;
+                this.showStep(targetStep);
+            });
+        });
+    }
+
+    updateSummary() {
+        const fullName = document.getElementById('inputFullName')?.value || '-';
+        const email = document.getElementById('inputEmail')?.value || '-';
+        const phone = document.getElementById('inputPhone')?.value || '-';
+        const cpf = document.getElementById('customfield2')?.value || '-';
+        const birthdate = document.getElementById('customfield3')?.value || '-';
+        const street = document.getElementById('inputAddress1')?.value || '-';
+        const number = document.getElementById('customfield18')?.value || '';
+        const fullStreet = number ? `${street}, ${number}` : street;
+        const cep = document.getElementById('inputPostcode')?.value || '-';
+        const city = document.getElementById('inputCity')?.value || '-';
+
+        // Atualiza resumo no Step 2
+        const summaryNameStep2 = document.getElementById('summaryNameStep2');
+        const summaryEmailStep2 = document.getElementById('summaryEmailStep2');
+        const summaryPhoneStep2 = document.getElementById('summaryPhoneStep2');
+        const summaryCpfStep2 = document.getElementById('summaryCpfStep2');
+        const summaryBirthdateStep2 = document.getElementById('summaryBirthdateStep2');
+
+        if (summaryNameStep2) summaryNameStep2.textContent = fullName;
+        if (summaryEmailStep2) summaryEmailStep2.textContent = email;
+        if (summaryPhoneStep2) summaryPhoneStep2.textContent = phone;
+        if (summaryCpfStep2) summaryCpfStep2.textContent = cpf;
+        if (summaryBirthdateStep2) summaryBirthdateStep2.textContent = birthdate;
+
+        // Atualiza resumo no Step 3
+        const summaryNameStep3 = document.getElementById('summaryNameStep3');
+        const summaryEmailStep3 = document.getElementById('summaryEmailStep3');
+        const summaryPhoneStep3 = document.getElementById('summaryPhoneStep3');
+        const summaryCpfStep3 = document.getElementById('summaryCpfStep3');
+        const summaryBirthdateStep3 = document.getElementById('summaryBirthdateStep3');
+        const summaryStreetStep3 = document.getElementById('summaryStreetStep3');
+        const summaryCepStep3 = document.getElementById('summaryCepStep3');
+        const summaryCityStep3 = document.getElementById('summaryCityStep3');
+
+        if (summaryNameStep3) summaryNameStep3.textContent = fullName;
+        if (summaryEmailStep3) summaryEmailStep3.textContent = email;
+        if (summaryPhoneStep3) summaryPhoneStep3.textContent = phone;
+        if (summaryCpfStep3) summaryCpfStep3.textContent = cpf;
+        if (summaryBirthdateStep3) summaryBirthdateStep3.textContent = birthdate;
+        if (summaryStreetStep3) summaryStreetStep3.textContent = fullStreet;
+        if (summaryCepStep3) summaryCepStep3.textContent = cep;
+        if (summaryCityStep3) summaryCityStep3.textContent = city;
+    }
     adjustContainer() { 
         const container = document.querySelector('.login-wrapper'); 
         if (container) container.style.maxWidth = '700px'; 
@@ -408,7 +1088,6 @@ class StepByStepForm {
             if (showCnpj) { 
                 cnpjGroup.style.display = 'block'; 
                 companyNameGroup.style.display = 'block'; 
-                cpfGroup.style.display = 'none'; 
                 cpfField.required = false; 
                 cnpjField.required = true; 
                 companyNameField.required = true; 
@@ -429,7 +1108,7 @@ class StepByStepForm {
         }
         this.checkStepValidationForButton();
     }
-    
+
     // ============================================
     // MÉTODO MODIFICADO: setupValidation
     // ============================================
@@ -470,32 +1149,73 @@ class StepByStepForm {
     }
 
     setupInputMasks() {
-        document.addEventListener('input', (e) => {
-            if (e.target.id === 'customfield2') this.applyCpfMask(e.target);
-            if (e.target.id === 'customfield5') this.applyCnpjMask(e.target);
-            if (e.target.id === 'inputPostcode') {
-                const country = document.getElementById('inputCountry').value;
-                if (country === 'BR') this.applyCepMask(e.target);
-                else if (country === 'US') this.applyZipCodeMask(e.target);
-            }
-            if (e.target.id === 'customfield3') this.applyDateMask(e.target);
-        });
+    document.addEventListener('input', (e) => {
+        const country = document.getElementById('inputCountry')?.value || 'BR';
+
+        // CPF
+        if (e.target.id === 'customfield2') {
+        if (country === 'BR') this.applyCpfMask(e.target); // só mascara no BR
+        // fora do BR: sem máscara (deixa livre)
+        }
+
+        // CNPJ
+        if (e.target.id === 'customfield5') {
+        if (country === 'BR') this.applyCnpjMask(e.target); // só mascara no BR
+        // fora do BR: sem máscara (deixa livre)
+        }
+
+        // CEP / ZIP
+        if (e.target.id === 'inputPostcode') {
+        if (country === 'BR') this.applyCepMask(e.target);
+        else if (country === 'US') this.applyZipCodeMask(e.target);
+        // demais países: sem máscara
+        }
+
+        // Data de nascimento
+        if (e.target.id === 'customfield3') this.applyDateMask(e.target);
+    });
     }
 
+    
 setupCepFieldListener() {
-    const cepField = document.getElementById('inputPostcode');
-    if (!cepField) return;
+  const cepField = document.getElementById('inputPostcode');
+  if (!cepField) return;
 
-    // Verifica o CEP quando o campo perder o foco (evento blur)
-    cepField.addEventListener('blur', async () => {
-        await this.validateCepField(cepField);
-    });
+  let debounceTimer = null;
 
-    // Verifica o CEP quando o valor do campo mudar (evento change)
-    cepField.addEventListener('change', async () => {
-        await this.validateCepField(cepField);
-    });
+  const triggerIfComplete = async () => {
+    const country = document.getElementById('inputCountry')?.value;
+    const digits = cepField.value.replace(/\D/g, '');
+
+    // Valida automaticamente quando completar o tamanho do CEP (BR = 8)
+    if (country === 'BR' && digits.length === 8 && cepField.dataset.lastValidated !== digits) {
+      cepField.dataset.lastValidated = digits;
+      await this.validateCepField(cepField);
+    }
+  };
+
+  // Valida ao digitar quando atingir o tamanho do CEP
+  cepField.addEventListener('input', () => {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(triggerIfComplete, 150);
+  });
+
+  // Valida ao perder foco
+  cepField.addEventListener('blur', async () => {
+    cepField.dataset.lastValidated = ''; // força revalidação no blur
+    await this.validateCepField(cepField);
+  });
+
+  // Valida em mudanças programáticas
+  cepField.addEventListener('change', async () => {
+    cepField.dataset.lastValidated = '';
+    await this.validateCepField(cepField);
+  });
+
+  // Se já vier preenchido no load, tenta validar também
+  setTimeout(triggerIfComplete, 0);
 }
+
 
 async validateCepField(cepField) {
     const cep = cepField.value.replace(/\D/g, '');  // Remove tudo que não for número
@@ -542,6 +1262,7 @@ async validateCepField(cepField) {
             }
         });
     }
+
     showStep(stepNumber) {
         document.querySelectorAll('.form-step').forEach(step => step.classList.remove('active'));
         const targetStep = document.querySelector(`.form-step[data-step="${stepNumber}"]`);
@@ -565,12 +1286,18 @@ async validateCepField(cepField) {
         if (nextBtn) nextBtn.textContent = stepNumber === this.totalSteps ? 'Finalizar' : 'Próximo';
 
         this.updateStepContent(stepNumber);
+        
+        // Atualiza o resumo quando chegar no step 2 ou 3
+        if (stepNumber === 2 || stepNumber === 3) {
+            this.updateSummary(); // ← ADICIONE ESTA LINHA
+        }
+        
         this.checkStepValidationForButton();
     }
-
     updateStepContent(stepNumber) {
-        const titles = ['Dados Pessoais', 'Endereço', 'Segurança'];
-        const subtitles = [
+        const t = this.translations[this.currentLanguage];
+        const titles = t ? t.stepTitles : ['Dados Pessoais', 'Endereço', 'Segurança'];
+        const subtitles = t ? t.stepSubtitles : [
             'Preencha suas informações básicas',
             'Informe seu endereço completo',
             'Crie sua senha de acesso'
@@ -580,6 +1307,12 @@ async validateCepField(cepField) {
         const subtitleEl = document.getElementById('stepSubtitle');
         if (titleEl) titleEl.textContent = titles[stepNumber - 1] || '';
         if (subtitleEl) subtitleEl.textContent = subtitles[stepNumber - 1] || '';
+        
+        // Atualiza o texto do botão conforme o idioma
+        const nextBtn = document.getElementById('nextBtn');
+        if (nextBtn && t) {
+            nextBtn.textContent = stepNumber === this.totalSteps ? t.finishButton : t.nextButton;
+        }
     }
 
     nextStep() {
@@ -599,173 +1332,195 @@ async validateCepField(cepField) {
     }
 
     validateField(field) {
-        const group = field.closest('.form-group') || field.closest('.col-md-6');
-        if (!group) return true;
+    const group = field.closest('.form-group') || field.closest('.col-md-6');
+    if (!group) return true;
 
-        const existingError = group.querySelector('.error-message');
-        if (existingError) existingError.remove();
-        field.classList.remove('error', 'success');
+    const existingError = group.querySelector('.error-message');
+    if (existingError) existingError.remove();
+    field.classList.remove('error', 'success');
 
-        const value = field.value.trim();
-        let isValid = true;
-        let errorMessage = '';
+    const value = field.value.trim();
+    const digits = value.replace(/\D/g, '');
+    const country = document.getElementById('inputCountry')?.value || 'BR';
 
-        if (field.type === 'checkbox') {
-            isValid = field.checked;
-            if (!isValid) errorMessage = 'Você deve aceitar os termos.';
-        } else if (field.required && !value) {
-            isValid = false;
-            errorMessage = 'Este campo é obrigatório.';
-        } else if (value && field.type === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
-            isValid = false;
-            errorMessage = 'E-mail inválido.';
-        } else if (value && field.id === 'customfield2' && value.replace(/\D/g, '').length < 11) {
-            isValid = false;
-            errorMessage = 'CPF inválido.';
-        } else if (value && field.id === 'customfield5' && value.replace(/\D/g, '').length < 14) {
-            isValid = false;
-            errorMessage = 'CNPJ inválido.';
-        } else if (field.id === 'inputPostcode' &&
-                document.getElementById('inputCountry').value === 'BR' &&
-                value.replace(/\D/g, '').length < 8) {
-            isValid = false;
-            errorMessage = 'CEP inválido.';
+    let isValid = true;
+    let errorMessage = '';
+
+    if (field.type === 'checkbox') {
+        isValid = field.checked;
+        if (!isValid) errorMessage = 'Você deve aceitar os termos.';
+    } else if (field.required && !value) {
+        isValid = false;
+        errorMessage = 'Este campo é obrigatório.';
+    } else if (value && field.type === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+        isValid = false;
+        errorMessage = 'E-mail inválido.';
+    } else if (field.id === 'customfield2') { // CPF / Doc Pessoa Física
+        if (country === 'BR') {
+        if ((field.required && digits.length !== 11) || (!field.required && value && digits.length !== 11)) {
+            isValid = false; errorMessage = 'CPF inválido.';
         }
-
-        if (!isValid) {
-            field.classList.add('error');
-            const errorEl = document.createElement('span');
-            errorEl.className = 'error-message';
-            errorEl.textContent = errorMessage;
-            group.appendChild(errorEl);
-        } else if (value || field.checked) {
-            field.classList.add('success');
+        } else {
+        // Fora do BR: se obrigatório, precisa ter ao menos 1 dígito; se opcional e vazio, ok
+        if (field.required && digits.length < 1) { isValid = false; errorMessage = 'Este campo é obrigatório.'; }
         }
-        return isValid;
+    } else if (field.id === 'customfield5') { // CNPJ / Doc Pessoa Jurídica
+        if (country === 'BR') {
+        if ((field.required && digits.length !== 14) || (!field.required && value && digits.length !== 14)) {
+            isValid = false; errorMessage = 'CNPJ inválido.';
+        }
+        } else {
+        if (field.required && digits.length < 1) { isValid = false; errorMessage = 'Este campo é obrigatório.'; }
+        }
+    } else if (field.id === 'inputPostcode' && country === 'BR' && digits.length < 8) {
+        isValid = false;
+        errorMessage = 'CEP inválido.';
+    }
+
+    if (!isValid) {
+        field.classList.add('error');
+        const errorEl = document.createElement('span');
+        errorEl.className = 'error-message';
+        errorEl.textContent = errorMessage;
+        group.appendChild(errorEl);
+    } else if (value || field.checked) {
+        field.classList.add('success');
+    }
+    return isValid;
     }
 
 async checkStepValidationForButton() {
-    const nextBtn = document.getElementById('nextBtn');
-    if (!nextBtn) return;
+  const nextBtn = document.getElementById('nextBtn');
+  if (!nextBtn) return;
 
-    const currentStepEl = document.querySelector(`.form-step.step-${this.currentStep}`);
-    if (!currentStepEl) return;
+  const currentStepEl = document.querySelector(`.form-step.step-${this.currentStep}`);
+  if (!currentStepEl) return;
 
-    const fields = currentStepEl.querySelectorAll('input[required], select[required]');
-    let allValid = true;
+  const fields = currentStepEl.querySelectorAll('input[required], select[required], #inputPhone, #customfield18, #customfield3');
+  let allValid = true;
 
-    // Valida os outros campos
-    fields.forEach(field => {
-        if (field.offsetParent !== null) {
-            // Validação especial para nome completo
-            if (field.id === 'inputFullName') {
-                const isValid = this.validateAndMapFullName(field);
-                if (!isValid) allValid = false;
-            } else {
-                if (!field.value.trim() && field.type !== 'checkbox') {
-                    allValid = false;
-                }
-                if (field.type === 'checkbox' && !field.checked) {
-                    allValid = false;
-                }
-            }
-        }
-    });
+  fields.forEach(field => {
+    if (field.offsetParent !== null) {
+      if (field.id === 'inputFullName') {
+        const ok = this.validateAndMapFullName(field);
+        if (!ok) allValid = false;
+      } else {
+        if (!field.value.trim() && field.type !== 'checkbox') allValid = false;
+        if (field.type === 'checkbox' && !field.checked) allValid = false;
+      }
+    }
+  });
 
-    // Verifica se estamos no step de endereço (step 2)
-    if (this.currentStep === 2) {
-        const cepField = document.getElementById('inputPostcode');
-        if (cepField) {
-            const cep = cepField.value.trim().replace(/\D/g, '');
+  // Regras específicas
+  const country = document.getElementById('inputCountry')?.value || 'BR';
 
-            if (!cep) {
-                allValid = false;  // Se o CEP estiver vazio
-            } else {
-                // Realiza a requisição para validar o CEP
-                const isValid = await this.validateCep(cep);
-                if (!isValid) {
-                    allValid = false;
-                    this.showCepError('CEP inválido. Verifique e tente novamente.');
-                } else {
-                    this.showCepError(''); // Limpa qualquer erro anterior
-                }
-            }
-        }
+  // Step 1: CPF/CNPJ por país
+  if (this.currentStep === 1) {
+    const cpfField = document.getElementById('customfield2');
+    const cnpjField = document.getElementById('customfield5');
+    const pessoaJuridica = document.getElementById('pessoaJuridica');
+    const companyNameField = document.getElementById('inputCompanyName');
+
+    if (cpfField && cpfField.offsetParent !== null) {
+      const cpfDigits = (cpfField.value || '').replace(/\D/g, '');
+      if (country === 'BR') {
+        if (cpfField.required && cpfDigits.length !== 11) allValid = false;
+      } else {
+        if (cpfField.required && cpfDigits.length < 1) allValid = false;
+      }
     }
 
-    // Atualiza o estado do botão "Próximo"
-    nextBtn.disabled = !allValid;
-}
-
-// Função para validar o CEP via API viaCEP
-async validateCep(cep) {
-    try {
-        const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
-        const data = await response.json();
-        return !data.erro;  // Retorna true se o CEP for válido, caso contrário false
-    } catch (error) {
-        return false;  // Se ocorrer erro na requisição, considera como inválido
+    if (pessoaJuridica && pessoaJuridica.checked) {
+      if (cnpjField && cnpjField.offsetParent !== null) {
+        const cnpjDigits = (cnpjField.value || '').replace(/\D/g, '');
+        if (country === 'BR') {
+          if (cnpjField.required && cnpjDigits.length !== 14) allValid = false;
+        } else {
+          if (cnpjField.required && cnpjDigits.length < 1) allValid = false;
+        }
+      }
+      if (companyNameField && companyNameField.required && companyNameField.offsetParent !== null) {
+        if (!companyNameField.value.trim()) allValid = false;
+      }
     }
-}
+  }
 
-// Função para exibir mensagens de erro do CEP
-showCepError(message) {
+  // Step 2: CEP somente obriga no BR
+  if (this.currentStep === 2) {
     const cepField = document.getElementById('inputPostcode');
-    const errorMessage = document.createElement('span');
-    errorMessage.classList.add('error-message');
-    errorMessage.textContent = message;
-    
-    // Remover qualquer erro anterior
-    const existingError = document.querySelector('#inputPostcode + .error-message');
-    if (existingError) existingError.remove();
+    if (country === 'BR' && cepField) {
+      const cep = cepField.value.replace(/\D/g, '');
+      if (cep.length !== 8 || cepField.classList.contains('error')) allValid = false;
+    }
+  }
 
-    cepField.parentNode.appendChild(errorMessage);
+  nextBtn.disabled = !allValid;
 }
 
 
-    submitForm() {
-        const form = document.querySelector('.loginForm');
-        const submitButton = form.querySelector('button[type="submit"]');
-        if (submitButton) submitButton.click();
-        else form.submit();
-    }
+    showCepError(message) {
+        const cepField = document.getElementById('inputPostcode');
+        const group = cepField?.closest('.form-group') || cepField?.closest('.col-md-6');
+        if (!group) return;
 
-    applyCpfMask(field) {
-        let v = field.value.replace(/\D/g, '').slice(0, 11);
-        v = v.replace(/(\d{3})(\d)/, '$1.$2');
-        v = v.replace(/(\d{3})(\d)/, '$1.$2');
-        v = v.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
-        field.value = v;
-    }
+        const existingError = group.querySelector('.error-message');
+        if (existingError) existingError.remove();
 
-    applyCnpjMask(field) {
-        let v = field.value.replace(/\D/g, '').slice(0, 14);
-        v = v.replace(/^(\d{2})(\d)/, '$1.$2');
-        v = v.replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3');
-        v = v.replace(/\.(\d{3})(\d)/, '.$1/$2');
-        v = v.replace(/(\d{4})(\d)/, '$1-$2');
-        field.value = v;
-    }
-
-    applyCepMask(field) {
-        let v = field.value.replace(/\D/g, '').slice(0, 8);
-        v = v.replace(/^(\d{5})(\d)/, '$1-$2');
-        field.value = v;
-    }
-
-    applyDateMask(field) {
-        let v = field.value.replace(/\D/g, '').slice(0, 8);
-        if (v.length > 4) v = v.replace(/(\d{2})(\d{2})(\d{1,4})/, '$1/$2/$3');
-        else if (v.length > 2) v = v.replace(/(\d{2})(\d{1,2})/, '$1/$2');
-        field.value = v;
-    }
-
-    applyZipCodeMask(field) {
-        let v = field.value.replace(/\D/g, '').slice(0, 9);
-        if (v.length > 5) {
-            v = v.replace(/^(\d{5})(\d{1,4})/, '$1-$2');
+        if (message) {
+            cepField.classList.add('error');
+            const errorEl = document.createElement('span');
+            errorEl.className = 'error-message';
+            errorEl.textContent = message;
+            group.appendChild(errorEl);
+        } else {
+            cepField.classList.remove('error');
+            cepField.classList.add('success');
         }
-        field.value = v;
+    }
+
+    applyCpfMask(field) { 
+        let value = field.value.replace(/\D/g, ''); 
+        value = value.substring(0, 11); 
+        value = value.replace(/(\d{3})(\d)/, '$1.$2'); 
+        value = value.replace(/(\d{3})(\d)/, '$1.$2'); 
+        value = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2'); 
+        field.value = value; 
+    }
+
+    applyCnpjMask(field) { 
+        let value = field.value.replace(/\D/g, ''); 
+        value = value.substring(0, 14); 
+        value = value.replace(/^(\d{2})(\d)/, '$1.$2'); 
+        value = value.replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3'); 
+        value = value.replace(/\.(\d{3})(\d)/, '.$1/$2'); 
+        value = value.replace(/(\d{4})(\d)/, '$1-$2'); 
+        field.value = value; 
+    }
+
+    applyCepMask(field) { 
+        let value = field.value.replace(/\D/g, ''); 
+        value = value.substring(0, 8); 
+        value = value.replace(/^(\d{5})(\d)/, '$1-$2'); 
+        field.value = value; 
+    }
+
+    applyZipCodeMask(field) { 
+        let value = field.value.replace(/\D/g, ''); 
+        value = value.substring(0, 5); 
+        field.value = value; 
+    }
+
+    applyDateMask(field) { 
+        let value = field.value.replace(/\D/g, ''); 
+        value = value.substring(0, 8); 
+        value = value.replace(/^(\d{2})(\d)/, '$1/$2'); 
+        value = value.replace(/(\d{2})(\d)/, '$1/$2'); 
+        field.value = value; 
+    }
+
+    submitForm() { 
+        const form = document.querySelector('.loginForm'); 
+        if (form) form.submit(); 
     }
 }
 
