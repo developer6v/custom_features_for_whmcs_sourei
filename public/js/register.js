@@ -1590,11 +1590,11 @@ async checkStepValidationForButton() {
         console.log('[Submit] Validando CAPTCHA...');
         const captchaValidation = this.validateCaptcha();
         
-       /* if (!captchaValidation.valid) {
+        if (!captchaValidation.valid) {
             console.error('[Submit] ❌ CAPTCHA não validado:', captchaValidation.message);
             alert(captchaValidation.message);
             return;
-        }*/
+        }
         
         console.log('[Submit] ✅ Todas as validações passaram. Enviando formulário...');
         form.submit(); 
@@ -1656,13 +1656,13 @@ async checkStepValidationForButton() {
             console.log('[CAPTCHA] Input de CAPTCHA encontrado:', captchaInput.name);
             console.log('[CAPTCHA] Valor do input:', captchaInput.value ? 'Preenchido' : 'Vazio');
             
-           /* if (!captchaInput.value || captchaInput.value.trim() === '') {
+            if (!captchaInput.value || captchaInput.value.trim() === '') {
                 console.warn('[CAPTCHA] ⚠️ Input de CAPTCHA está vazio');
                 return {
                     valid: false,
                     message: 'Por favor, complete a verificação de segurança (CAPTCHA).'
                 };
-            }*/
+            }
         }
 
         // Se não encontrou nenhum CAPTCHA, permite o envio
