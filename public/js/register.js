@@ -781,9 +781,6 @@ class StepByStepForm {
         const termsSection = document.querySelector('input[name="accepttos"]')?.closest('.section');
         const mailingListSection = document.querySelector('input[name="marketingoptin"]')?.closest('.section');
 
-        // ← NOVO: Localiza o CAPTCHA
-
-        // STEP 3 - MODIFICADO: Agora inclui o CAPTCHA
         const step3Elements = [passwordSection, mailingListSection, termsSection];
 
         const step3 = this.createStep(3, step3Elements.filter(el => el !== null));
@@ -799,16 +796,6 @@ class StepByStepForm {
         }
     }
 
-
-        // ============================================
-    // MÉTODO NOVO: findCaptchaSection
-    // Localiza o campo de CAPTCHA do WHMCS
-    // ============================================
-
-
-    // ============================================
-    // MÉTODO NOVO: createFullNameField
-    // ============================================
     createFullNameField() {
         // Oculta os campos originais
         const firstNameGroup = this.findMoveableGroup('inputFirstName');
@@ -1533,20 +1520,28 @@ async checkStepValidationForButton() {
         field.value = value; 
     }
 
-    submitForm() { 
+    submitForm() {
         console.log('[Submit] Iniciando processo de envio do formulário...');
-        
         const form = document.querySelector('.loginForm');
-        
         if (!form) {
             console.error('[Submit] ❌ Formulário não encontrado');
             return;
         }
-        
-     
-        console.log('[Submit] ✅ Todas as validações passaram. Enviando formulário...');
-        form.submit(); 
+
+        // 1) Encontre o botão de submit que tem a classe que o WHMCS injeta p/ o captcha
+        const submitBtn = form.querySelector('button[type="submit"]');
+
+        if (!submitBtn) {
+            console.error('[Submit] ❌ Botão de submit do WHMCS não encontrado');
+            return;
+        }
+
+        // 2) Se for reCAPTCHA invisível, o clique no botão aciona o fluxo do captcha
+        //    (NÃO use form.submit(), pois isso ignora o captcha)
+        console.log('[Submit] ✅ Disparando clique no botão para acionar o captcha invisível');
+        submitBtn.click();
     }
+
 
 
     // ============================================
