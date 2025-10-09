@@ -6,6 +6,7 @@ class StepByStepForm {
         this.iti = null;
         this.currentLanguage = 'pt-BR'; // Idioma padrão
         this.translations = this.initTranslations();
+          this.uniquenessURL = '/rota-x/verificar-duplicados'; 
         this.init();
     }
 
@@ -64,7 +65,11 @@ class StepByStepForm {
                 errorEmail: 'E-mail inválido.',
                 errorFullName: 'Por favor, insira nome e sobrenome',
                 errorCep: 'CEP inválido. Verifique e tente novamente.',
-                errorCepFetch: 'Erro ao buscar CEP. Tente novamente.'
+                errorCepFetch: 'Erro ao buscar CEP. Tente novamente.',
+                errorCpfExists: 'Este CPF já está cadastrado.',
+                errorCnpjExists: 'Este CNPJ já está cadastrado.',
+                errorNetwork: 'Não foi possível validar agora. Tente novamente.'
+
             },
             'en-US': {
                 stepTitles: ['Personal Information', 'Address', 'Security'],
@@ -333,6 +338,82 @@ class StepByStepForm {
         
         console.log(`[Translation] Página traduzida para: ${language}`);
     }
+
+
+    normalizeDigits_(v){ return String(v||'').replace(/\D+/g,''); }
+
+        /**
+         * Checa duplicidade de CPF/CNPJ no servidor (Step 1).
+         * Retorna true se puder avançar; false se deve barrar.
+         */
+        async validateDocUniquenessStep1_(){
+        const t = this.translations[this.currentLanguage] || this.translations['pt-BR'];
+        const pj = document.getElementById('pessoaJuridica');
+        const useCnpj = !!(pj && pj.checked);
+
+        const cpfEl  = document.getElementById('customfield2');
+        const cnpjEl = document.getElementById('customfield5');
+
+        const fieldId = useCnpj ? 'customfield5' : 'customfield2';
+        const el = useCnpj ? cnpjEl : cpfEl;
+        if (!el){ return true; } // se não achar o campo, não trava
+
+        // limpa erro anterior
+        this.clearFieldError_(fieldId);
+
+        const digits = this.normalizeDigits_(el.value);
+        if (!digits){ return false; } // obrigatório já barrado pela validação local
+
+        // trava botão
+        const nextBtn = document.getElementById('nextBtn');
+        const oldLabel = nextBtn ? nextBtn.textContent : '';
+        if (nextBtn){ nextBtn.disabled = true; nextBtn.textContent = 'Verificando...'; }
+
+        try{
+            const resp = await fetch(this.docCheckURL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ documento: digits, tipo: useCnpj ? 'cnpj' : 'cpf' })
+            });
+            if (!resp.ok){
+            this.showFieldError_(fieldId, t.errorNetwork);
+            return false;
+            }
+            const data = await resp.json();
+            // esperado (exemplo):
+            // { status: "success", cpf: true/false, cnpj: true/false }
+            if (useCnpj ? data?.cnpj === true : data?.cpf === true){
+            this.showFieldError_(fieldId, useCnpj ? t.errorCnpjExists : t.errorCpfExists);
+            return false;
+            }
+            return true;
+        } catch(e){
+            console.error('[DocCheck] erro', e);
+            this.showFieldError_(fieldId, t.errorNetwork);
+            return false;
+        } finally {
+            if (nextBtn){ nextBtn.disabled = false; nextBtn.textContent = oldLabel || 'Próximo'; }
+        }
+        }
+
+
+        getFieldGroupById_(id){
+        const el = document.getElementById(id);
+        return el ? (el.closest('.form-group') || el.closest('.col-md-6')) : null;
+        }
+        showFieldError_(id, msg){
+        const g = this.getFieldGroupById_(id), f = document.getElementById(id);
+        if (!g || !f) return;
+        g.querySelectorAll('.error-message').forEach(n=>n.remove());
+        f.classList.remove('success'); f.classList.add('error');
+        const s = document.createElement('span'); s.className='error-message'; s.textContent = msg; g.appendChild(s);
+        }
+        clearFieldError_(id){
+        const g = this.getFieldGroupById_(id), f = document.getElementById(id);
+        if (!g || !f) return;
+        g.querySelectorAll('.error-message').forEach(n=>n.remove());
+        f.classList.remove('error');
+        }
 
     // ============================================
     // MÉTODO NOVO: translateLabel
@@ -1317,14 +1398,102 @@ async validateCepField(cepField) {
         }
     }
 
-    nextStep() {
-        if (this.currentStep < this.totalSteps) {
-            this.currentStep++;
-            this.showStep(this.currentStep);
-        } else {
-            this.submitForm();
+    async nextStep() {
+    if (this.currentStep === 1) {
+        // validação local dos campos visíveis do step 1
+        const stepEl = document.querySelector('.form-step.step-1');
+        if (stepEl){
+        const fields = stepEl.querySelectorAll('.form-control, input[type="checkbox"], select');
+        let okLocal = true;
+        fields.forEach(f=>{
+            if (f.offsetParent !== null){
+            if (f.id === 'inputFullName'){
+                if (!this.validateAndMapFullName(f)) okLocal = false;
+            } else {
+                if (!this.validateField(f)) okLocal = false;
+            }
+            }
+        });
+        if (!okLocal){ this.checkStepValidationForButton(); return; }
         }
+
+        // checagem servidor para CPF + EMAIL
+        const okServer = await this.validateUniquenessStep1_();
+        if (!okServer){ this.checkStepValidationForButton(); return; }
     }
+
+    if (this.currentStep < this.totalSteps) {
+        this.currentStep++;
+        this.showStep(this.currentStep);
+    } else {
+        this.submitForm();
+    }
+    }
+
+
+    /**
+ * Checa duplicidade de CPF + email no servidor.
+ * Retorna true se NÃO há duplicidade (pode avançar), false caso contrário.
+    */
+    async validateUniquenessStep1_(){
+    const t = this.translations[this.currentLanguage] || this.translations['pt-BR'];
+    const emailEl = document.getElementById('inputEmail');
+    const cpfEl   = document.getElementById('customfield2');
+
+    if (!emailEl || !cpfEl) return true; // se campos não encontrados, não trava
+
+    // limpa erros anteriores
+    this.clearFieldError_('inputEmail');
+    this.clearFieldError_('customfield2');
+
+    const payload = {
+        email: this.normalizeEmail_(emailEl.value),
+        cpf: this.normalizeDigits_(cpfEl.value)
+    };
+
+    // se vazios, assume validação local irá bloquear; aqui não sobe requisição
+    if (!payload.email || !payload.cpf) return false;
+
+    const nextBtn = document.getElementById('nextBtn');
+    const oldLabel = nextBtn ? nextBtn.textContent : '';
+    if (nextBtn){ nextBtn.disabled = true; nextBtn.textContent = 'Verificando...'; }
+
+    try {
+        const resp = await fetch(this.uniquenessURL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+        credentials: 'omit'
+        });
+
+        if (!resp.ok){
+        this.showFieldError_('inputEmail', t.errorNetwork);
+        return false;
+        }
+
+        const data = await resp.json();
+        // esperado: { status: "success", cpf: boolean, email: boolean }
+
+        let canProceed = true;
+        if (data?.cpf === true){
+        this.showFieldError_('customfield2', t.errorCpfExists);
+        canProceed = false;
+        }
+        if (data?.email === true){
+        this.showFieldError_('inputEmail', t.errorEmailExists);
+        canProceed = false;
+        }
+        return canProceed;
+
+    } catch(err){
+        console.error('[Uniq] erro', err);
+        this.showFieldError_('inputEmail', t.errorNetwork);
+        return false;
+    } finally {
+        if (nextBtn){ nextBtn.disabled = false; nextBtn.textContent = oldLabel || 'Próximo'; }
+    }
+    }
+
 
     prevStep() {
         if (this.currentStep > 1) {
