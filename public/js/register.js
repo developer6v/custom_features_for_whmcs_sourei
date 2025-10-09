@@ -4,9 +4,11 @@ class StepByStepForm {
         this.totalSteps = 3;
         this.formData = {};
         this.iti = null;
-        this.currentLanguage = 'pt-BR'; // Idioma padrão
-        this.translations = this.initTranslations();
-          this.uniquenessURL = '/rota-x/verificar-duplicados'; 
+        this.serverCpfExists = false;
+        this.serverEmailExists = false;
+        this.currentLanguage = 'pt-BR';
+        this.translations = window.FormGeoI18n.getTranslation(this.currentLanguage);
+        this.urlvalidateemailcpf = "/modules/addons/custom_features_for_whmcs_sourei/src/Controllers/validateEmailCpf.php" ;
         this.init();
     }
 
@@ -65,11 +67,7 @@ class StepByStepForm {
                 errorEmail: 'E-mail inválido.',
                 errorFullName: 'Por favor, insira nome e sobrenome',
                 errorCep: 'CEP inválido. Verifique e tente novamente.',
-                errorCepFetch: 'Erro ao buscar CEP. Tente novamente.',
-                errorCpfExists: 'Este CPF já está cadastrado.',
-                errorCnpjExists: 'Este CNPJ já está cadastrado.',
-                errorNetwork: 'Não foi possível validar agora. Tente novamente.'
-
+                errorCepFetch: 'Erro ao buscar CEP. Tente novamente.'
             },
             'en-US': {
                 stepTitles: ['Personal Information', 'Address', 'Security'],
@@ -254,26 +252,7 @@ class StepByStepForm {
         };
     }
 
-    // ============================================
-    // MÉTODO NOVO: getCountryLanguage
-    // Mapeia país para idioma
-    // ============================================
-    getCountryLanguage(countryCode) {
-        const countryLanguageMap = {
-            'BR': 'pt-BR',
-            'PT': 'pt-PT',
-            'US': 'en-US',
-            'GB': 'en-US',
-            'ES': 'es-ES',
-            'MX': 'es-ES',
-            'AR': 'es-ES',
-            'FR': 'fr-FR',
-            'DE': 'en-US', // Alemão não implementado, usa inglês
-            'IT': 'en-US'  // Italiano não implementado, usa inglês
-        };
-        
-        return countryLanguageMap[countryCode] || 'en-US';
-    }
+
 
     // ============================================
     // MÉTODO NOVO: translatePage
@@ -281,6 +260,7 @@ class StepByStepForm {
     // ============================================
     translatePage(language) {
         this.currentLanguage = language;
+        this.translations = window.FormGeoI18n.getTranslation(language);
         const t = this.translations[language];
         
         if (!t) {
@@ -338,82 +318,6 @@ class StepByStepForm {
         
         console.log(`[Translation] Página traduzida para: ${language}`);
     }
-
-
-    normalizeDigits_(v){ return String(v||'').replace(/\D+/g,''); }
-
-        /**
-         * Checa duplicidade de CPF/CNPJ no servidor (Step 1).
-         * Retorna true se puder avançar; false se deve barrar.
-         */
-        async validateDocUniquenessStep1_(){
-        const t = this.translations[this.currentLanguage] || this.translations['pt-BR'];
-        const pj = document.getElementById('pessoaJuridica');
-        const useCnpj = !!(pj && pj.checked);
-
-        const cpfEl  = document.getElementById('customfield2');
-        const cnpjEl = document.getElementById('customfield5');
-
-        const fieldId = useCnpj ? 'customfield5' : 'customfield2';
-        const el = useCnpj ? cnpjEl : cpfEl;
-        if (!el){ return true; } // se não achar o campo, não trava
-
-        // limpa erro anterior
-        this.clearFieldError_(fieldId);
-
-        const digits = this.normalizeDigits_(el.value);
-        if (!digits){ return false; } // obrigatório já barrado pela validação local
-
-        // trava botão
-        const nextBtn = document.getElementById('nextBtn');
-        const oldLabel = nextBtn ? nextBtn.textContent : '';
-        if (nextBtn){ nextBtn.disabled = true; nextBtn.textContent = 'Verificando...'; }
-
-        try{
-            const resp = await fetch(this.docCheckURL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ documento: digits, tipo: useCnpj ? 'cnpj' : 'cpf' })
-            });
-            if (!resp.ok){
-            this.showFieldError_(fieldId, t.errorNetwork);
-            return false;
-            }
-            const data = await resp.json();
-            // esperado (exemplo):
-            // { status: "success", cpf: true/false, cnpj: true/false }
-            if (useCnpj ? data?.cnpj === true : data?.cpf === true){
-            this.showFieldError_(fieldId, useCnpj ? t.errorCnpjExists : t.errorCpfExists);
-            return false;
-            }
-            return true;
-        } catch(e){
-            console.error('[DocCheck] erro', e);
-            this.showFieldError_(fieldId, t.errorNetwork);
-            return false;
-        } finally {
-            if (nextBtn){ nextBtn.disabled = false; nextBtn.textContent = oldLabel || 'Próximo'; }
-        }
-        }
-
-
-        getFieldGroupById_(id){
-        const el = document.getElementById(id);
-        return el ? (el.closest('.form-group') || el.closest('.col-md-6')) : null;
-        }
-        showFieldError_(id, msg){
-        const g = this.getFieldGroupById_(id), f = document.getElementById(id);
-        if (!g || !f) return;
-        g.querySelectorAll('.error-message').forEach(n=>n.remove());
-        f.classList.remove('success'); f.classList.add('error');
-        const s = document.createElement('span'); s.className='error-message'; s.textContent = msg; g.appendChild(s);
-        }
-        clearFieldError_(id){
-        const g = this.getFieldGroupById_(id), f = document.getElementById(id);
-        if (!g || !f) return;
-        g.querySelectorAll('.error-message').forEach(n=>n.remove());
-        f.classList.remove('error');
-        }
 
     // ============================================
     // MÉTODO NOVO: translateLabel
@@ -512,6 +416,43 @@ class StepByStepForm {
     });
     }
 
+    ensureReferralFieldExists() {
+    const form = document.querySelector('.loginForm');
+    console.log('[ReferralCheck] form encontrado?', !!form);
+    if (!form) return null;
+
+    // tenta achar por id OU pelo name correto do WHMCS
+    let el = document.getElementById('customfield157') ||
+            form.querySelector('input[name="customfield[157]"]');
+
+    if (!el) {
+        // cria o hidden compatível com WHMCS
+        el = document.createElement('input');
+        el.type = 'hidden';
+        el.id = 'customfield157';       // útil pra selecionar no seu JS
+        el.name = 'customfield[157]';   // ESSENCIAL pro WHMCS
+        form.appendChild(el);
+        console.log('[ReferralCheck] customfield[157] CRIADO (hidden)');
+    } else {
+        // normaliza e oculta o grupo original
+        el.id = 'customfield157';
+        el.name = 'customfield[157]';
+        el.type = 'hidden';
+        el.disabled = false;
+
+        const group = el.closest('.form-group') || el.closest('.col-md-6');
+        if (group) group.style.display = 'none';
+
+        console.log('[ReferralCheck] customfield[157] ENCONTRADO e ocultado/normalizado');
+    }
+
+    // não use required em hidden; a validação é sua (JS) ou do servidor
+    el.required = false;
+
+    return el;
+    }
+
+
     setupFormStructure() {
         this.createStepHeader();
         this.organizeFieldsIntoSteps();
@@ -519,6 +460,7 @@ class StepByStepForm {
         this.createSummaryBoxes();
         this.adjustContainer();
         this.ensureNameFieldsExist();
+        this.ensureReferralFieldExists();
 
     }
 
@@ -608,9 +550,9 @@ class StepByStepForm {
                 formCountrySelect.dispatchEvent(new Event('change', { bubbles: true }));
                 
                 // Traduz a página para o idioma do país
-                const language = this.getCountryLanguage(selectedCountry);
-                this.translatePage(language);
-                
+                const lang = window.FormGeoI18n.getCountryLanguage(selectedCountry);
+                this.translatePage(lang);
+
                 // Adapta os nomes dos campos conforme o país
                 this.adaptFieldLabels(selectedCountry);
                 
@@ -766,13 +708,7 @@ class StepByStepForm {
     populateStates(countryCode) {
         const stateSelect = document.getElementById('stateselect');
         if (!stateSelect) return;
-
-        const usStates = { "AL": "Alabama", "AK": "Alaska", "AZ": "Arizona", "AR": "Arkansas", "CA": "California", "CO": "Colorado", "CT": "Connecticut", "DE": "Delaware", "FL": "Florida", "GA": "Georgia", "HI": "Hawaii", "ID": "Idaho", "IL": "Illinois", "IN": "Indiana", "IA": "Iowa", "KS": "Kansas", "KY": "Kentucky", "LA": "Louisiana", "ME": "Maine", "MD": "Maryland", "MA": "Massachusetts", "MI": "Michigan", "MN": "Minnesota", "MS": "Mississippi", "MO": "Missouri", "MT": "Montana", "NE": "Nebraska", "NV": "Nevada", "NH": "New Hampshire", "NJ": "New Jersey", "NM": "New Mexico", "NY": "New York", "NC": "North Carolina", "ND": "North Dakota", "OH": "Ohio", "OK": "Oklahoma", "OR": "Oregon", "PA": "Pennsylvania", "RI": "Rhode Island", "SC": "South Carolina", "SD": "South Dakota", "TN": "Tennessee", "TX": "Texas", "UT": "Utah", "VT": "Vermont", "VA": "Virginia", "WA": "Washington", "WV": "West Virginia", "WI": "Wisconsin", "WY": "Wyoming" };
-        const brStates = { "AC": "Acre", "AL": "Alagoas", "AP": "Amapá", "AM": "Amazonas", "BA": "Bahia", "CE": "Ceará", "DF": "Distrito Federal", "ES": "Espírito Santo", "GO": "Goiás", "MA": "Maranhão", "MT": "Mato Grosso", "MS": "Mato Grosso do Sul", "MG": "Minas Gerais", "PA": "Pará", "PB": "Paraíba", "PR": "Paraná", "PE": "Pernambuco", "PI": "Piauí", "RJ": "Rio de Janeiro", "RN": "Rio Grande do Norte", "RS": "Rio Grande do Sul", "RO": "Rondônia", "RR": "Roraima", "SC": "Santa Catarina", "SP": "São Paulo", "SE": "Sergipe", "TO": "Tocantins" };
-
-        let states = {};
-        if (countryCode === 'US') states = usStates;
-        else if (countryCode === 'BR') states = brStates;
+        const states = window.FormGeoI18n.getStates(countryCode);
 
         stateSelect.innerHTML = '<option value="">Selecione um estado</option>';
 
@@ -815,22 +751,12 @@ class StepByStepForm {
     }
 
     getMaxDigitsForCountry(countryCode) {
-        const countryMaxDigits = {
-            US: 10, 
-            CA: 10, 
-            BR: 11, 
-            GB: 10, 
-            FR: 9,  
-            DE: 11, 
-            IN: 10, 
-            MX: 10, 
-            AU: 9, 
-            JP: 10, 
-            PT: 9
-        };
+        return window.FormGeoI18n.getPhoneMaxDigits(countryCode) ;
 
-        return countryMaxDigits[countryCode] || 15; 
+
     }
+
+    
 
     // ============================================
     // MÉTODO MODIFICADO: organizeFieldsIntoSteps
@@ -842,14 +768,20 @@ class StepByStepForm {
         const stepsContainer = document.createElement('div');
         stepsContainer.className = 'steps-container';
 
-        // STEP 1 - MODIFICADO: Agora usa createFullNameField()
+        // STEP 1
         const step1 = this.createStep(1, [
-            this.createFullNameField(), // ← CAMPO DE NOME COMPLETO
-            this.createTwoColumnRow([this.findMoveableGroup('inputPhone'), this.findMoveableGroup('inputEmail')]),
-            this.createTwoColumnRow([this.findMoveableGroup('customfield2'), this.findMoveableGroup('customfield3')]),
-            this.createCheckboxField(),
-            this.createTwoColumnRow([this.findMoveableGroup('customfield5'), this.findMoveableGroup('inputCompanyName')]),
-        ]);
+        this.createFullNameField(),
+        this.createTwoColumnRow([this.findMoveableGroup('inputPhone'), this.findMoveableGroup('inputEmail')]),
+
+        // ⬇️ NOVO: campo "Por onde nos conheceu"
+
+
+        this.createTwoColumnRow([this.findMoveableGroup('customfield2'), this.findMoveableGroup('customfield3')]),
+        this.createCheckboxField(),
+        this.createTwoColumnRow([this.findMoveableGroup('customfield5'), this.findMoveableGroup('inputCompanyName')]),
+            this.createReferralField(),   
+    ]);
+
 
         const step2 = this.createStep(2, [
             this.createTwoColumnRow([this.findMoveableGroup('inputCountry'), this.findMoveableGroup('inputPostcode')]),
@@ -1043,7 +975,7 @@ class StepByStepForm {
                 <div class="summary-box" id="summaryPersonalInfoStep3" data-goto="1">
                     <div class="summary-header">
                         <h4>Informações Pessoais:</h4>
-                        <button type="button" class="edit-step-btn">✏️</button>
+                        <button type="button" class="edit-step-btn" data-target-step="1">✏️</button>
                     </div>
                     <div class="summary-content">
                         <p><strong>Nome:</strong> <span id="summaryNameStep3">-</span></p>
@@ -1057,7 +989,7 @@ class StepByStepForm {
                 <div class="summary-box" id="summaryAddressStep3" data-goto="2">
                     <div class="summary-header">
                         <h4>Endereço:</h4>
-                        <button type="button" class="edit-step-btn">✏️</button>
+                        <button type="button" class="edit-step-btn" data-target-step="2">✏️</button>
                     </div>
                     <div class="summary-content">
                         <p><strong>Rua:</strong> <span id="summaryStreetStep3">-</span></p>
@@ -1138,6 +1070,26 @@ class StepByStepForm {
     }
 
     setupEventListeners() {
+        // dentro de setupEventListeners(), junto com os outros listeners
+        document.addEventListener('input', (e) => {
+        if (e.target && e.target.id === 'inputEmail') {
+            // limpa erro de servidor para email ao editar
+            if (this.serverEmailExists) {
+            this.serverEmailExists = false;
+            this.clearFieldError_('inputEmail');
+            this.checkStepValidationForButton();
+            }
+        }
+        if (e.target && e.target.id === 'customfield2') {
+            // limpa erro de servidor para cpf ao editar
+            if (this.serverCpfExists) {
+            this.serverCpfExists = false;
+            this.clearFieldError_('customfield2');
+            this.checkStepValidationForButton();
+            }
+        }
+        });
+
         document.addEventListener('click', (e) => {
             if (e.target.id === 'nextBtn') this.nextStep();
             if (e.target.id === 'prevBtn') this.prevStep();
@@ -1399,98 +1351,99 @@ async validateCepField(cepField) {
     }
 
     async nextStep() {
-    if (this.currentStep === 1) {
-        // validação local dos campos visíveis do step 1
-        const stepEl = document.querySelector('.form-step.step-1');
-        if (stepEl){
-        const fields = stepEl.querySelectorAll('.form-control, input[type="checkbox"], select');
-        let okLocal = true;
-        fields.forEach(f=>{
-            if (f.offsetParent !== null){
-            if (f.id === 'inputFullName'){
-                if (!this.validateAndMapFullName(f)) okLocal = false;
-            } else {
-                if (!this.validateField(f)) okLocal = false;
-            }
-            }
-        });
-        if (!okLocal){ this.checkStepValidationForButton(); return; }
-        }
-
-        // checagem servidor para CPF + EMAIL
-        const okServer = await this.validateUniquenessStep1_();
-        if (!okServer){ this.checkStepValidationForButton(); return; }
-    }
-
-    if (this.currentStep < this.totalSteps) {
-        this.currentStep++;
-        this.showStep(this.currentStep);
-    } else {
-        this.submitForm();
-    }
-    }
-
-
-    /**
- * Checa duplicidade de CPF + email no servidor.
- * Retorna true se NÃO há duplicidade (pode avançar), false caso contrário.
-    */
-    async validateUniquenessStep1_(){
-    const t = this.translations[this.currentLanguage] || this.translations['pt-BR'];
-    const emailEl = document.getElementById('inputEmail');
-    const cpfEl   = document.getElementById('customfield2');
-
-    if (!emailEl || !cpfEl) return true; // se campos não encontrados, não trava
-
-    // limpa erros anteriores
-    this.clearFieldError_('inputEmail');
-    this.clearFieldError_('customfield2');
-
-    const payload = {
-        email: this.normalizeEmail_(emailEl.value),
-        cpf: this.normalizeDigits_(cpfEl.value)
-    };
-
-    // se vazios, assume validação local irá bloquear; aqui não sobe requisição
-    if (!payload.email || !payload.cpf) return false;
-
     const nextBtn = document.getElementById('nextBtn');
+    const t = this.translations[this.currentLanguage] || this.translations['pt-BR'];
+    const validatingLabel = t.validating || 'Validando...';
+    // guarda label antigo só por garantia (não estraga nada)
     const oldLabel = nextBtn ? nextBtn.textContent : '';
-    if (nextBtn){ nextBtn.disabled = true; nextBtn.textContent = 'Verificando...'; }
+
+    // Se estivermos no Step 1, mostra "Validando..." e trava o botão
+    if (this.currentStep === 1 && nextBtn) {
+        nextBtn.disabled = true;
+        nextBtn.textContent = validatingLabel;
+    }
 
     try {
-        const resp = await fetch(this.uniquenessURL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-        credentials: 'omit'
-        });
+        if (this.currentStep == 1) {
+        const email = (document.getElementById('inputEmail')?.value || '').trim();
+        const cpf = (document.getElementById('customfield2')?.value || '').trim();
 
-        if (!resp.ok){
-        this.showFieldError_('inputEmail', t.errorNetwork);
-        return false;
+        try {
+            let resp = null;
+            if (this.urlvalidateemailcpf) {
+            resp = await fetch(this.urlvalidateemailcpf, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, cpf }),
+                credentials: 'omit'
+            });
+            } else {
+            // se por algum motivo a URL não existir, pula a validação remota
+            resp = null;
+            }
+
+            if (resp) {
+            if (!resp.ok) {
+                console.error('[validate] resposta HTTP', resp.status);
+                // mostra erro genérico (usa showFieldError_ se tiver)
+                this.showFieldError_?.('inputEmail', t.errorNetwork || 'Erro de validação. Tente novamente.');
+                this.checkStepValidationForButton();
+                return;
+            }
+
+            const data = await resp.json();
+
+            // limpa erros de servidor anteriores
+            this.clearFieldError_?.('inputEmail');
+            this.clearFieldError_?.('customfield2');
+
+            // marca flags internas (assuma que você já tem serverCpfExists/serverEmailExists; se não, cria)
+            this.serverCpfExists = !!data.cpf;
+            this.serverEmailExists = !!data.email;
+
+            // mostra mensagens específicas
+            if (this.serverCpfExists) {
+                this.showFieldError_?.('customfield2', t.errorCpfExists || 'CPF já cadastrado.');
+            }
+            if (this.serverEmailExists) {
+                this.showFieldError_?.('inputEmail', t.errorEmailExists || 'E-mail já cadastrado.');
+            }
+
+            // atualiza o estado do botão (vai desabilitar se alguma flag for true)
+            this.checkStepValidationForButton();
+
+            // se houver duplicidade, não avança — o usuário precisa editar os campos
+            if (this.serverCpfExists || this.serverEmailExists) {
+                return;
+            }
+            }
+
+        } catch (err) {
+            console.error('Erro ao fazer requisição de validação:', err);
+            this.showFieldError_?.('inputEmail', t.errorNetwork || 'Erro ao validar. Tente novamente.');
+            this.checkStepValidationForButton();
+            return;
+        }
         }
 
-        const data = await resp.json();
-        // esperado: { status: "success", cpf: boolean, email: boolean }
-
-        let canProceed = true;
-        if (data?.cpf === true){
-        this.showFieldError_('customfield2', t.errorCpfExists);
-        canProceed = false;
+        // se passou pela validação do step 1 (ou não era step 1), segue o fluxo normal
+        if (this.currentStep < this.totalSteps) {
+        this.currentStep++;
+        this.showStep(this.currentStep);
+        } else {
+        this.submitForm();
         }
-        if (data?.email === true){
-        this.showFieldError_('inputEmail', t.errorEmailExists);
-        canProceed = false;
-        }
-        return canProceed;
 
-    } catch(err){
-        console.error('[Uniq] erro', err);
-        this.showFieldError_('inputEmail', t.errorNetwork);
-        return false;
     } finally {
-        if (nextBtn){ nextBtn.disabled = false; nextBtn.textContent = oldLabel || 'Próximo'; }
+        // restaura o texto do botão baseado no step atual (showStep pode já ter ajustado,
+        // mas asseguramos que volte ao label correto)
+        if (nextBtn) {
+        const t2 = this.translations[this.currentLanguage] || this.translations['pt-BR'];
+        nextBtn.textContent = (this.currentStep === this.totalSteps) ? (t2.finishButton || 'Finalizar') : (t2.nextButton || 'Próximo');
+
+        // reavalia se o botão deve estar habilitado (considera flags de servidor)
+        this.checkStepValidationForButton();
+        }
     }
     }
 
@@ -1624,9 +1577,41 @@ async checkStepValidationForButton() {
     }
   }
 
+    // bloqueia se servidor indicou duplicidade
+    if (this.serverCpfExists || this.serverEmailExists) {
+    allValid = false;
+    }
+
   nextBtn.disabled = !allValid;
 }
 
+getFieldGroupById_(id){
+  const el = document.getElementById(id);
+  return el ? (el.closest('.form-group') || el.closest('.col-md-6')) : null;
+}
+
+showFieldError_(id, msg){
+  const group = this.getFieldGroupById_(id);
+  const field = document.getElementById(id);
+  if (!group || !field) return;
+  // remove erros antigos deste grupo
+  group.querySelectorAll('.error-message.server-error, .error-message').forEach(n => n.remove());
+  field.classList.remove('success');
+  field.classList.add('error');
+  const err = document.createElement('span');
+  err.className = 'error-message server-error';
+  err.textContent = msg;
+  group.appendChild(err);
+}
+
+clearFieldError_(id){
+  const group = this.getFieldGroupById_(id);
+  const field = document.getElementById(id);
+  if (!group || !field) return;
+  group.querySelectorAll('.error-message.server-error').forEach(n => n.remove());
+  // não remove mensagens de validação local (caso queira remover tudo com: '.error-message')
+  field.classList.remove('error');
+}
 
     showCepError(message) {
         const cepField = document.getElementById('inputPostcode');
@@ -1709,6 +1694,166 @@ async checkStepValidationForButton() {
         console.log('[Submit] ✅ Disparando clique no botão para acionar o captcha invisível');
         submitBtn.click();
     }
+
+    // ==============================
+// NOVO: opções e placeholders
+// ==============================
+getReferralOptions_() {
+  return [
+    { value: '',               label: 'Selecione...' ,         ph: '' },
+    { value: 'Redes sociais',  label: 'Redes sociais',          ph: 'Ex.: Instagram, TikTok, Facebook...' },
+    { value: 'Indicação',      label: 'Indicação de amigo(a)',  ph: 'Quem indicou?' },
+    { value: 'Google',         label: 'Google (Busca/Ads)',     ph: 'Ex.: palavra-chave ou origem' },
+    { value: 'YouTube',        label: 'YouTube',                ph: 'Canal ou vídeo?' },
+    { value: 'Blog/Artigo',    label: 'Blog/Artigo',            ph: 'Qual blog/artigo?' },
+    { value: 'Evento',         label: 'Evento/Palestra',        ph: 'Qual evento?' },
+    { value: 'E-mail',         label: 'E-mail/Newsletter',      ph: 'Qual campanha/lista?' },
+    { value: 'Marketplace',    label: 'Marketplace',            ph: 'Qual marketplace?' },
+    { value: 'Outros',         label: 'Outros',                 ph: 'Descreva...' },
+  ];
+}
+
+// ======================================
+// NOVO: UI do "Por onde nos conheceu"
+// Usa o input hidden original (customfield157)
+// ======================================
+createReferralField() {
+  // esconde o campo original do WHMCS mas mantém para submit
+  const origGroup = this.findMoveableGroup('customfield157');
+  const hiddenInput = document.getElementById('customfield157');
+  if (origGroup) origGroup.style.display = 'none';
+  if (hiddenInput) {
+    hiddenInput.type = 'hidden';                // garante que não apareça
+    hiddenInput.required = true;                // tornamos obrigatório (via validação custom)
+    hiddenInput.dataset.referral = 'true';      // flag interna
+  }
+
+  const opts = this.getReferralOptions_();
+
+  const wrap = document.createElement('div');
+  wrap.className = 'form-group col-md-12';
+  wrap.id = 'referralWrapper';
+  wrap.innerHTML = `
+    <label for="referralSelect">Por onde nos conheceu <span>*</span></label>
+    <div class="row">
+      <div class="col-md-6">
+        <select id="referralSelect" class="form-control" required>
+          ${opts.map(o => `<option value="${o.value}">${o.label}</option>`).join('')}
+        </select>
+      </div>
+      <div class="col-md-6">
+        <input id="referralDetail" class="form-control" type="text" placeholder="" style="display:none;">
+      </div>
+    </div>
+    <span class="error-message" id="referralError"></span>
+  `;
+
+  // listeners
+  const onChange = () => {
+    const select = wrap.querySelector('#referralSelect');
+    const detail = wrap.querySelector('#referralDetail');
+    const err    = wrap.querySelector('#referralError');
+    const hidden = document.getElementById('customfield157');
+
+    // placeholder dinâmico + mostrar/ocultar detalhe
+    const meta = opts.find(o => o.value === select.value) || { ph: '' };
+    if (select.value) {
+      detail.placeholder = meta.ph || '';
+      // mostra o campo "quem/qual" para tudo que não seja vazio
+      detail.style.display = (select.value ? 'block' : 'none');
+    } else {
+      detail.value = '';
+      detail.style.display = 'none';
+    }
+
+    // atualiza hidden
+    const joined = this.joinReferralValue_(select.value, detail.value);
+    if (hidden) hidden.value = joined;
+
+    // valida
+    this.validateReferral_();
+    this.checkStepValidationForButton();
+  };
+
+  // input/blur atualizam hidden + validação
+  wrap.addEventListener('change', (e) => {
+    if (e.target.id === 'referralSelect') onChange();
+  });
+  wrap.addEventListener('input', (e) => {
+    if (e.target.id === 'referralDetail') onChange();
+  });
+  wrap.addEventListener('blur', (e) => {
+    if (e.target.id === 'referralSelect' || e.target.id === 'referralDetail') {
+      e.target.dataset.touched = 'true';
+      this.validateReferral_();
+      this.checkStepValidationForButton();
+    }
+  }, true);
+
+  // estado inicial
+  setTimeout(onChange, 0);
+
+  return wrap;
+}
+
+// ======================================
+// NOVO: junta select + detalhe no formato final
+// ======================================
+joinReferralValue_(sel, det) {
+  const s = (sel || '').trim();
+  const d = (det || '').trim();
+  if (!s) return '';
+  return d ? `${s} - ${d}` : s;
+}
+
+// ======================================
+// NOVO: validação do bloco de referral
+// Regras: select é obrigatório; se select tiver valor, "detalhe" também é obrigatório
+// ======================================
+validateReferral_() {
+  const wrap   = document.getElementById('referralWrapper');
+  if (!wrap) return true;
+
+  const select = wrap.querySelector('#referralSelect');
+  const detail = wrap.querySelector('#referralDetail');
+  const err    = wrap.querySelector('#referralError');
+  const hidden = document.getElementById('customfield157');
+
+  // limpa estado
+  err.textContent = '';
+  select.classList.remove('error','success');
+  detail.classList.remove('error','success');
+
+  let ok = true;
+
+  if (!select.value) {
+    ok = false;
+    if (select.dataset.touched === 'true') {
+      err.textContent = 'Selecione uma opção.';
+      select.classList.add('error');
+    }
+  } else {
+    select.classList.add('success');
+    // quando há seleção, exigimos detalhe
+    if (!detail.value.trim()) {
+      ok = false;
+      if (detail.style.display !== 'none' && detail.dataset.touched === 'true') {
+        err.textContent = 'Informe "quem/qual".';
+        detail.classList.add('error');
+      }
+    } else {
+      detail.classList.add('success');
+    }
+  }
+
+  if (hidden) {
+    // mantém o hidden coerente
+    hidden.value = this.joinReferralValue_(select.value, detail.value);
+  }
+
+  return ok;
+}
+
 
 
 

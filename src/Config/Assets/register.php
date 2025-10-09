@@ -15,6 +15,7 @@ function assets_register() {
     $assets .= '<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>';
 
     // Registra os assets personalizados
+    $assets .= '<script type="text/javascript" src="' . $base_url . '/js/paises.js?v=' . $version . '"></script>';
     $assets .= '<link rel="stylesheet" type="text/css" href="' . $base_url . '/css/register.css?v=' . $version . '">';
     $assets .= '<script type="text/javascript" src="' . $base_url . '/js/register.js?v=' . $version . '"></script>';
 
