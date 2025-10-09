@@ -316,7 +316,70 @@ class StepByStepForm {
         });
         
         console.log(`[Translation] Página traduzida para: ${language}`);
+        this.applyStaticTranslations_();
     }
+
+    applyStaticTranslations_() {
+        const t = this.translations || window.FormGeoI18n.getTranslation('pt-BR');
+        if (!t) return;
+
+        // ajudantes
+        const setText = (sel, val) => { const el = document.querySelector(sel); if (el && val != null) el.textContent = val; };
+        const setHTML = (sel, html) => { const el = document.querySelector(sel); if (el && html != null) el.innerHTML = html; };
+
+        // ====== Senha / Segurança ======
+        setText('#containerNewUserSecurity .section-title', t.passwordSectionTitle);
+        setText('#newPassword1 label[for="inputNewPassword1"]', t.passwordLabel);
+        setText('#newPassword2 label[for="inputNewPassword2"]', t.passwordConfirmLabel);
+
+        // botão "Gerar Senha" (mantém o ícone)
+        const genBtn = document.querySelector('.generate-password');
+        if (genBtn) genBtn.innerHTML = `<i class="ls ls-refresh"></i>${t.passwordGenerate}`;
+
+        // força da senha (strings globais usadas pelo script já existente)
+        window.langPasswordWeak = t.passwordWeak;
+        window.langPasswordModerate = t.passwordModerate;
+        window.langPasswordStrong = t.passwordStrong;
+        window.langPasswordTooShort = t.passwordTooShort;
+
+        // acessibilidade da barra (prefixo do texto)
+        const srOnly = document.querySelector('#passwordStrengthBar .sr-only');
+        if (srOnly) srOnly.textContent = `${t.passwordRatingPrefix || ''}0%`;
+
+        // mensagem de senhas não conferem
+        const nonMatch = document.getElementById('nonMatchingPasswordResult');
+        if (nonMatch) nonMatch.textContent = t.passwordMismatch;
+
+        // ====== Mailing list ======
+        setText('.section .section-header h2.section-title', t.mailingTitle);
+        setText('.section .section-header p.section-desc', t.mailingDesc);
+        setText('.panel-switch .switch-label', t.mailingReceived);
+
+        // ====== Ajuda / help-blocks ======
+        setText('label[for="customfield2"] + input + .help-block', t.helpCpf);
+        setText('label[for="customfield3"] + input + .help-block', t.helpBirthdate);
+        setText('label[for="customfield5"] + input + .help-block', t.helpCnpj);
+        setText('label[for="customfield18"] + input + .help-block', t.helpNumber);
+        setText('label[for="customfield19"] + input + .help-block', t.helpComplement);
+
+        // ====== Botão principal (submit) ======
+        setText('.form-actions .btn .btn-text', t.registerButton);
+
+        // ====== Termos de serviço (mantém o link) ======
+        const tosSpan = document.querySelector('.accepttos')?.closest('label')?.querySelector('span.label-required');
+        if (tosSpan) {
+            const link = tosSpan.querySelector('a');
+            if (link) {
+            // reconstrói: prefixo + link intacto
+            tosSpan.innerHTML = '';
+            tosSpan.append(document.createTextNode(t.tosPrefix || ''));
+            tosSpan.appendChild(link);
+            } else {
+            setText('.accepttos + span.label-required', t.tosPrefix);
+            }
+        }
+        }
+
 
     // ============================================
     // MÉTODO NOVO: translateLabel
@@ -347,6 +410,7 @@ class StepByStepForm {
                 this.setupValidation();
                 this.setupInputMasks();
                 this.showStep(1);
+                this.applyStaticTranslations_();
                 this.setupCepFieldListener();
                 this.toggleCnpjField(false);
                 this.initializePhoneInput();
