@@ -1329,7 +1329,7 @@ async validateCepField(cepField) {
         this.checkStepValidationForButton();
     }
     updateStepContent(stepNumber) {
-        const t = this.translations[this.currentLanguage];
+        const t = this.translations;
         const titles = t ? t.stepTitles : ['Dados Pessoais', 'Endereço', 'Segurança'];
         const subtitles = t ? t.stepSubtitles : [
             'Preencha suas informações básicas',
@@ -1351,8 +1351,8 @@ async validateCepField(cepField) {
 
     async nextStep() {
     const nextBtn = document.getElementById('nextBtn');
-    const t = this.translations[this.currentLanguage] || this.translations['pt-BR'];
-    const validatingLabel = t.validating || 'Validando...';
+    const t = this.translations || window.FormGeoI18n.getTranslation('pt-BR');
+    const validatingLabel = (t && t.validating) ? t.validating : 'Validando...';
     // guarda label antigo só por garantia (não estraga nada)
     const oldLabel = nextBtn ? nextBtn.textContent : '';
 
@@ -1437,7 +1437,7 @@ async validateCepField(cepField) {
         // restaura o texto do botão baseado no step atual (showStep pode já ter ajustado,
         // mas asseguramos que volte ao label correto)
         if (nextBtn) {
-            const t2 = this.translations[this.currentLanguage] || this.translations['pt-BR'];
+         const t2 = this.translations || window.FormGeoI18n.getTranslation('pt-BR');
 
             nextBtn.textContent = (this.currentStep === this.totalSteps) ? (t2.finishButton || 'Finalizar') : (t2.nextButton || 'Próximo');
 
