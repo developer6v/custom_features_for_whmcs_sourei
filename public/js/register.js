@@ -1350,7 +1350,6 @@ async validateCepField(cepField) {
 
     if (field.type === 'checkbox') {
         isValid = field.checked;
-        if (!isValid) errorMessage = 'Você deve aceitar os termos.';
     } else if (field.required && !value) {
         isValid = false;
         errorMessage = 'Este campo é obrigatório.';
