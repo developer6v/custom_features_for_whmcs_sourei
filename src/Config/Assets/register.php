@@ -16,6 +16,8 @@ function assets_register() {
 
     // Registra os assets personalizados
     $assets .= '<script type="text/javascript" src="' . $base_url . '/js/paises.js?v=' . $version . '"></script>';
+
+    $assets .= '<script type="text/javascript" src="' . $base_url . '/js/countrySelect.js?v=' . $version . '"></script>';
     $assets .= '<link rel="stylesheet" type="text/css" href="' . $base_url . '/css/register.css?v=' . $version . '">';
     $assets .= '<script type="text/javascript" src="' . $base_url . '/js/register.js?v=' . $version . '"></script>';
 

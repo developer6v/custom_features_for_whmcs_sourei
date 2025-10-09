@@ -317,6 +317,10 @@ class StepByStepForm {
         
         console.log(`[Translation] Página traduzida para: ${language}`);
         this.applyStaticTranslations_();
+        CountrySelect.relabel('inputCountry', language);
+        const hdr = document.getElementById('headerCountrySelect');
+        if (hdr) CountrySelect.relabel(hdr, language);
+
     }
 
     applyStaticTranslations_() {
@@ -406,6 +410,7 @@ class StepByStepForm {
         document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
                 this.setupFormStructure();
+                CountrySelect.relabel('inputCountry', this.currentLanguage);
                 this.setupEventListeners();
                 this.setupValidation();
                 this.setupInputMasks();
@@ -558,16 +563,7 @@ class StepByStepForm {
                         <!-- Seletor de País -->
                         <div class="header-selector-group">
                             <select id="headerCountrySelect" class="header-select">
-                                <option value="BR">🇧🇷 BR</option>
-                                <option value="US">🇺🇸 US</option>
-                                <option value="PT">🇵🇹 PT</option>
-                                <option value="ES">🇪🇸 ES</option>
-                                <option value="FR">🇫🇷 FR</option>
-                                <option value="DE">🇩🇪 DE</option>
-                                <option value="IT">🇮🇹 IT</option>
-                                <option value="GB">🇬🇧 GB</option>
-                                <option value="AR">🇦🇷 AR</option>
-                                <option value="MX">🇲🇽 MX</option>
+                              
                             </select>
                         </div>
                     </div>
@@ -597,7 +593,8 @@ class StepByStepForm {
     setupHeaderCountryListener() {
         const headerCountrySelect = document.getElementById('headerCountrySelect');
         const formCountrySelect = document.getElementById('inputCountry');
-        
+        CountrySelect.populate('headerCountrySelect', this.currentLanguage, ['BR','US','PT','ES','FR','DE','IT','GB','AR','MX']);
+
         if (headerCountrySelect && formCountrySelect) {
             // Sincroniza o valor inicial
             headerCountrySelect.value = formCountrySelect.value || 'BR';
