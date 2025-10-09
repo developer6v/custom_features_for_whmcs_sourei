@@ -261,8 +261,7 @@ class StepByStepForm {
     translatePage(language) {
         this.currentLanguage = language;
         this.translations = window.FormGeoI18n.getTranslation(language);
-        const t = this.translations[language];
-        
+        const t = this.translations;        
         if (!t) {
             console.warn(`[Translation] Idioma ${language} não encontrado`);
             return;
@@ -1438,8 +1437,9 @@ async validateCepField(cepField) {
         // restaura o texto do botão baseado no step atual (showStep pode já ter ajustado,
         // mas asseguramos que volte ao label correto)
         if (nextBtn) {
-        const t2 = this.translations[this.currentLanguage] || this.translations['pt-BR'];
-        nextBtn.textContent = (this.currentStep === this.totalSteps) ? (t2.finishButton || 'Finalizar') : (t2.nextButton || 'Próximo');
+            const t2 = this.translations[this.currentLanguage] || this.translations['pt-BR'];
+
+            nextBtn.textContent = (this.currentStep === this.totalSteps) ? (t2.finishButton || 'Finalizar') : (t2.nextButton || 'Próximo');
 
         // reavalia se o botão deve estar habilitado (considera flags de servidor)
         this.checkStepValidationForButton();
@@ -1816,7 +1816,16 @@ validateReferral_() {
 
   const select = wrap.querySelector('#referralSelect');
   const detail = wrap.querySelector('#referralDetail');
-  const err    = wrap.querySelector('#referralError');
+
+    let err = wrap.querySelector('#referralError');
+        if (!err) { // se alguém removeu, recria
+        err = document.createElement('span');
+        err.id = 'referralError';
+        err.className = 'error-message';
+        wrap.appendChild(err);
+    }
+
+
   const hidden = document.getElementById('customfield157');
 
   // limpa estado
