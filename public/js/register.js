@@ -1944,15 +1944,13 @@ validateReferral_() {
 
   const select = wrap.querySelector('#referralSelect');
   const detail = wrap.querySelector('#referralDetail');
-
-    let err = wrap.querySelector('#referralError');
-        if (!err) { // se alguém removeu, recria
-        err = document.createElement('span');
-        err.id = 'referralError';
-        err.className = 'error-message';
-        wrap.appendChild(err);
-    }
-
+  let err = wrap.querySelector('#referralError');
+  if (!err) {
+    err = document.createElement('span');
+    err.id = 'referralError';
+    err.className = 'error-message';
+    wrap.appendChild(err);
+  }
 
   const hidden = document.getElementById('customfield157');
 
@@ -1961,34 +1959,27 @@ validateReferral_() {
   select.classList.remove('error','success');
   detail.classList.remove('error','success');
 
-  let ok = true;
-
+  // Se nada foi selecionado, é válido e sem erro
   if (!select.value) {
-    ok = false;
-    if (select.dataset.touched === 'true') {
-      err.textContent = 'Selecione uma opção.';
-      select.classList.add('error');
-    }
-  } else {
-    select.classList.add('success');
-    // quando há seleção, exigimos detalhe
-    if (!detail.value.trim()) {
-      ok = false;
-      if (detail.style.display !== 'none' && detail.dataset.touched === 'true') {
-        err.textContent = 'Informe "quem/qual".';
-        detail.classList.add('error');
-      }
-    } else {
-      detail.classList.add('success');
-    }
+    if (hidden) hidden.value = '';
+    return true;
   }
 
-  if (hidden) {
-    // mantém o hidden coerente
-    hidden.value = this.joinReferralValue_(select.value, detail.value);
+  // Se selecionou algo, mostramos o campo detalhe e exigimos seu preenchimento
+  select.classList.add('success');
+  if (!detail.value.trim()) {
+    if (detail.dataset.touched === 'true') {
+      err.textContent = 'Informe "quem/qual".';
+      detail.classList.add('error');
+    }
+    // Mesmo sem detalhe, não bloqueia os passos; apenas mostra feedback visual
+    if (hidden) hidden.value = this.joinReferralValue_(select.value, '');
+    return true;
   }
 
-  return ok;
+  detail.classList.add('success');
+  if (hidden) hidden.value = this.joinReferralValue_(select.value, detail.value);
+  return true;
 }
 
 
