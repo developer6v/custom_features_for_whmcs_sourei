@@ -1031,30 +1031,36 @@ class StepByStepForm {
             const summaryContainer3 = document.createElement('div');
             summaryContainer3.className = 'summary-container';
             summaryContainer3.innerHTML = `
-                <div class="summary-box" id="summaryPersonalInfoStep3" data-goto="1">
-                    <div class="summary-header">
-                        <h4>Informações Pessoais:</h4>
-                        <button type="button" class="edit-step-btn" data-target-step="1">✏️</button>
-                    </div>
-                    <div class="summary-content">
-                        <p><strong>Nome:</strong> <span id="summaryNameStep3">-</span></p>
-                        <p><strong>E-mail:</strong> <span id="summaryEmailStep3">-</span></p>
-                        <p><strong>Telefone:</strong> <span id="summaryPhoneStep3">-</span></p>
-                        <p><strong>CPF:</strong> <span id="summaryCpfStep3">-</span></p>
-                        <p><strong>Data de Nascimento:</strong> <span id="summaryBirthdateStep3">-</span></p>
-                    </div>
+            <div class="summary-box" id="summaryPersonalInfoStep3" data-goto="1">
+                <div class="summary-header">
+                <h4>Informações Pessoais:</h4>
+                <button type="button" class="edit-step-btn" data-target-step="1">✏️</button>
                 </div>
+                <div class="summary-content">
+                <p><strong>Nome:</strong> <span id="summaryNameStep3">-</span></p>
+                <p><strong>E-mail:</strong> <span id="summaryEmailStep3">-</span></p>
+                <p><strong>Telefone:</strong> <span id="summaryPhoneStep3">-</span></p>
+                <p><strong>CPF:</strong> <span id="summaryCpfStep3">-</span></p>
+                <p><strong>Data de Nascimento:</strong> <span id="summaryBirthdateStep3">-</span></p>
+                </div>
+            </div>
 
-                <div class="summary-box" id="summaryAddressStep3" data-goto="2">
-                    <div class="summary-header">
-                        <h4>Endereço:</h4>
-                        <button type="button" class="edit-step-btn" data-target-step="2">✏️</button>
-                    </div>
-                    <div class="summary-content">
-                        <p><strong>Rua:</strong> <span id="summaryStreetStep3">-</span></p>
-                        <p><strong>CEP:</strong> <span id="summaryCepStep3">-</span> | <strong>Cidade:</strong> <span id="summaryCityStep3">-</span></p>
-                    </div>
+            <div class="summary-box" id="summaryAddressStep3" data-goto="2">
+                <div class="summary-header">
+                <h4>Endereço:</h4>
+                <button type="button" class="edit-step-btn" data-target-step="2">✏️</button>
                 </div>
+                <div class="summary-content">
+                <p><strong>Rua:</strong> <span id="summaryStreetStep3">-</span></p>
+                <p><strong>Número:</strong> <span id="summaryNumberStep3">-</span></p>
+                <p><strong>Complemento:</strong> <span id="summaryComplementStep3">-</span></p>
+                <p><strong>Bairro:</strong> <span id="summaryNeighborhoodStep3">-</span></p>
+                <p><strong>CEP:</strong> <span id="summaryCepStep3">-</span></p>
+                <p><strong>Cidade:</strong> <span id="summaryCityStep3">-</span></p>
+                <p><strong>Estado:</strong> <span id="summaryStateStep3">-</span></p>
+                <p><strong>País:</strong> <span id="summaryCountryStep3">-</span></p>
+                </div>
+            </div>
             `;
             // === PATCH STEP 3: sumário DEPOIS do bloco de senha ===
             const stepContent3 = step3.querySelector('.step-content');
@@ -1080,49 +1086,80 @@ class StepByStepForm {
     }
 
     updateSummary() {
-        const fullName = document.getElementById('inputFullName')?.value || '-';
-        const email = document.getElementById('inputEmail')?.value || '-';
-        const phone = document.getElementById('inputPhone')?.value || '-';
-        const cpf = document.getElementById('customfield2')?.value || '-';
-        const birthdate = document.getElementById('customfield3')?.value || '-';
-        const street = document.getElementById('inputAddress1')?.value || '-';
-        const number = document.getElementById('customfield18')?.value || '';
-        const fullStreet = number ? `${street}, ${number}` : street;
-        const cep = document.getElementById('inputPostcode')?.value || '-';
-        const city = document.getElementById('inputCity')?.value || '-';
+    // Pessoais
+    const fullName  = document.getElementById('inputFullName')?.value || '-';
+    const email     = document.getElementById('inputEmail')?.value || '-';
+    const phone     = document.getElementById('inputPhone')?.value || '-';
+    const cpf       = document.getElementById('customfield2')?.value || '-';
+    const birthdate = document.getElementById('customfield3')?.value || '-';
 
-        // Atualiza resumo no Step 2
-        const summaryNameStep2 = document.getElementById('summaryNameStep2');
-        const summaryEmailStep2 = document.getElementById('summaryEmailStep2');
-        const summaryPhoneStep2 = document.getElementById('summaryPhoneStep2');
-        const summaryCpfStep2 = document.getElementById('summaryCpfStep2');
-        const summaryBirthdateStep2 = document.getElementById('summaryBirthdateStep2');
+    // Endereço (campos)
+    const street     = document.getElementById('inputAddress1')?.value || '-';
+    const number     = document.getElementById('customfield18')?.value || '-';
+    const complement = document.getElementById('customfield19')?.value || '-';
+    const neighborhood = document.getElementById('inputAddress2')?.value || '-';
+    const cep        = document.getElementById('inputPostcode')?.value || '-';
+    const city       = document.getElementById('inputCity')?.value || '-';
 
-        if (summaryNameStep2) summaryNameStep2.textContent = fullName;
-        if (summaryEmailStep2) summaryEmailStep2.textContent = email;
-        if (summaryPhoneStep2) summaryPhoneStep2.textContent = phone;
-        if (summaryCpfStep2) summaryCpfStep2.textContent = cpf;
-        if (summaryBirthdateStep2) summaryBirthdateStep2.textContent = birthdate;
+    // Estado: prioriza o texto da option selecionada (ex.: "Minas Gerais")
+    const stateSel   = document.getElementById('stateselect');
+    const stateText  = stateSel
+        ? (stateSel.options[stateSel.selectedIndex]?.text?.trim() || stateSel.value || '-')
+        : '-';
 
-        // Atualiza resumo no Step 3
-        const summaryNameStep3 = document.getElementById('summaryNameStep3');
-        const summaryEmailStep3 = document.getElementById('summaryEmailStep3');
-        const summaryPhoneStep3 = document.getElementById('summaryPhoneStep3');
-        const summaryCpfStep3 = document.getElementById('summaryCpfStep3');
-        const summaryBirthdateStep3 = document.getElementById('summaryBirthdateStep3');
-        const summaryStreetStep3 = document.getElementById('summaryStreetStep3');
-        const summaryCepStep3 = document.getElementById('summaryCepStep3');
-        const summaryCityStep3 = document.getElementById('summaryCityStep3');
+    // País: idem — tenta o texto do <select>, senão código (ex.: "Brasil" ou "BR")
+    const countrySel = document.getElementById('inputCountry') || document.getElementById('headerCountrySelect');
+    const countryText = countrySel
+        ? (countrySel.options[countrySel.selectedIndex]?.text?.trim() || countrySel.value || '-')
+        : '-';
 
-        if (summaryNameStep3) summaryNameStep3.textContent = fullName;
-        if (summaryEmailStep3) summaryEmailStep3.textContent = email;
-        if (summaryPhoneStep3) summaryPhoneStep3.textContent = phone;
-        if (summaryCpfStep3) summaryCpfStep3.textContent = cpf;
-        if (summaryBirthdateStep3) summaryBirthdateStep3.textContent = birthdate;
-        if (summaryStreetStep3) summaryStreetStep3.textContent = fullStreet;
-        if (summaryCepStep3) summaryCepStep3.textContent = cep;
-        if (summaryCityStep3) summaryCityStep3.textContent = city;
+    // ===== Step 2 (box de dados pessoais) =====
+    const summaryNameStep2       = document.getElementById('summaryNameStep2');
+    const summaryEmailStep2      = document.getElementById('summaryEmailStep2');
+    const summaryPhoneStep2      = document.getElementById('summaryPhoneStep2');
+    const summaryCpfStep2        = document.getElementById('summaryCpfStep2');
+    const summaryBirthdateStep2  = document.getElementById('summaryBirthdateStep2');
+
+    if (summaryNameStep2)      summaryNameStep2.textContent = fullName;
+    if (summaryEmailStep2)     summaryEmailStep2.textContent = email;
+    if (summaryPhoneStep2)     summaryPhoneStep2.textContent = phone;
+    if (summaryCpfStep2)       summaryCpfStep2.textContent = cpf;
+    if (summaryBirthdateStep2) summaryBirthdateStep2.textContent = birthdate;
+
+    // ===== Step 3 (pessoais) =====
+    const summaryNameStep3       = document.getElementById('summaryNameStep3');
+    const summaryEmailStep3      = document.getElementById('summaryEmailStep3');
+    const summaryPhoneStep3      = document.getElementById('summaryPhoneStep3');
+    const summaryCpfStep3        = document.getElementById('summaryCpfStep3');
+    const summaryBirthdateStep3  = document.getElementById('summaryBirthdateStep3');
+
+    if (summaryNameStep3)      summaryNameStep3.textContent = fullName;
+    if (summaryEmailStep3)     summaryEmailStep3.textContent = email;
+    if (summaryPhoneStep3)     summaryPhoneStep3.textContent = phone;
+    if (summaryCpfStep3)       summaryCpfStep3.textContent = cpf;
+    if (summaryBirthdateStep3) summaryBirthdateStep3.textContent = birthdate;
+
+    // ===== Step 3 (endereço completo) =====
+    const summaryStreetStep3       = document.getElementById('summaryStreetStep3');
+    const summaryNumberStep3       = document.getElementById('summaryNumberStep3');
+    const summaryComplementStep3   = document.getElementById('summaryComplementStep3');
+    const summaryNeighborhoodStep3 = document.getElementById('summaryNeighborhoodStep3');
+    const summaryCepStep3          = document.getElementById('summaryCepStep3');
+    const summaryCityStep3         = document.getElementById('summaryCityStep3');
+    const summaryStateStep3        = document.getElementById('summaryStateStep3');
+    const summaryCountryStep3      = document.getElementById('summaryCountryStep3');
+
+    if (summaryStreetStep3)       summaryStreetStep3.textContent       = street;
+    if (summaryNumberStep3)       summaryNumberStep3.textContent       = number || '-';
+    if (summaryComplementStep3)   summaryComplementStep3.textContent   = complement || '-';
+    if (summaryNeighborhoodStep3) summaryNeighborhoodStep3.textContent = neighborhood || '-';
+    if (summaryCepStep3)          summaryCepStep3.textContent          = cep;
+    if (summaryCityStep3)         summaryCityStep3.textContent         = city;
+    if (summaryStateStep3)        summaryStateStep3.textContent        = stateText;
+    if (summaryCountryStep3)      summaryCountryStep3.textContent      = countryText;
     }
+
+
     adjustContainer() { 
         const container = document.querySelector('.login-wrapper'); 
         if (container) container.style.maxWidth = '700px'; 
