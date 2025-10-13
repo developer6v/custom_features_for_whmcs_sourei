@@ -1626,7 +1626,34 @@ async validateCepField(cepField) {
         } else if (field.id === 'inputPostcode' && country === 'BR' && digits.length < 8) {
             isValid = false;
             errorMessage = 'CEP inválido.';
+        } else if (field.id === 'customfield3') { // Data de Nascimento (DD/MM/AAAA)
+        // Se estiver vazia e não for obrigatória, é válido
+        if (!value) {
+            isValid = !field.required;
+        } else if (value.length < 10) {
+            // Incompleta: não marca erro nem sucesso, e não bloqueia
+            field.classList.remove('error', 'success');
+            return true; // sai "neutro"
+        } else {
+            // Completou 10 chars: valida formato e data real
+            const m = value.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+            if (!m) {
+            isValid = false;
+            errorMessage = 'Data inválida.';
+            } else {
+            const d = parseInt(m[1], 10);
+            const mo = parseInt(m[2], 10);
+            const y = parseInt(m[3], 10);
+            const dt = new Date(y, mo - 1, d);
+            // confere se a data “bate” (evita 31/02, etc.)
+            if (dt.getFullYear() !== y || (dt.getMonth() + 1) !== mo || dt.getDate() !== d) {
+                isValid = false;
+                errorMessage = 'Data inválida.';
+            }
+            }
         }
+        }
+
 
         if (!isValid) {
             field.classList.add('error');
