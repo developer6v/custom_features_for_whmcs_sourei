@@ -1939,46 +1939,17 @@ joinReferralValue_(sel, det) {
 // Regras: select é obrigatório; se select tiver valor, "detalhe" também é obrigatório
 // ======================================
 validateReferral_() {
-  const wrap   = document.getElementById('referralWrapper');
+  const wrap = document.getElementById('referralWrapper');
   if (!wrap) return true;
 
   const select = wrap.querySelector('#referralSelect');
   const detail = wrap.querySelector('#referralDetail');
-  let err = wrap.querySelector('#referralError');
-  if (!err) {
-    err = document.createElement('span');
-    err.id = 'referralError';
-    err.className = 'error-message';
-    wrap.appendChild(err);
-  }
-
   const hidden = document.getElementById('customfield157');
 
-  // limpa estado
-  err.textContent = '';
-  select.classList.remove('error','success');
-  detail.classList.remove('error','success');
+  // Mantém o hidden coerente, mesmo que vazio
+  if (hidden) hidden.value = this.joinReferralValue_(select?.value || '', detail?.value || '');
 
-  // Se nada foi selecionado, é válido e sem erro
-  if (!select.value) {
-    if (hidden) hidden.value = '';
-    return true;
-  }
-
-  // Se selecionou algo, mostramos o campo detalhe e exigimos seu preenchimento
-  select.classList.add('success');
-  if (!detail.value.trim()) {
-    if (detail.dataset.touched === 'true') {
-      err.textContent = 'Informe "quem/qual".';
-      detail.classList.add('error');
-    }
-    // Mesmo sem detalhe, não bloqueia os passos; apenas mostra feedback visual
-    if (hidden) hidden.value = this.joinReferralValue_(select.value, '');
-    return true;
-  }
-
-  detail.classList.add('success');
-  if (hidden) hidden.value = this.joinReferralValue_(select.value, detail.value);
+  // Nada de erros, nada de bloquear
   return true;
 }
 
