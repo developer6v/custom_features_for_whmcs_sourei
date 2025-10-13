@@ -833,13 +833,11 @@ class StepByStepForm {
         this.createFullNameField(),
         this.createTwoColumnRow([this.findMoveableGroup('inputPhone'), this.findMoveableGroup('inputEmail')]),
 
-        // ⬇️ NOVO: campo "Por onde nos conheceu"
 
 
         this.createTwoColumnRow([this.findMoveableGroup('customfield2'), this.findMoveableGroup('customfield3')]),
         this.createCheckboxField(),
         this.createTwoColumnRow([this.findMoveableGroup('customfield5'), this.findMoveableGroup('inputCompanyName')]),
-            this.createReferralField(),   
     ]);
 
 
@@ -853,8 +851,9 @@ class StepByStepForm {
         const passwordSection = document.getElementById('containerNewUserSecurity');
         const termsSection = document.querySelector('input[name="accepttos"]')?.closest('.section');
         const mailingListSection = document.querySelector('input[name="marketingoptin"]')?.closest('.section');
+        const referralSection = this.createReferralField();
 
-        const step3Elements = [passwordSection, mailingListSection, termsSection];
+        const step3Elements = [passwordSection, mailingListSection, referralSection, termsSection];
 
         const step3 = this.createStep(3, step3Elements.filter(el => el !== null));
 
