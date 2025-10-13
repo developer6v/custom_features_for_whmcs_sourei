@@ -1647,7 +1647,7 @@ async checkStepValidationForButton() {
   const currentStepEl = document.querySelector(`.form-step.step-${this.currentStep}`);
   if (!currentStepEl) return;
 
-  const fields = currentStepEl.querySelectorAll('input[required], select[required], #inputPhone, #customfield18, #customfield3');
+  const fields = currentStepEl.querySelectorAll('input[required], select[required]:not(#referralSelect), #inputPhone, #customfield18, #customfield3');
   let allValid = true;
 
   fields.forEach(field => {
@@ -1862,10 +1862,10 @@ createReferralField() {
   wrap.className = 'form-group col-md-12';
   wrap.id = 'referralWrapper';
   wrap.innerHTML = `
-    <label for="referralSelect">Por onde nos conheceu <span>*</span></label>
+    <label for="referralSelect">Por onde nos conheceu</label>
     <div class="row">
       <div class="col-md-6">
-        <select id="referralSelect" class="form-control" required>
+        <select id="referralSelect" class="form-control">
           ${opts.map(o => `<option value="${o.value}">${o.label}</option>`).join('')}
         </select>
       </div>
