@@ -1852,7 +1852,7 @@ createReferralField() {
   if (origGroup) origGroup.style.display = 'none';
   if (hiddenInput) {
     hiddenInput.type = 'hidden';                // garante que não apareça
-    hiddenInput.required = true;                // tornamos obrigatório (via validação custom)
+    hiddenInput.required = false;                // tornamos obrigatório (via validação custom)
     hiddenInput.dataset.referral = 'true';      // flag interna
   }
 
