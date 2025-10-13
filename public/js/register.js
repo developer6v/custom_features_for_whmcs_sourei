@@ -1552,61 +1552,92 @@ async validateCepField(cepField) {
         }
     }
 
+    // ===== CPF real (BR): valida dígito verificador =====
+    isValidCpf_(value) {
+        if (!value) return false;
+        const cpf = String(value).replace(/\D/g, '');
+        if (cpf.length !== 11) return false;
+
+        // rejeita sequências do tipo 00000000000, 11111111111, etc.
+        if (/^(\d)\1{10}$/.test(cpf)) return false;
+
+        // DV1
+        let sum = 0;
+        for (let i = 0; i < 9; i++) sum += parseInt(cpf[i], 10) * (10 - i);
+        let dv1 = (sum * 10) % 11;
+        if (dv1 === 10) dv1 = 0;
+        if (dv1 !== parseInt(cpf[9], 10)) return false;
+
+        // DV2
+        sum = 0;
+        for (let i = 0; i < 10; i++) sum += parseInt(cpf[i], 10) * (11 - i);
+        let dv2 = (sum * 10) % 11;
+        if (dv2 === 10) dv2 = 0;
+        if (dv2 !== parseInt(cpf[10], 10)) return false;
+
+        return true;
+    }
+
+
     validateField(field) {
-    const group = field.closest('.form-group') || field.closest('.col-md-6');
-    if (!group) return true;
+        const group = field.closest('.form-group') || field.closest('.col-md-6');
+        if (!group) return true;
 
-    const existingError = group.querySelector('.error-message');
-    if (existingError) existingError.remove();
-    field.classList.remove('error', 'success');
+        const existingError = group.querySelector('.error-message');
+        if (existingError) existingError.remove();
+        field.classList.remove('error', 'success');
 
-    const value = field.value.trim();
-    const digits = value.replace(/\D/g, '');
-    const country = document.getElementById('inputCountry')?.value || 'BR';
+        const value = field.value.trim();
+        const digits = value.replace(/\D/g, '');
+        const country = document.getElementById('inputCountry')?.value || 'BR';
 
-    let isValid = true;
-    let errorMessage = '';
+        let isValid = true;
+        let errorMessage = '';
 
-    if (field.type === 'checkbox') {
-        isValid = field.checked;
-    } else if (field.required && !value) {
-        isValid = false;
-        errorMessage = 'Este campo é obrigatório.';
-    } else if (value && field.type === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
-        isValid = false;
-        errorMessage = 'E-mail inválido.';
-    } else if (field.id === 'customfield2') { // CPF / Doc Pessoa Física
-        if (country === 'BR') {
-        if ((field.required && digits.length !== 11) || (!field.required && value && digits.length !== 11)) {
-            isValid = false; errorMessage = 'CPF inválido.';
+        if (field.type === 'checkbox') {
+            isValid = field.checked;
+        } else if (field.required && !value) {
+            isValid = false;
+            errorMessage = 'Este campo é obrigatório.';
+        } else if (value && field.type === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+            isValid = false;
+            errorMessage = 'E-mail inválido.';
+        } else if (field.id === 'customfield2') { // CPF / Doc Pessoa Física
+            if (country === 'BR') {
+                if (field.required && !value) {
+                isValid = false; errorMessage = 'Este campo é obrigatório.';
+                } else if (value && !this.isValidCpf_(value)) {
+                isValid = false; errorMessage = 'CPF inválido.';
+                }
+            } else {
+                // Fora do BR: se obrigatório, precisa ter ao menos 1 dígito; se opcional e vazio, ok
+                if (field.required && digits.length < 1) {
+                isValid = false; errorMessage = 'Este campo é obrigatório.';
+                }
+            }
+        } else if (field.id === 'customfield5') { // CNPJ / Doc Pessoa Jurídica
+            if (country === 'BR') {
+            if ((field.required && digits.length !== 14) || (!field.required && value && digits.length !== 14)) {
+                isValid = false; errorMessage = 'CNPJ inválido.';
+            }
+            } else {
+            if (field.required && digits.length < 1) { isValid = false; errorMessage = 'Este campo é obrigatório.'; }
+            }
+        } else if (field.id === 'inputPostcode' && country === 'BR' && digits.length < 8) {
+            isValid = false;
+            errorMessage = 'CEP inválido.';
         }
-        } else {
-        // Fora do BR: se obrigatório, precisa ter ao menos 1 dígito; se opcional e vazio, ok
-        if (field.required && digits.length < 1) { isValid = false; errorMessage = 'Este campo é obrigatório.'; }
-        }
-    } else if (field.id === 'customfield5') { // CNPJ / Doc Pessoa Jurídica
-        if (country === 'BR') {
-        if ((field.required && digits.length !== 14) || (!field.required && value && digits.length !== 14)) {
-            isValid = false; errorMessage = 'CNPJ inválido.';
-        }
-        } else {
-        if (field.required && digits.length < 1) { isValid = false; errorMessage = 'Este campo é obrigatório.'; }
-        }
-    } else if (field.id === 'inputPostcode' && country === 'BR' && digits.length < 8) {
-        isValid = false;
-        errorMessage = 'CEP inválido.';
-    }
 
-    if (!isValid) {
-        field.classList.add('error');
-        const errorEl = document.createElement('span');
-        errorEl.className = 'error-message';
-        errorEl.textContent = errorMessage;
-        group.appendChild(errorEl);
-    } else if (value || field.checked) {
-        field.classList.add('success');
-    }
-    return isValid;
+        if (!isValid) {
+            field.classList.add('error');
+            const errorEl = document.createElement('span');
+            errorEl.className = 'error-message';
+            errorEl.textContent = errorMessage;
+            group.appendChild(errorEl);
+        } else if (value || field.checked) {
+            field.classList.add('success');
+        }
+        return isValid;
     }
 
 async checkStepValidationForButton() {
