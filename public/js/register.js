@@ -593,7 +593,7 @@ class StepByStepForm {
     setupHeaderCountryListener() {
         const headerCountrySelect = document.getElementById('headerCountrySelect');
         const formCountrySelect = document.getElementById('inputCountry');
-        CountrySelect.populate('headerCountrySelect', this.currentLanguage, ['BR','US','PT','ES','FR','DE','IT','GB','AR','MX']);
+        CountrySelect.populate('headerCountrySelect', this.currentLanguage, []);
 
         if (headerCountrySelect && formCountrySelect) {
             // Sincroniza o valor inicial
