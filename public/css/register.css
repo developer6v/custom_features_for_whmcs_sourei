@@ -445,7 +445,7 @@ input[name="accepttos"]::before {
     min-width: 0px !important;
 }
 @media (max-width: 768px) {
-    #newPassword1, #newPassword2 {
+    #newPassword1, #newPassword2, #referralWrapper {
         width: 300px!important;
     }
 
