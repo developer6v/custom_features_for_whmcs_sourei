@@ -431,6 +431,15 @@ input[name="accepttos"]::before {
 }
 
 
+#containerPassword {
+    flex-direction: column;
+    width: 100%;
+}
+
+#newPassword1, #newPassword2 {
+    width: 500px!important;
+}
+
 .header-selector-group {
     min-width: 0px !important;
 }
