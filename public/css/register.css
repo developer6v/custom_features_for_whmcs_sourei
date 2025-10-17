@@ -434,6 +434,7 @@ input[name="accepttos"]::before {
 #containerPassword {
     flex-direction: column;
     width: 100%;
+    gap: 0!important;
 }
 
 #newPassword1, #newPassword2 {
@@ -444,6 +445,9 @@ input[name="accepttos"]::before {
     min-width: 0px !important;
 }
 @media (max-width: 768px) {
+    #newPassword1, #newPassword2 {
+        width: 300px!important;
+    }
 
     .main-body {
         width: 100% !important;
