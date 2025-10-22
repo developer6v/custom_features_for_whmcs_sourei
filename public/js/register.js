@@ -406,6 +406,7 @@ class StepByStepForm {
         if (field) field.placeholder = text;
     }
     hideLoader() {
+        console.log("hide loader called")
         const loader = document.getElementById('page-loader');
         if (!loader) return;
         loader.style.transition = 'opacity 0.4s ease';
