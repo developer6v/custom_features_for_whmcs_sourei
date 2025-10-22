@@ -405,6 +405,13 @@ class StepByStepForm {
         const field = document.getElementById(fieldId);
         if (field) field.placeholder = text;
     }
+    hideLoader() {
+        const loader = document.getElementById('page-loader');
+        if (!loader) return;
+        loader.style.transition = 'opacity 0.4s ease';
+        loader.style.opacity = '0';
+        setTimeout(() => loader.remove(), 400);
+    }
 
     init() {
         document.addEventListener('DOMContentLoaded', () => {
@@ -444,7 +451,8 @@ class StepByStepForm {
 
                 const interval = setInterval(ensureTermsChecked, 200);
 
-                
+                this.hideLoader();
+
 
             }, 200);
         });
