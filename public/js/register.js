@@ -538,6 +538,7 @@ class StepByStepForm {
         this.adjustContainer();
         this.ensureNameFieldsExist();
         this.ensureReferralFieldExists();
+        this.translateLabel('inputEmail', (this.translations?.email || 'E-mail'));
 
     }
 
