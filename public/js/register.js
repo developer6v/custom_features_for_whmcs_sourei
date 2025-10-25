@@ -1703,18 +1703,28 @@ async checkStepValidationForButton() {
   const country = document.getElementById('inputCountry')?.value || 'BR';
 
   // Step 1: CPF/CNPJ por país
-  if (this.currentStep === 1) {
+    if (this.currentStep === 1) {
     const cpfField = document.getElementById('customfield2');
     const cnpjField = document.getElementById('customfield5');
     const pessoaJuridica = document.getElementById('pessoaJuridica');
     const companyNameField = document.getElementById('inputCompanyName');
+    const country = document.getElementById('inputCountry')?.value || 'BR';
 
-    if (cpfField && cpfField.offsetParent !== null) {
-        const okCpf = this.validateField(cpfField);
+    // CPF (PF): usa verificador real no BR; fora do BR exige algo apenas se required
+    if (cpfField && cpfField.offsetParent !== null && !(pessoaJuridica && pessoaJuridica.checked)) {
+        const cpfVal = (cpfField.value || '').trim();
+        const cpfDigits = cpfVal.replace(/\D/g, '');
+        let okCpf = true;
+
+        if (country === 'BR') {
+        okCpf = this.isValidCpf_(cpfVal); // ← valida DV real
+        } else {
+        okCpf = cpfField.required ? (cpfDigits.length >= 1) : true;
+        }
+
         if (!okCpf) allValid = false;
     }
 
-    
     if (pessoaJuridica && pessoaJuridica.checked) {
       if (cnpjField && cnpjField.offsetParent !== null) {
         const cnpjDigits = (cnpjField.value || '').replace(/\D/g, '');
