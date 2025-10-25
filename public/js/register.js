@@ -1710,14 +1710,11 @@ async checkStepValidationForButton() {
     const companyNameField = document.getElementById('inputCompanyName');
 
     if (cpfField && cpfField.offsetParent !== null) {
-      const cpfDigits = (cpfField.value || '').replace(/\D/g, '');
-      if (country === 'BR') {
-        if (cpfField.required && cpfDigits.length !== 11) allValid = false;
-      } else {
-        if (cpfField.required && cpfDigits.length < 1) allValid = false;
-      }
+        const okCpf = this.validateField(cpfField);
+        if (!okCpf) allValid = false;
     }
 
+    
     if (pessoaJuridica && pessoaJuridica.checked) {
       if (cnpjField && cnpjField.offsetParent !== null) {
         const cnpjDigits = (cnpjField.value || '').replace(/\D/g, '');
