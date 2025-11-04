@@ -1,5 +1,7 @@
 class StepByStepForm {
     constructor() {
+        this.captchaEl = null;
+        this.captchaClearfix = null;
         this.currentStep = 1;
         this.totalSteps = 3;
         this.formData = {};
@@ -876,6 +878,30 @@ class StepByStepForm {
             originalSectionsContainer.innerHTML = '';
             originalSectionsContainer.appendChild(stepsContainer);
         }
+
+        // ... depois de criar const step3 = this.createStep(3, step3Elements.filter(...))
+
+        // pega o captcha e o clearfix que vem logo depois dele
+        this.captchaEl = document.getElementById('captchaContainer');
+        if (this.captchaEl) {
+        // se o próximo irmão for um clearfix, guardamos também
+        const next = this.captchaEl.nextElementSibling;
+        if (next && next.classList && next.classList.contains('clearfix')) {
+            this.captchaClearfix = next;
+        }
+
+        // move os elementos para dentro do conteúdo do step 3
+        const step3Content = step3.querySelector('.step-content');
+        // esconde inicialmente
+        this.captchaEl.style.display = 'none';
+        step3Content.appendChild(this.captchaEl);
+
+        if (this.captchaClearfix) {
+            this.captchaClearfix.style.display = 'none';
+            step3Content.appendChild(this.captchaClearfix);
+        }
+        }
+
     }
 
     createFullNameField() {
@@ -1434,6 +1460,14 @@ async validateCepField(cepField) {
         }
         
         this.checkStepValidationForButton();
+        // exibe o captcha apenas no step 3
+        if (this.captchaEl) {
+        this.captchaEl.style.display = (stepNumber === 3 ? '' : 'none');
+        }
+        if (this.captchaClearfix) {
+        this.captchaClearfix.style.display = (stepNumber === 3 ? '' : 'none');
+        }
+
     }
     updateStepContent(stepNumber) {
         const t = this.translations;
