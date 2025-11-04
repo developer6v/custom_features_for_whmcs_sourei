@@ -533,6 +533,7 @@ class StepByStepForm {
     // tenta achar por name e por id (alguns temas usam id="accepttos")
     const tos = document.querySelector('input[name="accepttos"]') 
             || document.getElementById('accepttos');
+console.log("checkbox termos encontrado?", tos);
 
     if (!tos) return;
 
