@@ -497,7 +497,7 @@ class StepByStepForm {
                 this.setupCountryListener();
                 this.setupHeaderCountryListener(); // ← NOVO: Listener do seletor de país no header
 
-                const ensureTermsChecked = () => {
+               /* const ensureTermsChecked = () => {
                 const termsCheckbox = document.querySelector('input[name="accepttos"]');
                 if (!termsCheckbox) return;
 
@@ -517,7 +517,7 @@ class StepByStepForm {
                 };
 
 
-                const interval = setInterval(ensureTermsChecked, 200);
+                const interval = setInterval(ensureTermsChecked, 200);*/
 
                 this.hideLoader();
 
@@ -929,6 +929,25 @@ class StepByStepForm {
         const termsSection = document.querySelector('input[name="accepttos"]')?.closest('.section');
         const mailingListSection = document.querySelector('input[name="marketingoptin"]')?.closest('.section');
         const referralSection = this.createReferralField();
+
+
+        // === NORMALIZA TERMOS: mostrar no Step 3 e tornar obrigatório ===
+        if (termsSection) {
+        // revela se alguém escondeu antes
+        termsSection.style.display = '';
+        // tenta achar o checkbox
+        const termsCheckbox = termsSection.querySelector('input[name="accepttos"]');
+        if (termsCheckbox) {
+            termsCheckbox.required = true;       // força validação local
+            termsCheckbox.checked = false;       // não pré-marca
+        }
+        // título amigável (opcional)
+        const header = termsSection.querySelector('.section-header .section-title');
+        if (header && !/Termos/i.test(header.textContent)) {
+            header.textContent = 'Termos de Serviço & Privacidade';
+        }
+        }
+
 
         const step3Elements = [passwordSection, mailingListSection, referralSection, termsSection];
 
@@ -1540,6 +1559,13 @@ async validateCepField(cepField) {
         this.captchaClearfix.style.display = (stepNumber === 3 ? '' : 'none');
         }
 
+        // exibe Termos só no step 3 (opcional, caso o tema mexa)
+        const termsInStep3 = document.querySelector('.form-step.step-3 input[name="accepttos"]')?.closest('.section');
+        if (termsInStep3) {
+        termsInStep3.style.display = (stepNumber === 3 ? '' : 'none');
+        }
+
+
     }
     updateStepContent(stepNumber) {
         const t = this.translations;
@@ -1858,6 +1884,13 @@ async checkStepValidationForButton() {
     // bloqueia se servidor indicou duplicidade
     if (this.serverCpfExists || this.serverEmailExists) {
     allValid = false;
+    }
+    // Step 3: exige aceitar Termos
+    if (this.currentStep === 3) {
+    const tos = document.querySelector('.form-step.step-3 input[name="accepttos"]');
+    if (tos && !tos.checked) {
+        allValid = false;
+    }
     }
 
   nextBtn.disabled = !allValid;
