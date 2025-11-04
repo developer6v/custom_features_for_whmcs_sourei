@@ -525,6 +525,35 @@ class StepByStepForm {
             }, 200);
         });
     }
+
+
+        // Chame depois de organizar os steps (ex.: no final de organizeFieldsIntoSteps())
+    // e também dentro de showStep() quando entrar no step 3.
+    ensureTermsWatcher_() {
+    // tenta achar por name e por id (alguns temas usam id="accepttos")
+    const tos = document.querySelector('.form-step.step-3 input[name="accepttos"]') 
+            || document.getElementById('accepttos');
+
+    if (!tos) return;
+
+    // garante required e estado inicial
+    tos.required = true;
+
+    // evita múltiplos binds
+    tos._bindedTerms = tos._bindedTerms || false;
+    if (tos._bindedTerms) return;
+    tos._bindedTerms = true;
+
+    const recheck = () => {
+        tos.dataset.touched = 'true';
+        this.checkStepValidationForButton();
+    };
+
+    // change cobre clique; input ajuda em temas que disparam input no toggle
+    tos.addEventListener('change', recheck);
+    tos.addEventListener('input', recheck);
+    }
+
     ensureNameFieldsExist() {
     const form = document.querySelector('.loginForm');
     console.log('[NameCheck] form encontrado?', !!form);
@@ -985,6 +1014,7 @@ class StepByStepForm {
             step3Content.appendChild(this.captchaClearfix);
         }
         }
+        this.ensureTermsWatcher_();
 
     }
 
@@ -1565,6 +1595,10 @@ async validateCepField(cepField) {
         const termsInStep3 = document.querySelector('.form-step.step-3 input[name="accepttos"]')?.closest('.section');
         if (termsInStep3) {
         termsInStep3.style.display = (stepNumber === 3 ? '' : 'none');
+        }
+
+        if (stepNumber === 3) {
+            this.ensureTermsWatcher_();
         }
 
 
