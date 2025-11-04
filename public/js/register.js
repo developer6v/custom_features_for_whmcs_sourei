@@ -545,6 +545,7 @@ class StepByStepForm {
     tos._bindedTerms = true;
 
     const recheck = () => {
+        console.log("foi chamado")
         tos.dataset.touched = 'true';
         this.checkStepValidationForButton();
     };
