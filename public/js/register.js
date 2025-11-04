@@ -531,7 +531,7 @@ class StepByStepForm {
     // e também dentro de showStep() quando entrar no step 3.
     ensureTermsWatcher_() {
     // tenta achar por name e por id (alguns temas usam id="accepttos")
-    const tos = document.querySelector('.form-step.step-3 input[name="accepttos"]') 
+    const tos = document.querySelector('input[name="accepttos"]') 
             || document.getElementById('accepttos');
 
     if (!tos) return;
