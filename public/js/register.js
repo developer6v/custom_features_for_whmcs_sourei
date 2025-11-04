@@ -551,9 +551,8 @@ console.log("Termos está marcado?", tos.checked);
         this.checkStepValidationForButton();
     };
 
-    // change cobre clique; input ajuda em temas que disparam input no toggle
-    tos.addEventListener('change', recheck);
-    tos.addEventListener('input', recheck);
+    setInterval(function() {recheck}, 100)
+    
     }
 
     ensureNameFieldsExist() {
