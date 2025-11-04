@@ -1304,6 +1304,14 @@ class StepByStepForm {
             this.checkStepValidationForButton();
             }
         }
+
+        
+            if (e.target.id === 'inputEmail' || e.target.id === 'customfield2') {
+                // respeita suas regras locais já existentes
+                this.validateField(e.target);
+                // só chama servidor se o local estiver OK (o método já revalida de novo)
+                this.checkEmailCpfDuplicate_();
+            }
         });
 
         document.addEventListener('click', (e) => {
@@ -1313,12 +1321,6 @@ class StepByStepForm {
         document.addEventListener('change', (e) => {
             if (e.target.id === 'pessoaJuridica') this.toggleCnpjField(e.target.checked);
 
-            if (e.target.id === 'inputEmail' || e.target.id === 'customfield2') {
-                // respeita suas regras locais já existentes
-                this.validateField(e.target);
-                // só chama servidor se o local estiver OK (o método já revalida de novo)
-                this.checkEmailCpfDuplicate_();
-            }
         });
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' && !e.shiftKey) {
@@ -1725,9 +1727,18 @@ async validateCepField(cepField) {
         const group = field.closest('.form-group') || field.closest('.col-md-6');
         if (!group) return true;
 
-        const existingError = group.querySelector('.error-message');
-        if (existingError) existingError.remove();
+        // Remove SOMENTE erros locais, preservando erros de servidor
+        group.querySelectorAll('.error-message:not(.server-error)').forEach(n => n.remove());
+
+        // Se já existe erro de servidor nesse campo, não sobrescreva a UI.
+        // Ainda assim, podemos validar e retornar o boolean, mas sem mexer no DOM.
+        const hasServerError = !!group.querySelector('.error-message.server-error');
+
+        // Não “limpa” classe se existe erro de servidor
+        if (!hasServerError) {
         field.classList.remove('error', 'success');
+        }
+
 
         const value = field.value.trim();
         const digits = value.replace(/\D/g, '');
@@ -1798,15 +1809,18 @@ async validateCepField(cepField) {
 
 
         if (!isValid) {
+        if (!hasServerError) {
             field.classList.add('error');
             const errorEl = document.createElement('span');
             errorEl.className = 'error-message';
             errorEl.textContent = errorMessage;
             group.appendChild(errorEl);
-        } else if (value || field.checked) {
-            field.classList.add('success');
         }
-        return isValid;
+        } else if ((value || field.checked) && !hasServerError) {
+        field.classList.add('success');
+        }
+        return isValid && !hasServerError; // servidor com erro mantém o false
+
     }
 
 async checkStepValidationForButton() {
@@ -1853,6 +1867,8 @@ async checkStepValidationForButton() {
         } else {
         okCpf = cpfField.required ? (cpfDigits.length >= 1) : true;
         }
+
+
 
         if (!okCpf) allValid = false;
     }
