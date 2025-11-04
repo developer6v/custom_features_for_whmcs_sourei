@@ -547,7 +547,7 @@ console.log("Termos está marcado?", tos.checked);
         this.checkStepValidationForButton();
     };
 
-    setInterval(function() {recheck}, 100)
+    setInterval(function() { recheck(); }, 100);
     
     }
 
