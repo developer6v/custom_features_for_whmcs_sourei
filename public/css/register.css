@@ -437,6 +437,10 @@ input[name="accepttos"]::before {
     gap: 0!important;
 }
 
+#referralDetail {
+    margin-top: 20px!important;
+}
+
 #newPassword1, #newPassword2 {
     width: 500px!important;
 }
