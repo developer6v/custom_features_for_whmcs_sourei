@@ -540,10 +540,6 @@ console.log("Termos está marcado?", tos.checked);
     // garante required e estado inicial
     tos.required = true;
 
-    // evita múltiplos binds
-    tos._bindedTerms = tos._bindedTerms || false;
-    if (tos._bindedTerms) return;
-    tos._bindedTerms = true;
 
     const recheck = () => {
         console.log("foi chamado")
