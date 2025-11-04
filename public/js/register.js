@@ -6,6 +6,7 @@ class StepByStepForm {
         this.totalSteps = 3;
         this.formData = {};
         this.iti = null;
+        this._lastDupChecked = { email: '', cpf: '' };
         this.serverCpfExists = false;
         this.serverEmailExists = false;
         this.currentLanguage = 'pt-BR';
@@ -254,6 +255,70 @@ class StepByStepForm {
         };
     }
 
+    async checkEmailCpfDuplicate_(){
+        const t        = this.translations || window.FormGeoI18n.getTranslation('pt-BR') || {};
+        const country  = document.getElementById('inputCountry')?.value || 'BR';
+        const emailEl  = document.getElementById('inputEmail');
+        const cpfEl    = document.getElementById('customfield2');
+
+        const rawEmail = (emailEl?.value || '').trim();
+        const rawCpf   = (cpfEl?.value || '').trim();
+
+        // --- validação local: só chama servidor se estiver OK localmente
+        const emailOk = !!rawEmail && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(rawEmail);
+        const cpfOk   = (country === 'BR') && !!rawCpf && this.isValidCpf_(rawCpf);
+
+        if (!emailOk && !cpfOk){
+            // nada a checar remotamente; limpa flags desse(s) campo(s)
+            if (!emailOk) { this.serverEmailExists = false; this.clearFieldError_('inputEmail'); }
+            if (!cpfOk)   { this.serverCpfExists   = false; this.clearFieldError_('customfield2'); }
+            this.checkStepValidationForButton();
+            return;
+        }
+
+        const normEmail = emailOk ? rawEmail.toLowerCase() : '';
+        const normCpf   = cpfOk   ? rawCpf.replace(/\D/g,'') : '';
+
+        // evita repetir a mesma chamada para o mesmo valor
+        if (normEmail === this._lastDupChecked.email && normCpf === this._lastDupChecked.cpf){
+            return;
+        }
+
+        try{
+            const resp = await fetch(this.urlvalidateemailcpf, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'omit',
+            body: JSON.stringify({ email: normEmail, cpf: normCpf })
+            });
+            if (!resp.ok) throw new Error('HTTP '+resp.status);
+            const data = await resp.json();
+
+            // zera erros antigos "de servidor"
+            this.clearFieldError_('inputEmail');
+            this.clearFieldError_('customfield2');
+
+            // flags internas reaproveitadas pelo seu checkStepValidationForButton()
+            this.serverEmailExists = !!(emailOk && data.email);
+            this.serverCpfExists   = !!(cpfOk   && data.cpf);
+
+            if (this.serverEmailExists){
+            this.showFieldError_('inputEmail', t.errorEmailExists || 'E-mail já cadastrado.');
+            }
+            if (this.serverCpfExists){
+            this.showFieldError_('customfield2', t.errorCpfExists || 'CPF já cadastrado.');
+            }
+
+            this._lastDupChecked.email = normEmail || this._lastDupChecked.email;
+            this._lastDupChecked.cpf   = normCpf   || this._lastDupChecked.cpf;
+
+        } catch(err){
+            console.error('[dup-check] erro de rede', err);
+            // não bloqueia o fluxo; só não marca duplicado
+        }
+
+        this.checkStepValidationForButton();
+    }
 
 
     // ============================================
@@ -1228,6 +1293,13 @@ class StepByStepForm {
         });
         document.addEventListener('change', (e) => {
             if (e.target.id === 'pessoaJuridica') this.toggleCnpjField(e.target.checked);
+
+            if (e.target.id === 'inputEmail' || e.target.id === 'customfield2') {
+                // respeita suas regras locais já existentes
+                this.validateField(e.target);
+                // só chama servidor se o local estiver OK (o método já revalida de novo)
+                this.checkEmailCpfDuplicate_();
+            }
         });
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' && !e.shiftKey) {
